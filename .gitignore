@@ -15,7 +15,7 @@ Thumbs.db
 Agents.md
 # Env
 .env
-.env.*
+
 !.env.example
 !.env.test
 
