@@ -1,0 +1,136 @@
+@import "../app.css";
+
+/* Matches <html class="dark"> itself, not just its descendants —
+   Skeleton's `:root { @variant dark { … } }` depends on this. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  font-family: "Inter Variable", sans-serif;
+  font-synthesis: none;
+  color-scheme: light dark;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  /* Beat Skeleton's `body { font-family: var(--typo-base--font-family) }`
+	   (catppuccin's ui-rounded stack) so the app font actually applies. */
+  font-family: "Inter Variable", sans-serif;
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  text-decoration: none;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--primary) 35%, transparent);
+}
+
+.input,
+.textarea,
+.select,
+.input-group {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--ring) 30%, transparent);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.page-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--card-foreground);
+  box-shadow: 0 1px 3px color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+
+.text-subtle {
+  color: var(--muted-foreground);
+}
+
+.text-muted-contrast {
+  color: var(--muted-foreground);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}

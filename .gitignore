@@ -1,0 +1,36 @@
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+!.env.*
+session*.md
+# OS
+.DS_Store
+Thumbs.db
+Agents.md
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Doppler — track doppler.yaml, ignore local cache
+.doppler/
+
+# Vite
+vite.config.timestamp-*
+vite.config.ts.timestamp-*
+.mimocode/
+.vscode/
+.opencode/
+.lightcms
+session-ses_08e9.md
+.env*
+
+# Turborepo
+.turbo

@@ -1,0 +1,239 @@
+<script lang="ts">
+  import {
+    FingerprintPattern,
+    GitBranch,
+    LogOut,
+    Mail,
+    ShieldCheck,
+  } from "@lucide/svelte";
+  import { untrack } from "svelte";
+  import { superForm } from "sveltekit-superforms";
+  import { goto } from "$app/navigation";
+  import { authClient, signIn, signOut } from "$lib/auth-client";
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import type { PageData } from "./$types";
+
+  let { data }: { data: PageData } = $props();
+  const authForm = untrack(() => superForm(data.form));
+  const {
+    form: authValues,
+    errors: authErrors,
+    enhance: authEnhance,
+    message: authMessage,
+    submitting: authSubmitting,
+  } = authForm;
+
+  let isUsingPasskey = $state(false);
+  let isAddingPasskey = $state(false);
+
+  async function signInWithGitHub() {
+    await signIn.social({ provider: "github", callbackURL: "/cms" });
+  }
+
+  async function signOutUser() {
+    try {
+      await signOut();
+    } finally {
+      await goto("/signout", { invalidateAll: true });
+    }
+  }
+
+  async function signInWithPasskey() {
+    isUsingPasskey = true;
+
+    try {
+      const result = await signIn.passkey();
+
+      if (result.error) {
+        return;
+      }
+
+      window.location.assign("/cms");
+    } finally {
+      isUsingPasskey = false;
+    }
+  }
+
+  async function addPasskey() {
+    isAddingPasskey = true;
+
+    try {
+      const result = await authClient.passkey.addPasskey();
+
+      if (result.error) {
+        return;
+      }
+    } finally {
+      isAddingPasskey = false;
+    }
+  }
+</script>
+
+<svelte:head>
+  <title>Account | LightCMS</title>
+</svelte:head>
+
+<section
+  class="flex min-h-[calc(100vh-12rem)] items-center justify-center py-6 sm:py-12"
+>
+  <div
+    class="relative w-full max-w-md space-y-6 rounded-3xl border border-border bg-card text-card-foreground p-6 shadow-2xl backdrop-blur-2xl sm:p-8"
+  >
+    <div class="text-center">
+      <span
+        class="inline-flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/30"
+      >
+        <ShieldCheck size={24} />
+      </span>
+      <h1 class="mt-4 text-2xl font-bold tracking-tight text-foreground">
+        {data.session ? "Your Account" : "Sign in to LightCMS"}
+      </h1>
+      <p class="mt-1.5 text-xs text-muted-foreground">
+        {data.session
+          ? "Manage your session and access details"
+          : "Connect your GitHub account or request a magic link"}
+      </p>
+    </div>
+
+    {#if data.session && data.user}
+      <div
+        class="flex items-center gap-3.5 rounded-2xl border border-border bg-muted/40 p-4"
+      >
+        <span
+          class="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/20 text-primary font-extrabold"
+        >
+          {(data.user.name ?? data.user.email ?? "U").charAt(0).toUpperCase()}
+        </span>
+        <div class="min-w-0 flex-1">
+          <p
+            class="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase"
+          >
+            Signed in as
+          </p>
+          <p class="truncate text-sm font-bold text-foreground">
+            {data.user.email ?? data.user.name ?? "LightCMS user"}
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-2.5 pt-2">
+        <a
+          href="/cms"
+          class="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-xs gap-2"
+        >
+          <GitBranch size={16} /> Go to CMS Workspace
+        </a>
+        <div class="grid grid-cols-2 gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            class="gap-2 text-xs font-semibold"
+            disabled={isAddingPasskey}
+            onclick={addPasskey}
+          >
+            <FingerprintPattern size={15} />
+            {isAddingPasskey ? "Adding..." : "Add passkey"}
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            class="gap-2 text-xs font-semibold"
+            onclick={signOutUser}
+          >
+            <LogOut size={15} /> Sign out
+          </Button>
+        </div>
+      </div>
+    {:else}
+      <div class="grid gap-3 pt-2">
+        <Button
+          size="lg"
+          class="w-full justify-center gap-2.5 text-sm font-semibold py-2.5 shadow-xs"
+          onclick={signInWithGitHub}
+        >
+          <GitBranch size={18} /> Continue with GitHub
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          class="w-full justify-center gap-2.5 text-sm font-semibold py-2.5"
+          disabled={isUsingPasskey}
+          onclick={signInWithPasskey}
+        >
+          <FingerprintPattern size={18} />
+          {isUsingPasskey ? "Authenticating..." : "Use Passkey"}
+        </Button>
+      </div>
+
+      <div class="relative my-6 flex items-center justify-center">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-border"></div>
+        </div>
+        <span
+          class="relative bg-card px-3 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+        >
+          or continue with magic link
+        </span>
+      </div>
+
+      <form
+        class="space-y-4"
+        method="POST"
+        use:authEnhance
+        aria-busy={$authSubmitting}
+      >
+        <div class="grid gap-2">
+          <label
+            class="text-xs font-semibold text-foreground"
+            for="magic-link-email">Email address</label
+          >
+          <div class="flex items-center gap-2">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-md border border-input bg-muted text-muted-foreground"
+            >
+              <Mail size={16} />
+            </div>
+            <Input
+              id="magic-link-email"
+              name="email"
+              autocomplete="email"
+              type="email"
+              placeholder="you@example.com"
+              required
+              class="flex-1"
+              value={$authValues.email ?? ""}
+              oninput={(e) => {
+                $authValues.email = (e.currentTarget as HTMLInputElement).value;
+              }}
+            />
+          </div>
+        </div>
+        {#if $authErrors.email?.length}
+          <p class="text-xs font-medium text-destructive">
+            {$authErrors.email[0]}
+          </p>
+        {/if}
+        <Button
+          variant="outline"
+          class="w-full font-semibold"
+          type="submit"
+          disabled={$authSubmitting}
+        >
+          {$authSubmitting
+            ? "Sending secure link..."
+            : "Email me a sign-in link"}
+        </Button>
+      </form>
+    {/if}
+
+    {#if $authMessage}
+      <div
+        class="rounded-lg border border-border bg-muted p-3 text-sm font-medium text-foreground"
+        role="status"
+      >
+        {$authMessage}
+      </div>
+    {/if}
+  </div>
+</section>
