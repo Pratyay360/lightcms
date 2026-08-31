@@ -1,199 +1,255 @@
 import matter from "gray-matter";
 import type { LightCmsCollection } from "$lib/server/config";
 import {
-  createFile,
-  createOrUpdateFile,
-  deleteFile,
-  getFileContent,
-  listDir,
+	createFile,
+	createOrUpdateFile,
+	deleteFile,
+	getFileContent,
+	listDir,
 } from "$lib/server/github";
-import { getSlug, joinPath, normalizeFolder, resolveEntryPath } from "$lib/server/paths";
-import { assertSlug, buildFrontMatter, parseFrontMatter, serializeEntry } from "./frontmatter";
+import {
+	getSlug,
+	joinPath,
+	normalizeFolder,
+	resolveEntryPath,
+} from "$lib/server/paths";
+import {
+	assertSlug,
+	buildFrontMatter,
+	parseFrontMatter,
+	serializeEntry,
+} from "./frontmatter";
 import { getEntryCommitMessage, resolveEntryContext } from "./slug-helpers.js";
 import {
-  type CmsContext,
-  type DirectoryListing,
-  type Entry,
-  type FrontMatter,
-  resolveRepository,
+	type CmsContext,
+	type DirectoryListing,
+	type Entry,
+	type FrontMatter,
+	resolveRepository,
 } from "./types";
 
 export { buildFrontMatter };
 
-function resolveTitle(collection: LightCmsCollection, frontMatter: FrontMatter): string {
-  const primary = collection.view?.primary ?? collection.fields[0]?.name;
-  const raw = primary ? frontMatter[primary] : undefined;
-  if (raw === null || raw === undefined) return "";
-  return typeof raw === "string" ? raw : String(raw);
+function resolveTitle(
+	collection: LightCmsCollection,
+	frontMatter: FrontMatter,
+): string {
+	const primary = collection.view?.primary ?? collection.fields[0]?.name;
+	const raw = primary ? frontMatter[primary] : undefined;
+	if (raw === null || raw === undefined) return "";
+	return typeof raw === "string" ? raw : String(raw);
 }
 
 function toSortableString(value: unknown): string {
-  if (typeof value === "string") return value;
-  return JSON.stringify(value);
+	if (typeof value === "string") return value;
+	return JSON.stringify(value);
 }
 
 async function mapWithConcurrency<T, R>(
-  items: T[],
-  limit: number,
-  fn: (item: T) => Promise<R>,
+	items: T[],
+	limit: number,
+	fn: (item: T) => Promise<R>,
 ): Promise<R[]> {
-  const results: R[] = Array.from({ length: items.length });
-  let index = 0;
-  async function worker() {
-    while (index < items.length) {
-      const current = index++;
-      results[current] = await fn(items[current]);
-    }
-  }
-  const workers = Array.from({ length: Math.min(limit, items.length) }, () => worker());
-  await Promise.all(workers);
-  return results;
+	const results: R[] = Array.from({ length: items.length });
+	let index = 0;
+	async function worker() {
+		while (index < items.length) {
+			const current = index++;
+			results[current] = await fn(items[current]);
+		}
+	}
+	const workers = Array.from({ length: Math.min(limit, items.length) }, () =>
+		worker(),
+	);
+	await Promise.all(workers);
+	return results;
 }
 
 export async function listCollectionEntries(
-  collection: LightCmsCollection,
-  ctx: CmsContext,
-  folder = "",
+	collection: LightCmsCollection,
+	ctx: CmsContext,
+	folder = "",
 ): Promise<DirectoryListing> {
-  const repo = resolveRepository(ctx);
-  const directoryPath = joinPath(collection.path, normalizeFolder(folder));
-  const entries = await listDir(directoryPath, ctx.client, repo, ctx.branch);
-  const folders = entries
-    .filter((entry) => entry.type === "dir" && !entry.name.startsWith("."))
-    .map((entry) => ({ name: entry.name, path: entry.path }));
-  const markdownEntries = entries.filter(
-    (entry) => entry.type === "file" && entry.path.endsWith(".md"),
-  );
+	const repo = resolveRepository(ctx);
+	const directoryPath = joinPath(collection.path, normalizeFolder(folder));
+	const entries = await listDir(directoryPath, ctx.client, repo, ctx.branch);
+	const folders = entries
+		.filter((entry) => entry.type === "dir" && !entry.name.startsWith("."))
+		.map((entry) => ({ name: entry.name, path: entry.path }));
+	const markdownEntries = entries.filter(
+		(entry) => entry.type === "file" && entry.path.endsWith(".md"),
+	);
 
-  const items = await mapWithConcurrency(markdownEntries, 5, async (entry) => {
-    const slug = getSlug(directoryPath, entry.path);
-    const content = await getFileContent(entry.path, ctx.client, repo, ctx.branch);
-    return {
-      path: entry.path,
-      slug,
-      frontMatter: parseFrontMatter(content.content),
-    };
-  });
+	const items = await mapWithConcurrency(markdownEntries, 5, async (entry) => {
+		const slug = getSlug(directoryPath, entry.path);
+		const content = await getFileContent(
+			entry.path,
+			ctx.client,
+			repo,
+			ctx.branch,
+		);
+		return {
+			path: entry.path,
+			slug,
+			frontMatter: parseFrontMatter(content.content),
+		};
+	});
 
-  const view = collection.view;
-  const sort = view?.default?.sort ?? view?.sort ?? [];
-  const order = view?.default?.order ?? view?.order ?? "asc";
+	const view = collection.view;
+	const sort = view?.default?.sort ?? view?.sort ?? [];
+	const order = view?.default?.order ?? view?.order ?? "asc";
 
-  // Pre-compute sortable strings to avoid JSON.stringify per comparison
-  const sortableCache = new Map<string, Map<string, string>>();
-  for (const item of items) {
-    const cache = new Map<string, string>();
-    for (const field of sort) cache.set(field, toSortableString(item.frontMatter[field]));
-    sortableCache.set(item.slug, cache);
-  }
+	// Pre-compute sortable strings to avoid JSON.stringify per comparison
+	const sortableCache = new Map<string, Map<string, string>>();
+	for (const item of items) {
+		const cache = new Map<string, string>();
+		for (const field of sort)
+			cache.set(field, toSortableString(item.frontMatter[field]));
+		sortableCache.set(item.slug, cache);
+	}
 
-  const sorted = items.sort((left, right) => {
-    for (const field of sort) {
-      const leftValue = left.frontMatter[field];
-      const rightValue = right.frontMatter[field];
-      if (leftValue === rightValue) continue;
-      if (leftValue === undefined || leftValue === null || leftValue === "") return 1;
-      if (rightValue === undefined || rightValue === null || rightValue === "") return -1;
-      const comparison = sortableCache
-        .get(left.slug)!
-        .get(field)!
-        .localeCompare(sortableCache.get(right.slug)!.get(field)!, undefined, {
-          numeric: true,
-          sensitivity: "base",
-        });
-      return order === "desc" ? -comparison : comparison;
-    }
-    return left.slug.localeCompare(right.slug);
-  });
+	const sorted = items.sort((left, right) => {
+		for (const field of sort) {
+			const leftValue = left.frontMatter[field];
+			const rightValue = right.frontMatter[field];
+			if (leftValue === rightValue) continue;
+			if (leftValue === undefined || leftValue === null || leftValue === "")
+				return 1;
+			if (rightValue === undefined || rightValue === null || rightValue === "")
+				return -1;
+			const comparison = sortableCache
+				.get(left.slug)!
+				.get(field)!
+				.localeCompare(sortableCache.get(right.slug)!.get(field)!, undefined, {
+					numeric: true,
+					sensitivity: "base",
+				});
+			return order === "desc" ? -comparison : comparison;
+		}
+		return left.slug.localeCompare(right.slug);
+	});
 
-  return {
-    folder: normalizeFolder(folder),
-    folders: folders.sort((left, right) => left.name.localeCompare(right.name)),
-    entries: sorted,
-  };
+	return {
+		folder: normalizeFolder(folder),
+		folders: folders.sort((left, right) => left.name.localeCompare(right.name)),
+		entries: sorted,
+	};
 }
 
 export async function getCollectionEntry(
-  collection: LightCmsCollection,
-  slug: string,
-  ctx: CmsContext,
-  folder = "",
+	collection: LightCmsCollection,
+	slug: string,
+	ctx: CmsContext,
+	folder = "",
 ): Promise<Entry> {
-  const repo = resolveRepository(ctx);
-  const path = resolveEntryPath(collection.path, normalizeFolder(folder), slug);
-  const source = await getFileContent(path, ctx.client, repo, ctx.branch);
-  const parsed = matter(source.content);
-  const data = parsed.data ?? {};
-  const { body: _body, ...frontMatter } = data as Record<string, unknown>;
-  return { path: source.path, slug, body: parsed.content, frontMatter };
+	const repo = resolveRepository(ctx);
+	const path = resolveEntryPath(collection.path, normalizeFolder(folder), slug);
+	const source = await getFileContent(path, ctx.client, repo, ctx.branch);
+	const parsed = matter(source.content);
+	const data = parsed.data ?? {};
+	const { body: _body, ...frontMatter } = data as Record<string, unknown>;
+	return { path: source.path, slug, body: parsed.content, frontMatter };
 }
 
 export async function createCollectionEntry(
-  collection: LightCmsCollection,
-  slug: string,
-  frontMatter: FrontMatter,
-  body: string,
-  ctx: CmsContext,
-  folder = "",
+	collection: LightCmsCollection,
+	slug: string,
+	frontMatter: FrontMatter,
+	body: string,
+	ctx: CmsContext,
+	folder = "",
 ) {
-  const { repo, path } = resolveEntryContext(collection, slug, folder, ctx);
-  const title = resolveTitle(collection, frontMatter);
-  const message = getEntryCommitMessage(collection, "create", title);
-  return createFile(path, serializeEntry(frontMatter, body), message, ctx.client, repo, ctx.branch);
+	const { repo, path } = resolveEntryContext(collection, slug, folder, ctx);
+	const title = resolveTitle(collection, frontMatter);
+	const message = getEntryCommitMessage(collection, "create", title);
+	return createFile(
+		path,
+		serializeEntry(frontMatter, body),
+		message,
+		ctx.client,
+		repo,
+		ctx.branch,
+	);
 }
 
 export async function updateCollectionEntry(
-  collection: LightCmsCollection,
-  currentSlug: string,
-  slug: string,
-  frontMatter: FrontMatter,
-  body: string,
-  ctx: CmsContext,
-  folder = "",
+	collection: LightCmsCollection,
+	currentSlug: string,
+	slug: string,
+	frontMatter: FrontMatter,
+	body: string,
+	ctx: CmsContext,
+	folder = "",
 ) {
-  const { repo, normalizedFolder, path } = resolveEntryContext(collection, slug, folder, ctx);
-  assertSlug(currentSlug);
-  const currentPath = resolveEntryPath(collection.path, normalizedFolder, currentSlug);
-  const title = resolveTitle(collection, frontMatter);
-  const message = getEntryCommitMessage(collection, "update", title);
-  const content = serializeEntry(frontMatter, body);
+	const { repo, normalizedFolder, path } = resolveEntryContext(
+		collection,
+		slug,
+		folder,
+		ctx,
+	);
+	assertSlug(currentSlug);
+	const currentPath = resolveEntryPath(
+		collection.path,
+		normalizedFolder,
+		currentSlug,
+	);
+	const title = resolveTitle(collection, frontMatter);
+	const message = getEntryCommitMessage(collection, "update", title);
+	const content = serializeEntry(frontMatter, body);
 
-  if (path === currentPath) {
-    return createOrUpdateFile(path, content, message, ctx.client, repo, ctx.branch);
-  }
-  const result = await createFile(path, content, message, ctx.client, repo, ctx.branch);
-  try {
-    await deleteFile(
-      currentPath,
-      `Remove previous path for ${collection.label ?? collection.name}: ${currentSlug}`,
-      ctx.client,
-      repo,
-      ctx.branch,
-    );
-  } catch (cause) {
-    try {
-      await deleteFile(
-        path,
-        `Roll back failed rename of ${collection.label ?? collection.name}: ${currentSlug}`,
-        ctx.client,
-        repo,
-        ctx.branch,
-      );
-    } catch (rollbackCause) {
-      throw new AggregateError([cause, rollbackCause], "The entry rename could not be completed.");
-    }
-    throw cause;
-  }
-  return result;
+	if (path === currentPath) {
+		return createOrUpdateFile(
+			path,
+			content,
+			message,
+			ctx.client,
+			repo,
+			ctx.branch,
+		);
+	}
+	const result = await createFile(
+		path,
+		content,
+		message,
+		ctx.client,
+		repo,
+		ctx.branch,
+	);
+	try {
+		await deleteFile(
+			currentPath,
+			`Remove previous path for ${collection.label ?? collection.name}: ${currentSlug}`,
+			ctx.client,
+			repo,
+			ctx.branch,
+		);
+	} catch (cause) {
+		try {
+			await deleteFile(
+				path,
+				`Roll back failed rename of ${collection.label ?? collection.name}: ${currentSlug}`,
+				ctx.client,
+				repo,
+				ctx.branch,
+			);
+		} catch (rollbackCause) {
+			throw new AggregateError(
+				[cause, rollbackCause],
+				"The entry rename could not be completed.",
+			);
+		}
+		throw cause;
+	}
+	return result;
 }
 
 export async function deleteCollectionEntry(
-  collection: LightCmsCollection,
-  slug: string,
-  ctx: CmsContext,
-  folder = "",
+	collection: LightCmsCollection,
+	slug: string,
+	ctx: CmsContext,
+	folder = "",
 ) {
-  const { repo, path } = resolveEntryContext(collection, slug, folder, ctx);
-  const message = getEntryCommitMessage(collection, "delete", slug);
-  await deleteFile(path, message, ctx.client, repo, ctx.branch);
+	const { repo, path } = resolveEntryContext(collection, slug, folder, ctx);
+	const message = getEntryCommitMessage(collection, "delete", slug);
+	await deleteFile(path, message, ctx.client, repo, ctx.branch);
 }

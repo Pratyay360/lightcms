@@ -11,12 +11,12 @@ import BubbleMenu from "./components/menu/BubbleMenu.svelte";
 import ToC from "./toc.svelte";
 
 const Edra = Object.assign(Tiptap, {
-  Content: Editor,
-  Toolbar,
-  BubbleMenu,
-  DragHandle,
-  UseAI,
-  ToC,
+	Content: Editor,
+	Toolbar,
+	BubbleMenu,
+	DragHandle,
+	UseAI,
+	ToC,
 });
 
 export { Edra };

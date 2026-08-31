@@ -1,17 +1,17 @@
 export {
-  atomPenetrationDepth,
-  effectivePenetrationThreshold,
-  entrySideFromSelection,
-  excludeAtomFromDragSelection,
-  includeAtomInDragSelection,
-  leaveSideFromPoint,
-  resolveAtomLeave,
-  selectionCoveringNode,
+	atomPenetrationDepth,
+	effectivePenetrationThreshold,
+	entrySideFromSelection,
+	excludeAtomFromDragSelection,
+	includeAtomInDragSelection,
+	leaveSideFromPoint,
+	resolveAtomLeave,
+	selectionCoveringNode,
 } from "./atom-selection.js";
 export {
-  restorePreservedSelection,
-  selectAtomOnClick,
-  shouldPreserveSelectionOnRightClick,
+	restorePreservedSelection,
+	selectAtomOnClick,
+	shouldPreserveSelectionOnRightClick,
 } from "./click-handlers.js";
 export { hitAtomAtCoords, pointInRect } from "./hit-testing.js";
 export { isAcrossSelectableNode } from "./node-classification.js";

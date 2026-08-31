@@ -7,12 +7,12 @@ export * from "./iframe/index.js";
 export * from "./image/ImageExtended.ts";
 export * from "./mermaid/index.js";
 export {
-  ATOM_SLIGHT_PENETRATION_PX,
-  excludeAtomFromDragSelection,
-  includeAtomInDragSelection,
-  resolveAtomLeave,
-  SelectAcrossAtoms,
-  selectionCoveringNode,
+	ATOM_SLIGHT_PENETRATION_PX,
+	excludeAtomFromDragSelection,
+	includeAtomInDragSelection,
+	resolveAtomLeave,
+	SelectAcrossAtoms,
+	selectionCoveringNode,
 } from "./SelectAcrossAtoms/index.js";
 export { default as SlashCommand } from "./slash/index.js";
 export * from "./table/index.ts";

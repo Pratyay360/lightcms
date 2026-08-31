@@ -30,7 +30,6 @@ vite.config.ts.timestamp-*
 .opencode/
 .lightcms
 session-ses_08e9.md
-.env*
 
 # Turborepo
 .turbo
