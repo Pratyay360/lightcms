@@ -22,7 +22,6 @@ import {
 <section
   class="grid min-h-[calc(100vh-12rem)] items-center gap-12 py-6 lg:grid-cols-[1.1fr_0.9fr] lg:py-12"
 >
-  <!-- Left Column: Hero Text -->
   <div class="max-w-2xl space-y-8">
     <div class="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-xs font-semibold text-foreground">
       <Sparkles size={13} class="animate-pulse text-primary" />

@@ -3,6 +3,7 @@
     ArrowLeft,
     Clock3,
     CloudCheck,
+    FileCode,
     FolderOpen,
     Maximize,
     Minimize,
@@ -90,13 +91,29 @@
   });
 
   let seededPath = $state("");
+  let editorMode = $state<"rich" | "markdown">("rich");
+  let rawMarkdown = $state("");
   $effect(() => {
     const entry = data.entry;
     if (entry && entry.path !== seededPath && editor) {
       seededPath = entry.path;
       editor.commands.setContent(entry.body ?? "", { contentType: "markdown" });
+      rawMarkdown = entry.body ?? "";
     }
   });
+
+  function switchToMarkdown() {
+    if (!editor) return;
+    rawMarkdown = editor.getMarkdown();
+    editorMode = "markdown";
+  }
+
+  function switchToRich() {
+    if (!editor) return;
+    ($form as Record<string, string>).body = rawMarkdown;
+    editor.commands.setContent(rawMarkdown, { contentType: "markdown" });
+    editorMode = "rich";
+  }
 
   let contentFullscreen = $state(false);
   $effect(() => {
@@ -105,7 +122,14 @@
     const guard = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !e.defaultPrevented) {
         contentFullscreen = false;
-        editor?.commands.focus("end");
+        if (editorMode === "rich" && editor) {
+          editor.commands.focus("end");
+        } else if (editorMode === "markdown") {
+          const markdownEditor = document.getElementById(
+            "markdown-editor",
+          ) as HTMLTextAreaElement | null;
+          markdownEditor?.focus();
+        }
       }
     };
     window.addEventListener("keydown", guard);
@@ -126,9 +150,19 @@
   }
 
   $effect(() => {
-    if (!contentFullscreen || !editor) return;
-    const frame = requestAnimationFrame(() => editor.commands.focus("end"));
-    return () => cancelAnimationFrame(frame);
+    if (!contentFullscreen) return;
+    if (editorMode === "rich" && editor) {
+      const frame = requestAnimationFrame(() => editor.commands.focus("end"));
+      return () => cancelAnimationFrame(frame);
+    } else if (editorMode === "markdown") {
+      const frame = requestAnimationFrame(() => {
+        const markdownEditor = document.getElementById(
+          "markdown-editor",
+        ) as HTMLTextAreaElement | null;
+        markdownEditor?.focus();
+      });
+      return () => cancelAnimationFrame(frame);
+    }
   });
 
   const bodyText = $derived(
@@ -455,13 +489,43 @@
 
           <!-- Content Editor -->
           <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium">Content</h3>
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <h3 class="text-lg font-medium">Content</h3>
+                <fieldset
+                  class="flex rounded-md border border-input"
+                >
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onclick={switchToRich}
+                    disabled={editorMode === "rich"}
+                    aria-pressed={editorMode === "rich"}
+                    class="gap-1.5 rounded-r-none border-r border-input"
+                  >
+                    <Type class="h-4 w-4" />
+                    Rich Text
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onclick={switchToMarkdown}
+                    disabled={editorMode === "markdown"}
+                    aria-pressed={editorMode === "markdown"}
+                    class="gap-1.5 rounded-l-none"
+                  >
+                    <FileCode class="h-4 w-4" />
+                    Markdown
+                  </Button>
+                </fieldset>
+              </div>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                class="gap-1.5"
+                class="gap-1.5 shrink-0"
                 onclick={() => (contentFullscreen = true)}
                 aria-expanded={contentFullscreen}
                 aria-controls="editor-pane"
@@ -471,7 +535,7 @@
               </Button>
             </div>
             <Separator />
-            {#if editor}
+            {#if editorMode === "rich" && editor}
               <div
                 id="editor-pane"
                 class:fixed={contentFullscreen}
@@ -575,6 +639,135 @@
                     />
                     <Edra.DragHandle />
                   </Edra>
+                </div>
+
+                {#if contentFullscreen}
+                  <div
+                    class="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t bg-background/95 px-4 py-2.5 text-xs text-muted-foreground sm:px-6 backdrop-blur supports-backdrop-filter:bg-background/60"
+                  >
+                    <div class="flex items-center gap-4">
+                      <span>
+                        <span class="font-semibold text-foreground"
+                          >{charCount}</span
+                        > characters
+                      </span>
+                      <span class="hidden sm:inline">
+                        <span class="font-semibold text-foreground"
+                          >{wordCount}</span
+                        > words
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-1.5 font-mono">
+                      <CloudCheck size={13} class="text-emerald-500" />
+                      <span
+                        >{saving
+                          ? "Saving to GitHub…"
+                          : hasUnsavedChanges
+                            ? "Draft — not saved"
+                            : "Synced to repository"}</span
+                      >
+                    </div>
+                  </div>
+                {/if}
+              </div>
+            {:else if editorMode === "markdown"}
+              <div
+                id="editor-pane"
+                class:fixed={contentFullscreen}
+                class:inset-0={contentFullscreen}
+                class:z-50={contentFullscreen}
+                class:bg-background={contentFullscreen}
+                class="border rounded-lg {contentFullscreen
+                  ? 'flex flex-col h-dvh rounded-none border-0 animate-in fade-in-0 zoom-in-95 duration-200'
+                  : ''}"
+              >
+                {#if contentFullscreen}
+                  <div
+                    class="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b bg-background/95 px-4 py-3 sm:px-6 backdrop-blur supports-backdrop-filter:bg-background/60"
+                  >
+                    <div class="flex min-w-0 items-center gap-2.5">
+                      <span class="truncate font-bold text-foreground"
+                        >{data.isNew ? "New entry" : currentTitle}</span
+                      >
+                      <span
+                        class="hidden font-mono text-xs text-muted-foreground sm:inline"
+                      >
+                        {folder
+                          ? `${data.collection.path}/${folder}`
+                          : data.collection.path}
+                      </span>
+                    </div>
+
+                    <div
+                      class="flex items-center gap-3 text-xs font-medium text-muted-foreground"
+                    >
+                      <span class="flex items-center gap-1.5">
+                        <FileCode size={13} class="text-primary-500" />
+                        <span
+                          >{wordCount}
+                          {wordCount === 1 ? "word" : "words"}</span
+                        >
+                      </span>
+                      <span class="hidden items-center gap-1.5 sm:flex">
+                        <Clock3 size={13} class="text-primary-500" />
+                        <span
+                          >{readingMinutes === 0
+                            ? "–"
+                            : `${readingMinutes} min read`}</span
+                        >
+                      </span>
+                    </div>
+
+                    <div class="ml-auto flex min-w-0 items-center gap-2">
+                      <SaveStatus {saving} {hasUnsavedChanges} {lastSaved} />
+
+                      <Button
+                        type="submit"
+                        form="main-entry-form"
+                        size="sm"
+                        class="gap-1.5"
+                        disabled={saving}
+                      >
+                        <Save class="h-4 w-4" />
+                        <span class="hidden sm:inline"
+                          >{saving ? "Saving..." : "Save"}</span
+                        >
+                        <kbd
+                          class="hidden rounded border bg-background px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground sm:inline"
+                          >⌘S</kbd
+                        >
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        class="gap-1.5"
+                        onclick={() => (contentFullscreen = false)}
+                      >
+                        <Minimize class="h-4 w-4" />
+                        <span class="hidden sm:inline">Exit</span>
+                        <kbd
+                          class="hidden rounded border bg-muted px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground sm:inline"
+                          >Esc</kbd
+                        >
+                      </Button>
+                    </div>
+                  </div>
+                {/if}
+
+                <div class="flex min-h-0 flex-1 flex-col">
+                  <Textarea
+                    id="markdown-editor"
+                    class="font-mono text-sm flex-1 min-h-0 w-full resize-none border-0 focus-visible:ring-0 px-8 py-4 {contentFullscreen
+                      ? 'max-w-3xl mx-auto w-full'
+                      : ''}"
+                    value={rawMarkdown}
+                    oninput={(e) => {
+                      rawMarkdown = (e.currentTarget as HTMLTextAreaElement).value;
+                      ($form as Record<string, string>).body = rawMarkdown;
+                    }}
+                    placeholder="Write markdown..."
+                  />
                 </div>
 
                 {#if contentFullscreen}

@@ -13,13 +13,13 @@ import { tableCommands } from "./table.js";
 import { textFormattingCommands } from "./text-formatting.js";
 
 export const commands: Record<string, EdraCommand[]> = {
-	"undo-redo": historyCommands,
-	headings: headingCommands,
-	"text-formatting": textFormattingCommands,
-	alignment: alignmentCommands,
-	lists: listCommands,
-	media: mediaCommands,
-	table: tableCommands,
-	math: mathCommands,
-	diagram: diagramCommands,
+  "undo-redo": historyCommands,
+  headings: headingCommands,
+  "text-formatting": textFormattingCommands,
+  alignment: alignmentCommands,
+  lists: listCommands,
+  media: mediaCommands,
+  table: tableCommands,
+  math: mathCommands,
+  diagram: diagramCommands,
 };

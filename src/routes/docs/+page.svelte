@@ -11,7 +11,7 @@ let {
 import { ArrowRight, BookOpen, FileText } from "@lucide/svelte";
 
 const _title = $derived(data.title ?? "Documentation");
-const _posts = $derived(data.posts ?? []);
+const _posts = $derived(data.posts);
 </script>
 
 <svelte:head>

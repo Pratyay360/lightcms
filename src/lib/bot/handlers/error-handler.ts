@@ -5,6 +5,6 @@ import { ORPCError } from "@orpc/server";
  * Eliminates the repeated `error instanceof Error ? error.message : String(error)` pattern.
  */
 export function wrapBotError(error: unknown): never {
-	const message = error instanceof Error ? error.message : String(error);
-	throw new ORPCError("INTERNAL_SERVER_ERROR", { message });
+  const message = error instanceof Error ? error.message : String(error);
+  throw new ORPCError("INTERNAL_SERVER_ERROR", { message });
 }

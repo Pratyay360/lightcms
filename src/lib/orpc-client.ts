@@ -4,14 +4,11 @@ import type { RouterClient } from "@orpc/server";
 import type { router } from "$lib/server/orpc/router";
 
 export function createLightCmsClient(): RouterClient<typeof router> {
-	const url =
-		typeof window !== "undefined"
-			? `${window.location.origin}/api/rpc`
-			: "/api/rpc";
+  const url = `${window.location.origin}/api/rpc`;
 
-	const link = new RPCLink({
-		url,
-	});
+  const link = new RPCLink({
+    url,
+  });
 
-	return createORPCClient(link);
+  return createORPCClient(link);
 }
