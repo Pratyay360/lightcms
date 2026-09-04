@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     params.collection,
   );
 
-  const folder = normalizeFolder(url.searchParams.get("folder"));
+  const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
   const schema = buildEntrySchema(collection);
 
   if (params.slug === "new") {
@@ -80,7 +80,7 @@ export const actions: Actions = {
       params.collection,
     );
 
-    const folder = normalizeFolder(url.searchParams.get("folder"));
+    const folder = normalizeFolder(url.searchParams.get("folder") ?? '');
     const schema = buildEntrySchema(collection);
     const form = await superValidate(request, zod4(schema));
 
@@ -153,7 +153,7 @@ export const actions: Actions = {
       params.collection,
     );
 
-    const folder = normalizeFolder(url.searchParams.get("folder"));
+    const folder = normalizeFolder(url.searchParams.get("folder") ?? '');
 
     try {
       await deleteCollectionEntry(collection, params.slug, ctx, folder);

@@ -258,7 +258,7 @@
 						class="group relative rounded-2xl border border-border bg-card p-5 flex items-center gap-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:border-primary-500/40"
 					>
 						<a
-							href={folderUrl(`${folder ? `${folder}/` : ''}${folderEntry.name}`)}
+							href={folderUrl(`${folder ? folder + '/' : ''}${folderEntry.name}`)}
 							class="flex items-center gap-4 min-w-0 flex-1"
 							aria-label={`Open folder ${folderEntry.name}`}
 						>

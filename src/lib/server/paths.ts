@@ -1,6 +1,6 @@
 export const CONTENT_ROOT = "";
 
-export const DEFAULT_COLLECTION_NAME = "";
+export const DEFAULT_COLLECTION_NAME = "Posts";
 
 export function sanitizeCollectionName(name: string): string {
   return name.replace(/[^a-zA-Z0-9_-]/g, "").toLowerCase();
@@ -50,7 +50,7 @@ export function resolveEntryPath(collectionPath: string, folder: string, filenam
   return normalizePath(joinPath(collectionPath, folder), filename);
 }
 
-export function normalizeFolder(folder: string | undefined | null): string {
+export function normalizeFolder(folder: string): string {
   const value = folder?.trim() ?? "";
   const parts = value
     .split("/")
