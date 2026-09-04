@@ -52,7 +52,7 @@ export { CONTENT_ROOT, DEFAULT_COLLECTION_NAME, resolveCollectionPath, sanitizeC
 export const POSTS_COLLECTION: LightCmsCollection = {
   name: DEFAULT_COLLECTION_NAME,
   type: "collection",
-  label: '',
+  label: "",
   path: resolveCollectionPath(DEFAULT_COLLECTION_NAME),
   fields: [
     {

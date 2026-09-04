@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { autoPlacement } from '@floating-ui/dom';
-	import {Command, Braces, Sparkles, TextAlignCenter } from '@lucide/svelte';
+	import {Braces, Command, Sparkles, TextAlignCenter } from '@lucide/svelte';
 	import Clipboard from '@lucide/svelte/icons/clipboard';
 	import Duplicate from '@lucide/svelte/icons/copy';
 	import GripVertical from '@lucide/svelte/icons/grip-vertical';

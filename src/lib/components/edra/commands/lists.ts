@@ -14,7 +14,7 @@ export const listCommands: EdraCommand[] = [
     onClick: (editor) => {
       editor.chain().focus().toggleBulletList().run();
     },
-    turnInto: (editor, node, pos) => {
+    turnInto: (editor, _node, pos) => {
       editor.chain().setNodeSelection(pos).toggleBulletList().run();
     },
     isActive: (editor) => editor.isActive("bulletList"),
@@ -27,7 +27,7 @@ export const listCommands: EdraCommand[] = [
     onClick: (editor) => {
       editor.chain().focus().toggleOrderedList().run();
     },
-    turnInto: (editor, node, pos) => {
+    turnInto: (editor, _node, pos) => {
       editor.chain().setNodeSelection(pos).toggleOrderedList().run();
     },
     clickable: (editor) => {
@@ -45,7 +45,7 @@ export const listCommands: EdraCommand[] = [
     onClick: (editor) => {
       editor.chain().focus().toggleTaskList().run();
     },
-    turnInto: (editor, node, pos) => {
+    turnInto: (editor, _node, pos) => {
       editor.chain().setNodeSelection(pos).toggleTaskList().run();
     },
     clickable: (editor) => {
