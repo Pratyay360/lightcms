@@ -157,8 +157,8 @@
 			/>
 		{/if}
 		{#if editor.isEditable}
-			<div
-				role="button"
+			<Button
+				variant="ghost"
 				tabindex="0"
 				aria-label={strings.extension.media.back}
 				class="absolute inset-y-0 z-20 flex w-5 cursor-col-resize items-center justify-start p-2"
@@ -173,10 +173,9 @@
 				<div
 					class="z-20 h-16 w-1 rounded-xl border bg-muted opacity-0 transition-all group-hover:opacity-100"
 				></div>
-			</div>
+			</Button>
 
-			<div
-				role="button"
+			<Button
 				tabindex="0"
 				aria-label={strings.extension.media.back}
 				class="absolute inset-y-0 z-20 flex w-5 cursor-col-resize items-center justify-end p-2"
@@ -191,7 +190,7 @@
 				<div
 					class="z-20 h-16 w-1 rounded-xl border bg-muted opacity-0 transition-all group-hover:opacity-100"
 				></div>
-			</div>
+			</Button>
 			<div
 				class={cn(
 					'absolute -top-2 left-[calc(50%-3rem)] z-50! flex items-center gap-1 rounded-md border bg-background/50 p-1 opacity-0 backdrop-blur-sm transition-opacity',

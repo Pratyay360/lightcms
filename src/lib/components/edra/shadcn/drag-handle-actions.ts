@@ -28,13 +28,13 @@ export function handleDuplicate(ctx: DragHandlerContext) {
     .run();
 }
 
-export function handleCopyToClipboard(ctx: DragHandlerContext) {
+export async function handleCopyToClipboard(ctx: DragHandlerContext) {
   const { editor, currentNodePos } = ctx;
   editor.chain().setMeta("hideDragHandle", true).setNodeSelection(currentNodePos).run();
-  window.navigator.clipboard.writeText(editor.state.selection.$anchor.node(1)?.textContent);
+  await window.navigator.clipboard.writeText(editor.state.selection.$anchor.node(1)?.textContent);
 }
 
-export function handleCopyContentAs(ctx: DragHandlerContext, as: "markdown" | "json") {
+export async function handleCopyContentAs(ctx: DragHandlerContext, as: "markdown" | "json") {
   const { editor, currentNode } = ctx;
   let data = "";
   const nodeData = currentNode?.toJSON();
@@ -44,7 +44,7 @@ export function handleCopyContentAs(ctx: DragHandlerContext, as: "markdown" | "j
     data = JSON.stringify(nodeData, null, 2) || "";
   }
   if (data) {
-    window.navigator.clipboard.writeText(data);
+    await window.navigator.clipboard.writeText(data);
   }
 }
 

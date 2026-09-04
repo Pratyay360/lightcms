@@ -153,7 +153,7 @@
 			const target = e.target as HTMLTextAreaElement;
 			const start = target.selectionStart;
 			const end = target.selectionEnd;
-			editCode = editCode.substring(0, start) + '  ' + editCode.substring(end);
+			editCode = `${editCode.substring(0, start)}  ${editCode.substring(end)}`;
 			tick().then(() => {
 				target.selectionStart = target.selectionEnd = start + 2;
 			});
@@ -320,7 +320,7 @@
 		<!-- Preview Mode -->
 		<div class="group/preview relative w-full">
 			{#if !code || code.trim() === ''}
-				<button
+				<Button
 					class="flex min-h-14 w-full items-center gap-2 rounded-lg border border-dashed bg-muted/30 p-4 transition-colors hover:bg-muted/50"
 					onclick={enterEditMode}
 				>
@@ -328,7 +328,7 @@
 					<span class="text-sm text-muted-foreground" contenteditable={false}
 						>Click to add a Mermaid diagram</span
 					>
-				</button>
+				</Button>
 			{:else}
 				<div class="overflow-hidden rounded-lg border">
 					<div

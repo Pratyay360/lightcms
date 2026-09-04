@@ -9,5 +9,5 @@
 
 <MediaExtended bind:mediaRef {...rest}>
 	{@const node = rest.node}
-	<iframe bind:this={mediaRef} class="m-0 w-full" {...node.attrs}> </iframe>
+	<iframe bind:this={mediaRef} class="m-0 w-full" {...node.attrs} title={node.attrs.title ?? 'Embedded content'}> </iframe>
 </MediaExtended>

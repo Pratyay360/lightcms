@@ -8,7 +8,7 @@ export type CmsSelection = {
   branch?: string;
 };
 
-export function getCmsSelection(url: URL): CmsSelection | null {
+export function getCmsSelection(url: URL): CmsSelection {
   const repository = url.searchParams.get("repository")?.trim();
   const rawInstallationId =
     url.searchParams.get("installation")?.trim() || url.searchParams.get("installationId")?.trim();
@@ -16,10 +16,10 @@ export function getCmsSelection(url: URL): CmsSelection | null {
   const branch = url.searchParams.get("branch")?.trim() || undefined;
 
   if (!repository || !Number.isInteger(installationId) || installationId <= 0) {
-    return null;
+    throw error(400, "Invalid CMS selection");
   }
 
-  return { installationId, repository, branch };
+  return { installationId, repository: repository, branch };
 }
 
 export function getCmsQuery(selection: CmsSelection): string {

@@ -137,8 +137,8 @@ export function createAIContentManager(editor: Editor) {
   }
 
   /** Copy AI response to clipboard */
-  function copyToClipboard() {
-    window.navigator.clipboard.writeText(state.aiResponse);
+  async function copyToClipboard() {
+    await window.navigator.clipboard.writeText(state.aiResponse);
   }
 
   /** Retry: delete AI content, re-run with same prompt */

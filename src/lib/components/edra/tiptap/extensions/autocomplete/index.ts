@@ -121,7 +121,7 @@ export const InlineAutocomplete = Extension.create({
             if (!found && !inlineGhost) return { deco: DecorationSet.empty, active: null };
 
             const pos = sel.$from.pos;
-            const ghost = found ? found.suggestion.ghost(found.match) : inlineGhost!;
+            const ghost = found ? found.suggestion.ghost(found.match) : inlineGhost;
             const deco = Decoration.widget(pos, () => {
               const span = document.createElement("span");
               span.textContent = ghost;
@@ -168,7 +168,6 @@ export const InlineAutocomplete = Extension.create({
             if (!editor) return true;
             // delete trigger text then apply
             const { from } = view.state.selection;
-            const triggerLen = st.active.match[0].length;
             const parentStart = from - view.state.selection.$from.parentOffset;
             // For block triggers, select trigger and replace via command
             editor.chain().focus().deleteRange({ from: parentStart, to: from }).run();

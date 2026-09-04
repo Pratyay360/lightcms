@@ -8,7 +8,7 @@
 	import { getEditor, useEditorTransaction } from '../../../tiptap/index.js';
 	import Tooltip from '../Tooltip.svelte';
 
-	const lists = commands['lists'];
+	const lists = commands.lists;
 
 	const editor = getEditor();
 	const transaction = useEditorTransaction(editor);

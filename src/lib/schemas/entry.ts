@@ -59,18 +59,18 @@ function buildFieldSchema(field: LightCmsField): z.ZodTypeAny {
       // buildFrontMatter, so the form value is validated as a local datetime.
       // js-yaml parses ISO strings as Date — accept both via preprocess.
       {
-        const toString = (v: unknown) =>
+        const normalizeDateValue = (v: unknown) =>
           v instanceof Date ? v.toISOString().replace(/\.\d{3}Z$/, "Z") : v;
         base = field.required
           ? z.preprocess(
-              toString,
+              normalizeDateValue,
               z
                 .string()
                 .min(1, `${field.label ?? field.name} is required.`)
                 .datetime({ local: true }),
             )
           : z.preprocess(
-              toString,
+              normalizeDateValue,
               z.union([z.string().datetime({ local: true }), z.literal("")]).default(""),
             );
       }

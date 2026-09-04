@@ -8,6 +8,25 @@ const authFormSchema = z.object({
   email: z.string().trim().min(1, "Enter an email address."),
 });
 
+function getMagicLinkErrorMessage(cause: unknown): string {
+  const fallback = "Failed to send magic link";
+  if (cause instanceof Error) {
+    const message = cause.message.trim();
+    if (message.length > 0) {
+      return message;
+    }
+    return fallback;
+  }
+  if (typeof cause === "string") {
+    const trimmed = cause.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
+    }
+    return fallback;
+  }
+  return fallback;
+}
+
 export const load = async () => ({
   form: await superValidate(zod4(authFormSchema), { id: "auth-magic-link" }),
 });
@@ -32,7 +51,8 @@ export const actions = {
         headers: event.request.headers,
       });
     } catch (cause) {
-      throw new Error(`${cause}`);
+      const errorMessage = getMagicLinkErrorMessage(cause);
+      throw new Error(errorMessage, { cause });
     }
 
     return message(form, "Check your inbox for a secure sign-in link.");

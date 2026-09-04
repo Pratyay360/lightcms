@@ -455,7 +455,7 @@
 
 {#snippet MenuButton(action: (typeof quickActions)[0], idx: number)}
 	{@const Icon = action.icon}
-	<button
+	<Button
 		onclick={action.handler}
 		class="group/dropdown-menu-item relative flex w-full cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden transition-colors select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive {activeOptionIndex ===
 		idx
@@ -465,16 +465,16 @@
 		<Icon />
 		<span class="ml-2 flex-1 text-start font-medium">{action.label}</span>
 		{#if activeOptionIndex === idx}
-			<span class="rounded-sm bg-muted/75 px-1 text-muted-foreground">Enter</span>
+			<Button size="icon-sm" class="rounded-sm bg-muted/75 px-1 text-muted-foreground">Enter</Button>
 		{/if}
-	</button>
+	</Button>
 {/snippet}
 <BubbleMenu
 	{editor}
 	pluginKey="ai-bubble-menu"
 	shouldShow={(props) => {
 		const { editor: propsEditor, view } = props;
-		if (!propsEditor || !propsEditor.isEditable || propsEditor.isDestroyed) return false;
+		if (!propsEditor?.isEditable || propsEditor?.isDestroyed) return false;
 		if (!view || propsEditor.view.dragging) return false;
 
 		// Always show during AI confirmation (streaming or action bar)
@@ -597,7 +597,7 @@
 	.animated-gradient-border {
 		background: conic-gradient(from var(--angle), #e50909, #c8b207, #e608e6, #6eec07);
 		animation: rotate 3s linear infinite;
-		border-radius: 12px !important;
+		border-radius: 12px;
 	}
 	.dot {
 		animation: bounce-dots 1.4s ease-in-out infinite;

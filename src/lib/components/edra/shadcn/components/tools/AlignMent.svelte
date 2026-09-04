@@ -8,7 +8,7 @@
 	import { getEditor, useEditorTransaction } from '../../../tiptap/index.js';
 	import Tooltip from '../Tooltip.svelte';
 
-	const alignments = commands['alignment'];
+	const alignments = commands.alignment;
 
 	const editor = getEditor();
 	const transaction = useEditorTransaction(editor);

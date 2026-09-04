@@ -24,7 +24,7 @@
 	}
 
 	let {
-		open = $bindable(false),
+		open: dialogOpen = $bindable(false),
 		targetPath,
 		error = '',
 		action = "?/createFolder",
@@ -36,13 +36,13 @@
 	let folderName = $state("");
 
 	$effect(() => {
-		if (open) {
+		if (dialogOpen) {
 			folderName = "";
 		}
 	});
 </script>
 
-<Dialog bind:open>
+<Dialog bind:open={dialogOpen}>
 	<DialogContent class="max-w-sm">
 		<DialogHeader>
 			<DialogTitle class="flex items-center gap-2">
@@ -64,7 +64,7 @@
 				return async ({ result, update }) => {
 					await update();
 					if (result.type === "redirect" || result.type === "success") {
-						open = false;
+						dialogOpen = false;
 						onSuccess?.();
 					}
 				};

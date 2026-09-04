@@ -8,7 +8,7 @@
 	import { NodeViewWrapper } from '../../tiptap/index.js';
 
 	const { editor, node }: NodeViewProps = $props();
-	let open = $state(false);
+	let isPopoverOpen = $state(false);
 	const mediaType = $derived(node.attrs.mediaType);
 	let url = $state('');
 	let files = $state<FileList | undefined>();
@@ -18,7 +18,7 @@
 		const file = files?.[0];
 		if (file) {
 			editor.commands.uploadMedia(file);
-			open = false;
+			isPopoverOpen = false;
 		}
 	}
 
@@ -67,12 +67,12 @@
 	<Button
 		tabindex={1}
 		class="flex min-h-14 w-full items-center gap-2 rounded-lg border border-dashed bg-muted/30 p-4 transition-colors hover:bg-muted/50"
-		onclick={() => (open = true)}
+		onclick={() => (isPopoverOpen = true)}
 	>
 		<Icon class="size-4 text-muted-foreground" />
 		<span class="text-sm text-muted-foreground" contenteditable={false}>{text}</span>
 
-		<Popover.Root bind:open>
+		<Popover.Root bind:open={isPopoverOpen}>
 			<Popover.Trigger class="sr-only left-1/2"></Popover.Trigger>
 			<Popover.Content portalProps={{ to: undefined }}>
 				<Tabs.Root value="link" class="w-full">

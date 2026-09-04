@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { autoPlacement } from '@floating-ui/dom';
-	import { Braces, Sparkles, TextAlignCenter } from '@lucide/svelte';
+	import {Command, Braces, Sparkles, TextAlignCenter } from '@lucide/svelte';
 	import Clipboard from '@lucide/svelte/icons/clipboard';
 	import Duplicate from '@lucide/svelte/icons/copy';
 	import GripVertical from '@lucide/svelte/icons/grip-vertical';
@@ -42,7 +42,7 @@
 
 	let currentNode: Node | null = $state(null);
 	let currentNodePos: number = $state(-1);
-	let open = $state(false);
+	let menuOpen = $state(false);
 
 	const pluginKey = 'globalDragHandle';
 	let element = $state(document.createElement('div'));
@@ -182,12 +182,12 @@
 	<Button
 		variant="ghost"
 		class="z-0! size-7! rounded-sm opacity-60 hover:opacity-100 focus-visible:opacity-100 active:opacity-100"
-		onclick={() => (open = !open)}
+		onclick={() => (menuOpen = !menuOpen)}
 	>
 		<GripVertical />
 	</Button>
 	{#if type === 'extended'}
-		<DropdownMenu.Root bind:open>
+		<DropdownMenu.Root bind:open={menuOpen}>
 			<DropdownMenu.Trigger class="sr-only">
 				<span>Drag Handle</span>
 			</DropdownMenu.Trigger>
@@ -208,7 +208,7 @@
 					{/if}
 					<DropdownMenu.Sub>
 						<DropdownMenu.SubTrigger openDelay={300}>
-							<Repeat2 />
+							<Command />
 							Turn Into
 						</DropdownMenu.SubTrigger>
 						<DropdownMenu.SubContent
@@ -345,12 +345,7 @@
 							Copy Content
 						</DropdownMenu.Item>
 						<DropdownMenu.Item onclick={() => handleCopyContentAs('markdown')}>
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
-								><path
-									fill="currentColor"
-									d="M2.491 4.046a.75.75 0 0 1 .83.218L7 8.592l3.678-4.328A.75.75 0 0 1 12 4.75v9.5a.75.75 0 0 1-1.5 0V6.79l-2.929 3.446a.75.75 0 0 1-1.142 0L3.5 6.79v7.46a.75.75 0 0 1-1.5 0v-9.5a.75.75 0 0 1 .491-.704M13.22 11.72a.75.75 0 0 1 1.06 0l.72.72V4.75a.75.75 0 0 1 1.5 0v7.69l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 0 1 0-1.06"
-								/></svg
-							>
+							<Command />
 							Copy as Markdown
 						</DropdownMenu.Item>
 						<DropdownMenu.Item onclick={() => handleCopyContentAs('json')}>

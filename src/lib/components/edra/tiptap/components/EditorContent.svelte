@@ -21,8 +21,12 @@
 		const element = rootEl;
 
 		untrack(() => {
-			const parent = editor.view.dom.parentNode!;
-			rootEl!.append(...parent.childNodes);
+			const parent = editor.view.dom.parentNode;
+			if (!parent) {
+				return;
+			}
+
+			rootEl?.append(...parent.childNodes);
 
 			editor.setOptions({
 				element

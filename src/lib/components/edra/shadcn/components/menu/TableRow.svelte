@@ -24,7 +24,7 @@
 	pluginKey="table-row-menu"
 	shouldShow={(props) => {
 		const { editor: propsEditor, state, view, from } = props;
-		if (!propsEditor || !propsEditor.isEditable) return false;
+		if (!propsEditor?.isEditable) return false;
 		if (!state) return false;
 		return isRowGripSelected({ editor: propsEditor, view, state, from });
 	}}

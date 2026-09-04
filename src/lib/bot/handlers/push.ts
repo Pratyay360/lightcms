@@ -35,7 +35,6 @@ export async function handlePush(context: Context<"push">) {
   const owner = repository.owner?.login ?? "";
   const repoName = repository?.name ?? "";
 
-  // Optionally: validate frontmatter of changed content files
   for (const commit of relevant) {
     for (const file of [...(commit.modified ?? []), ...(commit.added ?? [])]) {
       if (!file.endsWith(".md") || !file.startsWith(contentPrefix)) continue;

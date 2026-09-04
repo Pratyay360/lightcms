@@ -19,7 +19,6 @@ export async function handlePullRequest(context: Context<"pull_request">) {
   switch (action) {
     case "opened":
     case "synchronize": {
-      // Fetch files changed in the PR
       const { data: files } = await context.octokit.rest.pulls.listFiles({
         owner,
         repo,

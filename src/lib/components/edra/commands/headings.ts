@@ -15,7 +15,7 @@ export const headingCommands: EdraCommand[] = [
     onClick: (editor) => {
       editor.chain().focus().toggleHeading({ level: 1 }).run();
     },
-    turnInto: (editor, node, pos) => {
+    turnInto: (editor, _node, pos) => {
       editor.chain().setNodeSelection(pos).setHeading({ level: 1 }).run();
     },
     clickable: (editor) => {

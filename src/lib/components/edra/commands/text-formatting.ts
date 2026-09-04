@@ -148,7 +148,7 @@ export const textFormattingCommands: EdraCommand[] = [
     onClick: (editor) => {
       editor.chain().focus().toggleCode().run();
     },
-    turnInto: (editor, node, pos) => {
+    turnInto: (editor, _node, pos) => {
       editor.chain().setNodeSelection(pos).toggleCodeBlock().run();
     },
     clickable: (editor) => {
@@ -166,7 +166,7 @@ export const textFormattingCommands: EdraCommand[] = [
     onClick: (editor) => {
       editor.chain().focus().toggleCodeBlock({ language: "plaintext" }).run();
     },
-    turnInto: (editor, node, pos) => {
+    turnInto: (editor, _node, pos) => {
       editor.chain().setNodeSelection(pos).toggleCodeBlock({ language: "plaintext" }).run();
     },
     clickable: (editor) => {

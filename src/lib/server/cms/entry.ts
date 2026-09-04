@@ -22,14 +22,47 @@ export { buildFrontMatter };
 
 function resolveTitle(collection: LightCmsCollection, frontMatter: FrontMatter): string {
   const primary = collection.view?.primary ?? collection.fields[0]?.name;
-  const raw = primary ? frontMatter[primary] : undefined;
-  if (raw === null || raw === undefined) return "";
-  return typeof raw === "string" ? raw : String(raw);
+  let raw: unknown;
+  if (primary === undefined || primary === null || primary === "") {
+    raw = undefined;
+  } else {
+    raw = frontMatter[primary];
+  }
+  if (raw === null || raw === undefined) {
+    return "";
+  }
+  if (typeof raw === "string") {
+    return raw;
+  }
+  if (typeof raw === "number" || typeof raw === "boolean" || typeof raw === "bigint") {
+    return String(raw);
+  }
+  if (typeof raw === "symbol") {
+    const description = raw.description;
+    if (description === undefined) {
+      return "";
+    }
+    return description;
+  }
+  if (typeof raw === "object") {
+    const serialized = JSON.stringify(raw);
+    if (serialized === undefined) {
+      return "";
+    }
+    return serialized;
+  }
+  return "";
 }
 
 function toSortableString(value: unknown): string {
-  if (typeof value === "string") return value;
-  return JSON.stringify(value);
+  if (typeof value === "string") {
+    return value;
+  }
+  const serialized = JSON.stringify(value);
+  if (serialized === undefined) {
+    return "";
+  }
+  return serialized;
 }
 
 async function mapWithConcurrency<T, R>(
@@ -95,13 +128,13 @@ export async function listCollectionEntries(
       if (leftValue === undefined || leftValue === null || leftValue === "") return 1;
       if (rightValue === undefined || rightValue === null || rightValue === "") return -1;
       const comparison = sortableCache
-        .get(left.slug)!
-        .get(field)!
-        .localeCompare(sortableCache.get(right.slug)!.get(field)!, undefined, {
+        .get(left.slug)
+        ?.get(field)
+        ?.localeCompare(sortableCache.get(right.slug)?.get(field) ?? "", undefined, {
           numeric: true,
           sensitivity: "base",
         });
-      return order === "desc" ? -comparison : comparison;
+      return order === "desc" ? -(comparison ?? 0) : (comparison ?? 0);
     }
     return left.slug.localeCompare(right.slug);
   });

@@ -1,5 +1,5 @@
 import type { LightCmsCollection } from "$lib/server/config";
-import { getSlug, normalizeFolder, resolveEntryPath } from "$lib/server/paths";
+import { normalizeFolder, resolveEntryPath } from "$lib/server/paths";
 import { assertSlug, ensureSlug } from "./frontmatter.js";
 import { type CmsContext, resolveRepository } from "./types.js";
 

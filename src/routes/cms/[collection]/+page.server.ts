@@ -9,6 +9,25 @@ import { getConfiguredCollection } from "$lib/server/cms-context";
 import { joinPath, normalizeContentPath, normalizeFolder } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
 
+function getInitializeErrorMessage(error: unknown): string {
+  const fallback = "Failed to initialize collection";
+  if (error instanceof Error) {
+    const message = error.message.trim();
+    if (message.length > 0) {
+      return message;
+    }
+    return fallback;
+  }
+  if (typeof error === "string") {
+    const trimmed = error.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
+    }
+    return fallback;
+  }
+  return fallback;
+}
+
 export const load: PageServerLoad = async ({ locals, params, url }) => {
   if (!locals.session) throw redirect(302, "/auth");
 
@@ -44,7 +63,8 @@ export const actions: Actions = {
     try {
       await initializeCollection(collection, ctx);
     } catch (error) {
-      throw new Error(`${error}`);
+      const errorMessage = getInitializeErrorMessage(error);
+      throw new Error(errorMessage, { cause: error });
     }
 
     throw redirect(303, `/cms/${encodeURIComponent(collection.name)}?${query}`);

@@ -24,7 +24,7 @@
 	pluginKey="math-inline-bubble-menu"
 	shouldShow={(props) => {
 		const { editor: propsEditor, state } = props;
-		if (!propsEditor || !propsEditor.isEditable) return false;
+		if (!propsEditor?.isEditable) return false;
 		if (!state) return false;
 		return propsEditor.isActive('inlineMath');
 	}}

@@ -51,12 +51,12 @@
 	const isTableGripSelected = (node: HTMLElement) => {
 		let container = node;
 		while (container && !['TD', 'TH'].includes(container.tagName)) {
-			container = container.parentElement!;
+			container = container.parentElement;
 		}
 		const gripColumn =
-			container && container.querySelector && container.querySelector('a.grip-column.selected');
+			container?.querySelector?.('a.grip-column.selected');
 		const gripRow =
-			container && container.querySelector && container.querySelector('a.grip-row.selected');
+			container?.querySelector?.('a.grip-row.selected');
 		if (gripColumn || gripRow) {
 			return true;
 		}
@@ -73,7 +73,7 @@
 	}) => {
 		const { editor: propsEditor, view, state } = props;
 
-		if (!propsEditor || !propsEditor.isEditable) return false;
+		if (!propsEditor?.isEditable) return false;
 		if (!view || view.dragging) return false;
 
 		if (propsEditor.isActive('link')) return false;
