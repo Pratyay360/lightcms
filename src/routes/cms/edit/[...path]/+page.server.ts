@@ -1,0 +1,118 @@
+import { error, fail, redirect } from "@sveltejs/kit";
+import matter from "gray-matter";
+import { deleteRepoFile, getRepoFile, saveRepoFile } from "$lib/server/cms";
+import { getRepoCmsContext } from "$lib/server/cms-context";
+import { normalizeContentPath } from "$lib/server/paths";
+import type { Actions, PageServerLoad } from "./$types";
+
+export const load: PageServerLoad = async ({ locals, params, url }) => {
+  if (!locals.session) {
+    throw redirect(302, "/auth");
+  }
+
+  let cmsContextResult: Awaited<ReturnType<typeof getRepoCmsContext>>;
+  try {
+    cmsContextResult = await getRepoCmsContext(locals.session.userId, url);
+  } catch {
+    throw redirect(302, "/cms");
+  }
+
+  const { ctx, query, selection } = cmsContextResult;
+  const filePath = normalizeContentPath(params.path ?? "");
+  if (!filePath) {
+    throw error(400, "File path is required.");
+  }
+
+  try {
+    const file = await getRepoFile(filePath, ctx);
+    const lastSlashIndex = filePath.lastIndexOf("/");
+    const parentPath = lastSlashIndex === -1 ? "" : filePath.slice(0, lastSlashIndex);
+
+    return {
+      file,
+      filePath,
+      parentPath,
+      query,
+      selection,
+    };
+  } catch (err) {
+    throw error(404, `File not found: ${filePath}`);
+  }
+};
+
+export const actions: Actions = {
+  save: async ({ locals, request, params, url }) => {
+    if (!locals.session) {
+      throw redirect(302, "/auth");
+    }
+
+    const { ctx, query } = await getRepoCmsContext(locals.session.userId, url);
+    const filePath = normalizeContentPath(params.path ?? "");
+    if (!filePath) {
+      return fail(400, { error: "File path is required." });
+    }
+
+    const formData = await request.formData();
+    const rawContent = formData.get("content");
+    const rawFrontMatter = formData.get("frontMatter");
+    const rawMessage = formData.get("message");
+
+    const content = typeof rawContent === "string" ? rawContent : "";
+    const commitMessage = typeof rawMessage === "string" && rawMessage.trim()
+      ? rawMessage.trim()
+      : `Update ${filePath}`;
+
+    let finalContent = content;
+
+    if (typeof rawFrontMatter === "string" && rawFrontMatter.trim()) {
+      try {
+        const parsedFrontMatter = JSON.parse(rawFrontMatter);
+        if (typeof parsedFrontMatter === "object" && parsedFrontMatter !== null) {
+          finalContent = matter.stringify(content, parsedFrontMatter);
+        }
+      } catch {
+        // If JSON parsing fails, preserve content as is
+      }
+    }
+
+    try {
+      await saveRepoFile(filePath, finalContent, commitMessage, ctx);
+      return { success: true, savedAt: new Date().toISOString() };
+    } catch (cause) {
+      return fail(500, {
+        error: cause instanceof Error ? cause.message : "Failed to save file.",
+      });
+    }
+  },
+
+  delete: async ({ locals, request, params, url }) => {
+    if (!locals.session) {
+      throw redirect(302, "/auth");
+    }
+
+    const { ctx, query } = await getRepoCmsContext(locals.session.userId, url);
+    const filePath = normalizeContentPath(params.path ?? "");
+    if (!filePath) {
+      return fail(400, { error: "File path is required." });
+    }
+
+    const formData = await request.formData();
+    const rawMessage = formData.get("message");
+    const commitMessage = typeof rawMessage === "string" && rawMessage.trim()
+      ? rawMessage.trim()
+      : `Delete ${filePath}`;
+
+    try {
+      await deleteRepoFile(filePath, commitMessage, ctx);
+    } catch (cause) {
+      return fail(500, {
+        error: cause instanceof Error ? cause.message : "Failed to delete file.",
+      });
+    }
+
+    const lastSlashIndex = filePath.lastIndexOf("/");
+    const parentPath = lastSlashIndex === -1 ? "" : filePath.slice(0, lastSlashIndex);
+    const redirectPath = parentPath ? `/cms/tree/${parentPath}?${query}` : `/cms/tree?${query}`;
+    throw redirect(303, redirectPath);
+  },
+};

@@ -29,7 +29,7 @@ async function fetchDirEntries(
   repository: Repository,
   branch?: string,
 ): Promise<RepositoryDirectoryEntry[]> {
-  assertRepositoryPath(path);
+  assertRepositoryPath(path, { allowEmpty: true });
   const { owner, repo } = parseRepository(repository);
   const response = await client.rest.repos.getContent({
     owner,
@@ -77,7 +77,7 @@ export async function listAllFilesRecursive(
   repository: Repository,
   branch?: string,
 ): Promise<string[]> {
-  assertRepositoryPath(path);
+  assertRepositoryPath(path, { allowEmpty: true });
   const files: string[] = [];
   const stack: string[] = [path];
   const visited = new Set<string>();

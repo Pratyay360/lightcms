@@ -8,18 +8,42 @@ export type CmsSelection = {
   branch?: string;
 };
 
-export function getCmsSelection(url: URL): CmsSelection {
+export function tryGetCmsSelection(url: URL): CmsSelection | null {
   const repository = url.searchParams.get("repository")?.trim();
   const rawInstallationId =
-    url.searchParams.get("installation")?.trim() || url.searchParams.get("installationId")?.trim();
+    url.searchParams.get("installation")?.trim() ?? url.searchParams.get("installationId")?.trim();
   const installationId = rawInstallationId ? Number(rawInstallationId) : NaN;
   const branch = url.searchParams.get("branch")?.trim() || undefined;
 
   if (!repository || !Number.isInteger(installationId) || installationId <= 0) {
-    throw error(400, "Invalid CMS selection");
+    return null;
   }
 
-  return { installationId, repository: repository, branch };
+  return { installationId, repository, branch };
+}
+
+export function getCmsSelection(url: URL): CmsSelection {
+  const selection = tryGetCmsSelection(url);
+  if (!selection) {
+    throw error(400, "Invalid CMS selection");
+  }
+  return selection;
+}
+
+export async function getRepoCmsContext(userId: string, url: URL) {
+  const selection = getCmsSelection(url);
+  const ctx = await getCmsContext(
+    userId,
+    selection.installationId,
+    selection.repository,
+    selection.branch,
+  );
+
+  return {
+    ctx,
+    selection,
+    query: getCmsQuery(selection),
+  };
 }
 
 export function getCmsQuery(selection: CmsSelection): string {

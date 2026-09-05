@@ -11,8 +11,13 @@ export function parseRepository(repository: Repository): {
   return { owner: parts[0], repo: parts[1] };
 }
 
-export function assertRepositoryPath(path: string): void {
-  if (!path) throw new Error("Repository path cannot be empty.");
+export function assertRepositoryPath(path: string, options?: { allowEmpty?: boolean }): void {
+  if (!path) {
+    if (options?.allowEmpty) {
+      return;
+    }
+    throw new Error("Repository path cannot be empty.");
+  }
   if (path.startsWith("/")) throw new Error("Repository path must not start with '/'.");
   if (path.split("/").some((part) => part === "..")) {
     throw new Error("Repository path must not contain '..'.");

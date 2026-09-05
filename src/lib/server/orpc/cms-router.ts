@@ -7,9 +7,13 @@ import {
   createFolderAtPath,
   deleteCollectionEntry,
   deleteFolderAtPath,
+  deleteRepoFile,
   getCollectionEntry,
+  getRepoFile,
   initializePath,
   listDirectory,
+  listRepoTree,
+  saveRepoFile,
   updateCollectionEntry,
 } from "$lib/server/cms";
 import { getCollection } from "$lib/server/config";
@@ -250,6 +254,79 @@ const deleteFolder = authedProcedure.input(dirInput).handler(async ({ input, con
   );
 });
 
+const treeInput = z.object({
+  installationId: z.number().int().positive(),
+  repository: z.string().trim().min(1),
+  branch: z.string().trim().optional(),
+  path: z.string().default(""),
+});
+
+const saveFileInput = z.object({
+  installationId: z.number().int().positive(),
+  repository: z.string().trim().min(1),
+  branch: z.string().trim().optional(),
+  filePath: z.string().trim().min(1),
+  content: z.string(),
+  message: z.string().trim().optional(),
+});
+
+const listTree = authedProcedure.input(treeInput).handler(async ({ input, context }) => {
+  const ctx = await resolveCtx(context.session.userId, input);
+  return orpcTry(
+    () => listRepoTree(input.path, ctx),
+    "INTERNAL_SERVER_ERROR",
+    "Could not list repository tree.",
+  );
+});
+
+const getFile = authedProcedure
+  .input(
+    z.object({
+      installationId: z.number().int().positive(),
+      repository: z.string().trim().min(1),
+      branch: z.string().trim().optional(),
+      filePath: z.string().trim().min(1),
+    }),
+  )
+  .handler(async ({ input, context }) => {
+    const ctx = await resolveCtx(context.session.userId, input);
+    return orpcTry(
+      () => getRepoFile(input.filePath, ctx),
+      "NOT_FOUND",
+      `File not found: ${input.filePath}`,
+    );
+  });
+
+const saveFile = authedProcedure.input(saveFileInput).handler(async ({ input, context }) => {
+  const ctx = await resolveCtx(context.session.userId, input);
+  const commitMessage = input.message ?? `Update ${input.filePath}`;
+  return orpcTry(
+    () => saveRepoFile(input.filePath, input.content, commitMessage, ctx),
+    "INTERNAL_SERVER_ERROR",
+    "Could not save file.",
+  );
+});
+
+const removeFile = authedProcedure
+  .input(
+    z.object({
+      installationId: z.number().int().positive(),
+      repository: z.string().trim().min(1),
+      branch: z.string().trim().optional(),
+      filePath: z.string().trim().min(1),
+      message: z.string().trim().optional(),
+    }),
+  )
+  .handler(async ({ input, context }) => {
+    const ctx = await resolveCtx(context.session.userId, input);
+    const commitMessage = input.message ?? `Delete ${input.filePath}`;
+    return orpcTry(
+      () => deleteRepoFile(input.filePath, commitMessage, ctx),
+      "INTERNAL_SERVER_ERROR",
+      "Could not delete file.",
+    );
+  });
+
 export const cmsRouter = {
   getEntry,
   createEntry,
@@ -260,4 +337,8 @@ export const cmsRouter = {
   listDir,
   initializeDir,
   deleteFolder,
+  listTree,
+  getFile,
+  saveFile,
+  removeFile,
 };

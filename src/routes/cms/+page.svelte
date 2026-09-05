@@ -69,6 +69,12 @@ function _selectRepository(event: Event) {
     </div>
     <div class="flex items-center gap-3">
       {#if data.selection}
+        <a
+          href={`/cms/tree?${_query}`}
+          class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full border bg-card px-3.5 py-2 text-foreground hover:bg-muted transition-all shadow-xs"
+        >
+          <FolderOpen size={14} class="text-primary-500" /> Repository Files
+        </a>
         <Button
           type="button"
           variant="outline"
@@ -125,12 +131,18 @@ function _selectRepository(event: Event) {
       </a>
     </div>
     {#if data.selection}
-      <div class="mt-4 flex items-center gap-3 text-xs font-semibold text-muted-foreground border-t pt-4 border-border/50">
+      <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs font-semibold text-muted-foreground border-t pt-4 border-border/50">
         <div class="flex items-center gap-1">
           <GitBranch size={14} class="text-primary-500" />
           <span>Branch:</span>
           <span class="font-mono text-foreground bg-muted px-1.5 py-0.5 rounded border">{data.selection.branch ?? "default branch"}</span>
         </div>
+        <a
+          href={`/cms/tree?${_query}`}
+          class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xs hover:opacity-90 transition-all shrink-0"
+        >
+          <FolderOpen size={14} /> Browse Repository Tree &rarr;
+        </a>
       </div>
     {/if}
   </div>

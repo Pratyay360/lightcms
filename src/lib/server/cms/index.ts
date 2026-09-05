@@ -25,6 +25,22 @@ export {
   initializePath,
   listDirectory,
 } from "./storage";
+export {
+  buildBreadcrumbs,
+  createRepoFile,
+  deleteRepoFile,
+  getFileExtension,
+  getParentPath,
+  getRepoFile,
+  listRepoTree,
+  saveRepoFile,
+} from "./tree";
+export type {
+  BreadcrumbItem,
+  RepoFileDetails,
+  RepoTreeItem,
+  RepoTreeListing,
+} from "./tree";
 export type {
   CmsContext,
   DirectoryListing,

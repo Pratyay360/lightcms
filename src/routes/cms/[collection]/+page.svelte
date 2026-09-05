@@ -133,6 +133,12 @@
 				>
 					<ArrowLeft size={14} /> Dashboard
 				</a>
+				<a
+					href={`/cms/tree/${currentPath}?${query}`}
+					class="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary-500 transition-colors bg-muted/50 hover:bg-muted border px-2.5 py-1.5 rounded-lg"
+				>
+					<FolderOpen size={14} /> Explorer View
+				</a>
 			</div>
 			<div class="space-y-1">
 				<h1 class="text-3xl font-black tracking-tight text-foreground">

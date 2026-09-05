@@ -1,6 +1,6 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { createFolderAtPath, listDirectory } from "$lib/server/cms";
-import { getCmsQuery, getCmsSelection } from "$lib/server/cms-context";
+import { getCmsQuery, getCmsSelection, tryGetCmsSelection } from "$lib/server/cms-context";
 import { assertCollectionName, BUILT_IN_COLLECTIONS, getCollection } from "$lib/server/config";
 import { isGitHubStatus, listRepositories } from "$lib/server/github";
 import { CONTENT_ROOT } from "$lib/server/paths";
@@ -55,7 +55,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       repositories.push(...result.value);
     }
   }
-  const selection = getCmsSelection(url);
+  const selection = tryGetCmsSelection(url);
   const query = selection ? getCmsQuery(selection) : "";
 
   const collectionsList = [...BUILT_IN_COLLECTIONS];
