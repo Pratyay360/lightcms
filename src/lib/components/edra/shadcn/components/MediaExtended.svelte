@@ -159,7 +159,7 @@
 		{#if editor.isEditable}
 			<Button
 				variant="ghost"
-				tabindex="0"
+				tabindex={0}
 				aria-label={strings.extension.media.back}
 				class="absolute inset-y-0 z-20 flex w-5 cursor-col-resize items-center justify-start p-2"
 				style="left: 0px"
@@ -176,7 +176,7 @@
 			</Button>
 
 			<Button
-				tabindex="0"
+				tabindex={0}
 				aria-label={strings.extension.media.back}
 				class="absolute inset-y-0 z-20 flex w-5 cursor-col-resize items-center justify-end p-2"
 				style="right: 0px"

@@ -23,7 +23,6 @@ import MediaPlaceholderComp from "./components/MediaPlaceHolder.svelte";
 import MermaidComp from "./components/Mermaid.svelte";
 import SlashCommandComp from "./components/SlashCommand.svelte";
 import VideoExtendedComp from "./components/VideoExtended.svelte";
-// @ts-expect-error `setTocItems` is a named export from the Svelte module.
 import { setTocItems } from "./toc.svelte";
 
 const lowlight = createLowlight(all);

@@ -228,14 +228,33 @@
   const errDate = $derived(fieldError("date"));
   const folder = $derived(data.folder ?? "");
   const collectionUrl = $derived(() => {
-    let params = data?.query;
-    return `/cms/${encodeURIComponent(data.collection.name)}?${params}`;
+    const params = data?.query;
+    if (params && params.length > 0) {
+      return `/cms/${encodeURIComponent(data.collection.name)}?${params}`;
+    }
+    return `/cms/${encodeURIComponent(data.collection.name)}`;
   });
-  const payloadQuery = $derived(data.query || folder);
-  const displayPath = $derived(
-    data.entry?.path ??
-      (folder ? `${data.collection.path}/${folder}` : data.collection.path),
-  );
+  const payloadQuery = $derived.by(() => {
+    if (data.query && data.query.length > 0) {
+      return data.query;
+    }
+    if (folder.length > 0) {
+      return `folder=${encodeURIComponent(folder)}`;
+    }
+    return "";
+  });
+  const displayPath = $derived.by(() => {
+    if (data.entry?.path) {
+      return data.entry.path;
+    }
+    if (data.collection.path.length > 0 && folder.length > 0) {
+      return `${data.collection.path}/${folder}`;
+    }
+    if (data.collection.path.length > 0) {
+      return data.collection.path;
+    }
+    return folder;
+  });
 </script>
 
 <svelte:head>

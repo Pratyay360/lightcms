@@ -90,15 +90,24 @@ export async function createOrUpdateFile(
   repository: Repository,
   branch?: string,
 ) {
-  assertRepositoryPath(path);
+  const normalizedPath = path.replace(/^\/+/, "");
+  assertRepositoryPath(normalizedPath);
   let sha: string | undefined;
   try {
-    sha = (await getFileContent(path, client, repository, branch)).sha;
+    sha = (await getFileContent(normalizedPath, client, repository, branch)).sha;
   } catch (error) {
     if (!isNotFoundError(error)) throw error;
     // File does not exist, so sha remains undefined.
   }
-  return createOrUpdateWithBranchFallback(path, content, message, client, repository, branch, sha);
+  return createOrUpdateWithBranchFallback(
+    normalizedPath,
+    content,
+    message,
+    client,
+    repository,
+    branch,
+    sha,
+  );
 }
 
 /**
@@ -112,18 +121,19 @@ export async function createFile(
   repository: Repository,
   branch?: string,
 ) {
-  assertRepositoryPath(path);
+  const normalizedPath = path.replace(/^\/+/, "");
+  assertRepositoryPath(normalizedPath);
   // Ensure the file does not already exist.
   try {
-    await getFileContent(path, client, repository, branch);
-    throw new RepositoryFileExistsError(`File "${path}" already exists.`);
+    await getFileContent(normalizedPath, client, repository, branch);
+    throw new RepositoryFileExistsError(`File "${normalizedPath}" already exists.`);
   } catch (error) {
     if (error instanceof RepositoryFileExistsError) throw error;
     if (!isNotFoundError(error)) throw error;
     // File does not exist, proceed.
   }
   return createOrUpdateWithBranchFallback(
-    path,
+    normalizedPath,
     content,
     message,
     client,
@@ -143,19 +153,20 @@ export async function deleteFile(
   repository: Repository,
   branch?: string,
 ) {
-  assertRepositoryPath(path);
+  const normalizedPath = path.replace(/^\/+/, "");
+  assertRepositoryPath(normalizedPath);
   const { owner, repo } = parseRepository(repository);
-  const { sha } = await getFileContent(path, client, repository, branch);
+  const { sha } = await getFileContent(normalizedPath, client, repository, branch);
   try {
     await client.rest.repos.deleteFile({
       owner,
       repo,
-      path,
+      path: normalizedPath,
       message,
       sha,
       ...(branch ? { branch } : {}),
     });
   } catch (error) {
-    wrapGitHubError(`delete file: ${path}`, error);
+    wrapGitHubError(`delete file: ${normalizedPath}`, error);
   }
 }

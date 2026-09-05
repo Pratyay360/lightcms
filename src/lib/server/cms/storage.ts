@@ -4,7 +4,11 @@ import { ensureUnderContentRoot, resolveCollectionPath } from "$lib/server/paths
 import { type CmsContext, resolveRepository } from "./types";
 
 function ensureGitKeepPath(targetPath: string): string {
-  return `${ensureUnderContentRoot(targetPath).replace(/\/+$/, "")}/.gitkeep`;
+  const base = ensureUnderContentRoot(targetPath);
+  if (base.length === 0) {
+    return ".gitkeep";
+  }
+  return `${base}/.gitkeep`;
 }
 
 export async function createFileAtPath(

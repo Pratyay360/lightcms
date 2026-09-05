@@ -8,8 +8,14 @@ export function sanitizeCollectionName(name: string): string {
 
 export function resolveCollectionPath(name: string): string {
   const clean = sanitizeCollectionName(name);
-  if (!clean) throw new Error(`Invalid collection name: ${name}`);
-  return `${CONTENT_ROOT}/${clean}`;
+  if (!clean) {
+    throw new Error(`Invalid collection name: ${name}`);
+  }
+  const root = normalizeContentPath(CONTENT_ROOT);
+  if (root.length === 0) {
+    return clean;
+  }
+  return `${root}/${clean}`;
 }
 
 export function isValidCollectionName(name: string): boolean {
@@ -18,31 +24,51 @@ export function isValidCollectionName(name: string): boolean {
 
 export function assertCollectionName(name: string): string {
   const clean = sanitizeCollectionName(name);
-  if (!clean) throw new Error(`Collection name must contain alphanumeric characters.`);
+  if (!clean) {
+    throw new Error("Collection name must contain alphanumeric characters.");
+  }
   return clean;
 }
 
 export function joinPath(directoryPath: string, folder: string): string {
-  const trimmed = folder.replace(/^\/+|\/+$/g, "");
-  if (!trimmed) return directoryPath;
-  return directoryPath.endsWith("/") ? `${directoryPath}${trimmed}` : `${directoryPath}/${trimmed}`;
+  const cleanDir = normalizeContentPath(directoryPath);
+  const cleanFolder = normalizeContentPath(folder);
+  if (cleanDir.length === 0) {
+    return cleanFolder;
+  }
+  if (cleanFolder.length === 0) {
+    return cleanDir;
+  }
+  return `${cleanDir}/${cleanFolder}`;
 }
 
 export function normalizeExtension(filename: string): string {
-  return filename.endsWith(".md") ? filename : `${filename}.md`;
+  if (filename.endsWith(".md")) {
+    return filename;
+  }
+  return `${filename}.md`;
 }
 
 export function normalizePath(directoryPath: string, filename: string): string {
-  const normalized = normalizeExtension(filename);
-  return directoryPath.endsWith("/")
-    ? `${directoryPath}${normalized}`
-    : `${directoryPath}/${normalized}`;
+  const normalizedFile = normalizeExtension(filename);
+  const cleanDir = normalizeContentPath(directoryPath);
+  if (cleanDir.length === 0) {
+    return normalizedFile;
+  }
+  return `${cleanDir}/${normalizedFile}`;
 }
 
 export function getSlug(directoryPath: string, filePath: string): string {
-  const normalized = normalizeExtension(filePath);
-  const prefix = directoryPath.endsWith("/") ? directoryPath : `${directoryPath}/`;
-  const relative = normalized.startsWith(prefix) ? normalized.slice(prefix.length) : normalized;
+  const cleanDir = normalizeContentPath(directoryPath);
+  const cleanFile = normalizeContentPath(filePath);
+  const normalizedFile = normalizeExtension(cleanFile);
+  if (cleanDir.length === 0) {
+    return normalizedFile.replace(/\.md$/, "");
+  }
+  const prefix = `${cleanDir}/`;
+  const relative = normalizedFile.startsWith(prefix)
+    ? normalizedFile.slice(prefix.length)
+    : normalizedFile;
   return relative.replace(/\.md$/, "");
 }
 
@@ -50,69 +76,108 @@ export function resolveEntryPath(collectionPath: string, folder: string, filenam
   return normalizePath(joinPath(collectionPath, folder), filename);
 }
 
-export function normalizeFolder(folder: string): string {
+export function normalizeFolder(folder: string | undefined | null): string {
   const value = folder?.trim() ?? "";
   const parts = value
     .split("/")
     .map((part) => part.trim())
     .filter((part) => part !== "" && part !== ".");
-  if (parts.some((part) => part === ".."))
+  if (parts.some((part) => part === "..")) {
     throw new Error("A folder path cannot contain '..' segments.");
+  }
   return parts.join("/");
 }
 
 function assertFolderSegment(name: string): void {
-  if (!name || name.trim() === "") throw new Error("A folder segment is required.");
-  if (name.includes("/") || name.includes("\\"))
+  if (!name || name.trim() === "") {
+    throw new Error("A folder segment is required.");
+  }
+  if (name.includes("/") || name.includes("\\")) {
     throw new Error("A folder segment cannot contain slashes.");
-  if (name.trim().startsWith(".")) throw new Error("A folder segment cannot start with a dot.");
+  }
+  if (name.trim().startsWith(".")) {
+    throw new Error("A folder segment cannot start with a dot.");
+  }
 }
 
 export function assertFolderName(name: string): void {
-  if (!name || name.trim() === "") throw new Error("A folder name is required.");
-  if (name.includes("/") || name.includes("\\"))
+  if (!name || name.trim() === "") {
+    throw new Error("A folder name is required.");
+  }
+  if (name.includes("/") || name.includes("\\")) {
     throw new Error("A folder name cannot contain slashes.");
-  if (name.trim().startsWith(".")) throw new Error("A folder name cannot start with a dot.");
+  }
+  if (name.trim().startsWith(".")) {
+    throw new Error("A folder name cannot start with a dot.");
+  }
   assertFolderSegment(name.trim());
 }
 
 export function normalizeContentPath(path: string | undefined | null): string {
   const raw = path?.trim() ?? "";
-  if (!raw) return "";
+  if (!raw) {
+    return "";
+  }
   const withoutLeading = raw.replace(/^\/+|\/+$/g, "");
   const parts = withoutLeading
     .split("/")
     .map((p) => p.trim())
     .filter((p) => p !== "" && p !== ".");
-  if (parts.some((p) => p === "..")) throw new Error("Path cannot contain '..' segments.");
-  if (parts.slice(0, -1).some((p) => p.startsWith(".")))
+  if (parts.some((p) => p === "..")) {
+    throw new Error("Path cannot contain '..' segments.");
+  }
+  if (parts.slice(0, -1).some((p) => p.startsWith("."))) {
     throw new Error("Folder segments cannot start with '.'");
+  }
   return parts.join("/");
 }
 
 export function assertContentPath(path: string, opts?: { allowEmpty?: boolean }): string {
   const normalized = normalizeContentPath(path);
-  if (!normalized && !opts?.allowEmpty) throw new Error("Path is required.");
-  if (normalized?.startsWith("/")) throw new Error("Path must be relative.");
-  if (normalized.split("/").some((p) => p === "..")) throw new Error("Path cannot contain '..'.");
+  if (!normalized && !opts?.allowEmpty) {
+    throw new Error("Path is required.");
+  }
+  if (normalized.startsWith("/")) {
+    throw new Error("Path must be relative.");
+  }
+  if (normalized.split("/").some((p) => p === "..")) {
+    throw new Error("Path cannot contain '..'.");
+  }
   return normalized;
 }
 
 export function ensureUnderContentRoot(path: string | undefined | null): string {
   const normalized = normalizeContentPath(path);
-  if (!normalized) return CONTENT_ROOT;
-  if (normalized === CONTENT_ROOT) return normalized;
-  if (normalized.startsWith(`${CONTENT_ROOT}/`)) return normalized;
-  if (!normalized.includes("/")) return `${CONTENT_ROOT}/${normalized}`;
-  throw new Error(`Path must be inside "${CONTENT_ROOT}/" (got "${path}")`);
+  const root = normalizeContentPath(CONTENT_ROOT);
+  if (root.length === 0) {
+    return normalized;
+  }
+  if (normalized.length === 0 || normalized === root) {
+    return root;
+  }
+  if (normalized.startsWith(`${root}/`)) {
+    return normalized;
+  }
+  if (!normalized.includes("/")) {
+    return `${root}/${normalized}`;
+  }
+  throw new Error(`Path must be inside "${root}/" (got "${path}")`);
 }
 
 export function resolveContentPath(...segments: Array<string | undefined | null>): string {
   const parts = segments.map((s) => normalizeContentPath(s)).filter((s) => s.length > 0);
-  if (parts.length === 0) return CONTENT_ROOT;
+  const root = normalizeContentPath(CONTENT_ROOT);
+  if (parts.length === 0) {
+    return root;
+  }
   const joined = parts.join("/");
-  if (joined === CONTENT_ROOT || joined.startsWith(`${CONTENT_ROOT}/`)) return joined;
-  return `${CONTENT_ROOT}/${joined}`;
+  if (root.length === 0) {
+    return joined;
+  }
+  if (joined === root || joined.startsWith(`${root}/`)) {
+    return joined;
+  }
+  return `${root}/${joined}`;
 }
 
 export function buildContentPath(...segments: string[]): string {

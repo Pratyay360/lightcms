@@ -29,16 +29,17 @@ async function fetchDirEntries(
   repository: Repository,
   branch?: string,
 ): Promise<RepositoryDirectoryEntry[]> {
-  assertRepositoryPath(path, { allowEmpty: true });
+  const normalizedPath = path.replace(/^\/+/, "");
+  assertRepositoryPath(normalizedPath, { allowEmpty: true });
   const { owner, repo } = parseRepository(repository);
   const response = await client.rest.repos.getContent({
     owner,
     repo,
-    path,
+    path: normalizedPath,
     ...(branch ? { ref: branch } : {}),
   });
   if (!Array.isArray(response.data)) {
-    throw new Error(`Expected "${path}" to be a directory.`);
+    throw new Error(`Expected "${normalizedPath}" to be a directory.`);
   }
   return response.data.map((entry) => ({
     name: entry.name,
@@ -58,13 +59,14 @@ export async function listDir(
   branch?: string,
   opts: { strict?: boolean } = {},
 ): Promise<RepositoryDirectoryEntry[]> {
+  const normalizedPath = path.replace(/^\/+/, "");
   try {
-    return await fetchDirEntries(path, client, repository, branch);
+    return await fetchDirEntries(normalizedPath, client, repository, branch);
   } catch (error) {
     if (!opts.strict && isNotFoundError(error)) {
       return [];
     }
-    wrapGitHubError(`list directory: ${path}`, error);
+    wrapGitHubError(`list directory: ${normalizedPath}`, error);
   }
 }
 
@@ -77,9 +79,10 @@ export async function listAllFilesRecursive(
   repository: Repository,
   branch?: string,
 ): Promise<string[]> {
-  assertRepositoryPath(path, { allowEmpty: true });
+  const normalizedPath = path.replace(/^\/+/, "");
+  assertRepositoryPath(normalizedPath, { allowEmpty: true });
   const files: string[] = [];
-  const stack: string[] = [path];
+  const stack: string[] = [normalizedPath];
   const visited = new Set<string>();
 
   while (stack.length > 0) {
@@ -106,17 +109,18 @@ export async function getFileContent(
   repository: Repository,
   branch?: string,
 ): Promise<RepositoryFile> {
-  assertRepositoryPath(path);
+  const normalizedPath = path.replace(/^\/+/, "");
+  assertRepositoryPath(normalizedPath);
   const { owner, repo } = parseRepository(repository);
   try {
     const response = await client.rest.repos.getContent({
       owner,
       repo,
-      path,
+      path: normalizedPath,
       ...(branch ? { ref: branch } : {}),
     });
     if (Array.isArray(response.data) || response.data.type !== "file" || !response.data.content) {
-      throw new Error(`Expected "${path}" to be a file.`);
+      throw new Error(`Expected "${normalizedPath}" to be a file.`);
     }
     return {
       path: response.data.path,

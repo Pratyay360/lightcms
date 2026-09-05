@@ -48,29 +48,26 @@
 		void transaction.version;
 		return command.clickable?.(editor) ?? true;
 	}
+	import type { BubbleMenuPluginProps } from '@tiptap/extension-bubble-menu';
+
 	const isTableGripSelected = (node: HTMLElement) => {
 		let container = node;
+
 		while (container && !['TD', 'TH'].includes(container.tagName)) {
-			container = container.parentElement;
+			container = container.parentElement!;
 		}
-		const gripColumn =
-			container?.querySelector?.('a.grip-column.selected');
-		const gripRow =
-			container?.querySelector?.('a.grip-row.selected');
+
+		if (!container) return false;
+
+		const gripColumn = container.querySelector('div.grip-column.selected');
+		const gripRow = container.querySelector('div.grip-row.selected');
+
 		if (gripColumn || gripRow) {
 			return true;
 		}
 		return false;
 	};
-	const shouldShow = (props: {
-		editor: Editor;
-		element: HTMLElement;
-		view: EditorView;
-		state: EditorState;
-		oldState?: EditorState;
-		from: number;
-		to: number;
-	}) => {
+	const shouldShow: NonNullable<BubbleMenuPluginProps['shouldShow']> = (props) => {
 		const { editor: propsEditor, view, state } = props;
 
 		if (!propsEditor?.isEditable) return false;

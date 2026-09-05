@@ -27,7 +27,7 @@ export async function createCollectionFolder(
   const trimmed = normalizeContentPath(name);
   const base = joinPath(collection.path, normalizeFolder(parentFolder));
   const folderPath = joinPath(base, trimmed);
-  const path = `${folderPath.replace(/\/+$/, "")}/.gitkeep`;
+  const path = folderPath.length === 0 ? ".gitkeep" : `${folderPath}/.gitkeep`;
   const message = `Create folder ${trimmed} in ${collection.label ?? collection.name}`;
   return createFile(path, "", message, ctx.client, repo, ctx.branch);
 }
@@ -44,7 +44,7 @@ export async function createFolderAtPath(
   if (!normalizedName) throw new Error("Folder name is required.");
   for (const part of normalizedName.split("/")) assertFolderName(part);
   const folderPath = joinPath(normalizedParent, normalizedName);
-  const filePath = `${folderPath.replace(/\/+$/, "")}/.gitkeep`;
+  const filePath = folderPath.length === 0 ? ".gitkeep" : `${folderPath}/.gitkeep`;
   const message = opts?.message ?? `Create folder ${normalizedName} at ${normalizedParent}`;
   return createFile(filePath, "", message, ctx.client, repo, ctx.branch);
 }
@@ -56,8 +56,9 @@ export async function deleteFolderAtPath(
 ) {
   const repo = resolveRepository(ctx);
   const normalized = ensureUnderContentRoot(folderPath);
-  if (normalized === CONTENT_ROOT)
-    throw new Error(`Cannot delete the content root "${CONTENT_ROOT}".`);
+  if (normalized.length === 0 || normalized === CONTENT_ROOT) {
+    throw new Error(`Cannot delete the content root.`);
+  }
 
   let files: string[];
   try {

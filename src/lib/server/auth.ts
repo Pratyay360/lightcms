@@ -9,21 +9,30 @@ import { db } from "$lib/server/db";
 import * as schema from "$lib/server/db/schema";
 import { sendMail } from "$lib/utils/mail";
 
-function requireEnv(name: string): string {
-  const value = (dynamicEnv as Record<string, string | undefined>)[name] ?? process.env[name];
-  if (!value) throw new Error(`Missing required env: ${name}`);
-  return value;
+function getEnv(name: string): string | undefined {
+  const fromDynamic = (dynamicEnv as Record<string, string | undefined>)[name];
+  if (fromDynamic) return fromDynamic;
+  const fromProcess = process.env[name];
+  if (fromProcess) return fromProcess;
+  const fromMeta = (import.meta.env as Record<string, string | undefined>)[name];
+  if (fromMeta) return fromMeta;
+  return undefined;
 }
 
 function createAuth() {
+  const betterAuthUrl = getEnv("BETTER_AUTH_URL");
+  const betterAuthSecret = getEnv("BETTER_AUTH_SECRET");
+  const githubClientId = getEnv("GITHUB_CLIENT_ID");
+  const githubClientSecret = getEnv("GITHUB_CLIENT_SECRET");
+
   return betterAuth({
     appName: "LightCMS",
     database: drizzleAdapter(db, {
       provider: "pg",
       schema,
     }),
-    baseURL: requireEnv("BETTER_AUTH_URL"),
-    secret: requireEnv("BETTER_AUTH_SECRET"),
+    ...(betterAuthUrl ? { baseURL: betterAuthUrl } : {}),
+    secret: betterAuthSecret,
     account: {
       storeStateStrategy: "database",
     },
@@ -32,12 +41,15 @@ function createAuth() {
       trustedProxyHeaders: true,
     },
 
-    socialProviders: {
-      github: {
-        clientId: requireEnv("GITHUB_CLIENT_ID"),
-        clientSecret: requireEnv("GITHUB_CLIENT_SECRET"),
-      },
-    },
+    socialProviders:
+      githubClientId && githubClientSecret
+        ? {
+            github: {
+              clientId: githubClientId,
+              clientSecret: githubClientSecret,
+            },
+          }
+        : {},
 
     plugins: [
       magicLink({

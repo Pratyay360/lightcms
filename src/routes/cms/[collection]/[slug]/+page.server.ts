@@ -12,7 +12,7 @@ import {
 } from "$lib/server/cms";
 import { getConfiguredCollection } from "$lib/server/cms-context";
 import { isGitHubStatus } from "$lib/server/github";
-import { normalizeFolder } from "$lib/server/paths";
+import { joinPath, normalizeFolder } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     throw redirect(302, "/auth");
   }
 
-  const { collection, ctx, query } = await getConfiguredCollection(
+  const { collection, ctx, query, selection } = await getConfiguredCollection(
     locals.session.userId,
     url,
     params.collection,
@@ -37,11 +37,12 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       isNew: true,
       query,
       collection,
+      selection,
       folder,
       primaryField: collection.view?.primary ?? collection.fields[0].name,
       entry: {
         slug: String(emptyEntry.slug),
-        path: folder ? `${collection.path}/${folder}` : collection.path,
+        path: joinPath(collection.path, folder),
         body: "",
         frontMatter: {} as FrontMatter,
       },
@@ -61,6 +62,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     isNew: false,
     query,
     collection,
+    selection,
     folder,
     primaryField: collection.view?.primary ?? collection.fields[0].name,
     entry,

@@ -12,18 +12,19 @@ export async function sendMail({
   text: string;
 }) {
   const mailHost = process.env.MAIL_HOST!;
-  const mailPort = process.env.MAIL_PORT!;
+  const rawPort = process.env.MAIL_PORT;
+  const mailPort = rawPort ? Number.parseInt(rawPort, 10) : 587;
   const mailUser = process.env.MAIL_USER!;
   const mailPass = process.env.MAIL_PASS!;
   const mailFrom = process.env.MAIL_FROM!;
-  const secure = process.env.MAIL_SECURE!;
+  const isSecure = process.env.MAIL_SECURE === "true";
 
   if (!Number.isFinite(mailPort)) throw new Error("MAIL_PORT must be a number");
 
   const transporter = createTransport({
     host: mailHost,
     port: mailPort,
-    secure,
+    secure: isSecure,
     auth: {
       user: mailUser,
       pass: mailPass,

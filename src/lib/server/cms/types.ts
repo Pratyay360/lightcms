@@ -24,6 +24,7 @@ export type Entry = {
   slug: string;
   body: string;
   frontMatter: FrontMatter;
+  sha?: string;
 };
 
 export type CmsContext = {

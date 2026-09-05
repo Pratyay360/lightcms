@@ -44,7 +44,15 @@
 	const folder = $derived(data.folder ?? "");
 	const segments = $derived(folder ? folder.split("/") : []);
 	const isRoot = $derived(folder === "");
-	const currentPath = $derived(isRoot ? collection.path : `${collection.path}/${folder}`);
+	const currentPath = $derived.by(() => {
+		if (isRoot) {
+			return collection.path;
+		}
+		if (collection.path.length > 0) {
+			return `${collection.path}/${folder}`;
+		}
+		return folder;
+	});
 
 	function folderUrl(folderPath: string) {
 		return buildFolderUrl(collection.name, query, folderPath);
@@ -103,7 +111,7 @@
 			toast.success(`Deleted folder "${targetName}"`);
 			deleteDialogOpen = false;
 			deleteTarget = null;
-			const currentFolderPath = `${collection.path}/${folder}`;
+			const currentFolderPath = currentPath;
 			if (targetPath && currentFolderPath === targetPath) {
 				const parent = folder.split("/").slice(0, -1).join("/");
 				const params = withFolder(query, parent);
@@ -148,7 +156,7 @@
 					<FileText size={12} class="text-primary-500" />
 					<span>Path:</span>
 					<span class="text-foreground">
-						{isRoot ? collection.path : `${collection.path}/${folder}`}
+						{currentPath}
 					</span>
 				</p>
 			</div>

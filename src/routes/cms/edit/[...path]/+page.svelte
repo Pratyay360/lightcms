@@ -342,7 +342,12 @@
   <div class="rounded-2xl border bg-card shadow-xs overflow-hidden min-h-[500px]">
     {#if file.isMarkdown && editorMode === "rich" && editor}
       <div class="p-6">
-        <Edra {editor} />
+        <Edra {editor}>
+          <Edra.UseAI />
+          <Edra.BubbleMenu />
+          <Edra.Content class="*:outline-none cursor-auto min-h-[500px]" />
+          <Edra.DragHandle />
+        </Edra>
       </div>
     {:else}
       <div class="p-4">

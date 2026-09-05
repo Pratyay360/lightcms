@@ -158,7 +158,7 @@ export async function getCollectionEntry(
   const parsed = matter(source.content);
   const data = parsed.data ?? {};
   const { body: _body, ...frontMatter } = data as Record<string, unknown>;
-  return { path: source.path, slug, body: parsed.content, frontMatter };
+  return { path: source.path, slug, body: parsed.content, frontMatter, sha: source.sha };
 }
 
 export async function createCollectionEntry(
