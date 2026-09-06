@@ -16,6 +16,13 @@ import {
 } from "$lib/server/paths";
 import { type CmsContext, resolveRepository } from "./types";
 
+export class FolderNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "FolderNotFoundError";
+  }
+}
+
 export async function createCollectionFolder(
   collection: LightCmsCollection,
   parentFolder: string,
@@ -64,7 +71,8 @@ export async function deleteFolderAtPath(
   try {
     files = await listAllFilesRecursive(normalized, ctx.client, repo, ctx.branch);
   } catch (cause) {
-    throw new Error(`Folder not found: ${cause instanceof Error ? cause.message : String(cause)}`);
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    throw new FolderNotFoundError(`Folder not found: ${detail}`);
   }
 
   if (files.length === 0) {
@@ -72,7 +80,7 @@ export async function deleteFolderAtPath(
       await listDir(normalized, ctx.client, repo, ctx.branch, { strict: true });
     } catch (cause) {
       if (isGitHubStatus(cause, 404) || isGitHubStatus(cause, 409)) {
-        throw new Error(`Folder not found: ${normalized}`);
+        throw new FolderNotFoundError(`Folder not found: ${normalized}`);
       }
       throw cause;
     }

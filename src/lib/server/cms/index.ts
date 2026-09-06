@@ -11,6 +11,7 @@ export {
   createFolderAtPath,
   deleteCollectionFolder,
   deleteFolderAtPath,
+  FolderNotFoundError,
 } from "./folder";
 export {
   assertSlug,

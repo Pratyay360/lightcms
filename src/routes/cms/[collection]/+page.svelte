@@ -28,8 +28,7 @@
 		DialogHeader,
 		DialogTitle,
 	} from "$lib/components/ui/dialog";
-	import { Input } from "$lib/components/ui/input";
-	import { Label } from "$lib/components/ui/label";
+
 	import { createLightCmsClient } from "$lib/orpc-client";
 	import { buildEntryUrl, buildFolderUrl, buildPayloadQuery, withFolder } from "$lib/utils/cms-url";
 	import type { PageData } from "./$types";
@@ -124,7 +123,8 @@
 				await invalidateAll();
 			}
 		} catch (cause) {
-			throw new Error(`Error ${cause}`);
+			deleteError = cause instanceof Error ? cause.message : String(cause);
+			toast.error(deleteError);
 		} finally {
 			deleting = false;
 		}
@@ -519,24 +519,14 @@
 					</div>
 
 					<div class="space-y-1.5">
-						<Label for="entry-dest-folder">Destination Folder</Label>
-						<Input
-							id="entry-dest-folder"
-							name="toFolder"
-							bind:value={destinationFolder}
-							placeholder="Leave empty for collection root, or enter folder name"
-							autocomplete="off"
-						/>
-					</div>
-
-					{#if folders.length > 0 || !isRoot}
-						<div class="space-y-1">
-							<span class="text-[11px] font-semibold text-muted-foreground">Quick select:</span>
+						<span class="text-[11px] font-semibold text-muted-foreground">Destination folder</span>
+						<input type="hidden" name="toFolder" value={destinationFolder} />
+						{#if !isRoot || folders.length > 0}
 							<div class="flex flex-wrap gap-1.5 pt-1">
 								{#if !isRoot}
 									<button
 										type="button"
-										class="rounded-md border bg-background px-2 py-1 text-[11px] font-mono hover:bg-muted transition-colors"
+										class="rounded-md border px-2 py-1 text-[11px] font-mono transition-colors hover:bg-muted {destinationFolder === '' ? 'bg-primary/10 ring-2 ring-primary/40 ring-inset' : 'bg-background'}"
 										onclick={() => (destinationFolder = "")}
 									>
 										/ (Root)
@@ -546,19 +536,21 @@
 									{@const optionFolder = folder ? `${folder}/${fEntry.name}` : fEntry.name}
 									<button
 										type="button"
-										class="rounded-md border bg-background px-2 py-1 text-[11px] font-mono hover:bg-muted transition-colors"
+										class="rounded-md border px-2 py-1 text-[11px] font-mono transition-colors hover:bg-muted {destinationFolder === optionFolder ? 'bg-primary/10 ring-2 ring-primary/40 ring-inset' : 'bg-background'}"
 										onclick={() => (destinationFolder = optionFolder)}
 									>
 										{fEntry.name}
 									</button>
 								{/each}
 							</div>
-						</div>
-					{/if}
+						{:else}
+							<p class="text-xs text-muted-foreground">No other folders yet — create one first.</p>
+						{/if}
+					</div>
 				</div>
 				<DialogFooter class="flex gap-2 justify-end">
 					<Button type="button" variant="outline" onclick={() => (moveEntryTarget = null)}>Cancel</Button>
-					<Button type="submit">Move Entry</Button>
+					<Button type="submit" disabled={destinationFolder === folder}>Move Entry</Button>
 				</DialogFooter>
 			</form>
 		</DialogContent>

@@ -8,6 +8,7 @@ import {
   deleteCollectionEntry,
   deleteFolderAtPath,
   deleteRepoFile,
+  FolderNotFoundError,
   getCollectionEntry,
   getRepoFile,
   initializePath,
@@ -250,11 +251,15 @@ const initializeDir = authedProcedure.input(dirInput).handler(async ({ input, co
 
 const deleteFolder = authedProcedure.input(dirInput).handler(async ({ input, context }) => {
   const ctx = await resolveCtx(context.session.userId, input);
-  return orpcTry(
-    () => deleteFolderAtPath(input.directoryPath, ctx),
-    "BAD_REQUEST",
-    "Could not delete folder.",
-  );
+  try {
+    return await deleteFolderAtPath(input.directoryPath, ctx);
+  } catch (cause) {
+    if (cause instanceof FolderNotFoundError) {
+      throw new ORPCError("NOT_FOUND", { message: cause.message });
+    }
+    const message = cause instanceof Error ? cause.message : "Could not delete folder.";
+    throw new ORPCError("BAD_REQUEST", { message });
+  }
 });
 
 const treeInput = z.object({

@@ -43,6 +43,7 @@
   import { Separator } from "$lib/components/ui/separator";
   import { Textarea } from "$lib/components/ui/textarea";
   import { createLightCmsClient } from "$lib/orpc-client";
+  import { buildPayloadQuery } from "$lib/utils/cms-url";
   import { timeAgo } from "$lib/utils/time-ago";
   import type { PageData } from "./$types";
 
@@ -241,15 +242,7 @@
     }
     return `/cms/${encodeURIComponent(data.collection.name)}`;
   });
-  const payloadQuery = $derived.by(() => {
-    if (data.query && data.query.length > 0) {
-      return data.query;
-    }
-    if (folder.length > 0) {
-      return `folder=${encodeURIComponent(folder)}`;
-    }
-    return "";
-  });
+  const payloadQuery = $derived(buildPayloadQuery(data.query ?? "", folder));
   const displayPath = $derived.by(() => {
     if (data.entry?.path) {
       return data.entry.path;
