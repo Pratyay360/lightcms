@@ -4,6 +4,7 @@
     Check,
     Code,
     FileText,
+    FolderInput,
     GitBranch,
     LoaderCircle,
     Plus,
@@ -48,9 +49,13 @@
   let newFieldKey = $state("");
   let newFieldValue = $state("");
   let deleteDialogOpen = $state(false);
+  let moveDialogOpen = $state(false);
+  let destinationFolder = $state(untrack(() => data.parentPath));
+  let newFilename = $state(untrack(() => data.file.filename));
   let isSaving = $state(false);
   let hasUnsavedChanges = $state(false);
   let lastSavedAt = $state<string | null>(null);
+
 
   // Initialize frontmatter entries from file
   onMount(() => {
@@ -213,11 +218,22 @@
       <Button
         type="button"
         variant="ghost"
+        class="text-muted-foreground hover:bg-muted hover:text-foreground rounded-xl"
+        title="Move or rename file"
+        onclick={() => (moveDialogOpen = true)}
+      >
+        <FolderInput size={16} />
+      </Button>
+
+      <Button
+        type="button"
+        variant="ghost"
         class="text-destructive hover:bg-destructive/10 rounded-xl"
         onclick={() => (deleteDialogOpen = true)}
       >
         <Trash2 size={16} />
       </Button>
+
 
       <!-- Save Form -->
       <form
@@ -380,3 +396,53 @@
     </form>
   </DialogContent>
 </Dialog>
+
+<!-- Move File Dialog -->
+<Dialog bind:open={moveDialogOpen}>
+  <DialogContent class="sm:max-w-md">
+    <form method="POST" action="?/move" class="space-y-4">
+      <DialogHeader>
+        <DialogTitle>Move or Rename File</DialogTitle>
+        <DialogDescription>
+          Change the folder location or filename for this file.
+        </DialogDescription>
+      </DialogHeader>
+      <div class="space-y-3 py-2">
+        <div class="rounded-xl border bg-muted/40 p-3 text-xs space-y-1">
+          <div class="text-muted-foreground">Current path:</div>
+          <div class="font-mono font-semibold text-foreground truncate">
+            {filePath}
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <Label for="destination-folder">Destination Folder</Label>
+          <Input
+            id="destination-folder"
+            name="destinationFolder"
+            bind:value={destinationFolder}
+            placeholder="Leave blank for root, or specify folder"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="space-y-1.5">
+          <Label for="new-filename">Filename</Label>
+          <Input
+            id="new-filename"
+            name="newFilename"
+            bind:value={newFilename}
+            required
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <DialogFooter class="flex gap-2 justify-end">
+        <Button type="button" variant="outline" onclick={() => (moveDialogOpen = false)}>Cancel</Button>
+        <Button type="submit">Move File</Button>
+      </DialogFooter>
+    </form>
+  </DialogContent>
+</Dialog>
+

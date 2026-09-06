@@ -65,6 +65,7 @@
 	{@const text = mediaTypeData?.text}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<Button
+		variant="ghost"
 		tabindex={1}
 		class="flex min-h-14 w-full items-center gap-2 rounded-lg border border-dashed bg-muted/30 p-4 transition-colors hover:bg-muted/50"
 		onclick={() => (isPopoverOpen = true)}

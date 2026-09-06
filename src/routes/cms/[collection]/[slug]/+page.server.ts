@@ -8,8 +8,10 @@ import {
   deleteCollectionEntry,
   type FrontMatter,
   getCollectionEntry,
+  moveCollectionEntry,
   updateCollectionEntry,
 } from "$lib/server/cms";
+
 import { getConfiguredCollection } from "$lib/server/cms-context";
 import { isGitHubStatus } from "$lib/server/github";
 import { joinPath, normalizeFolder } from "$lib/server/paths";
@@ -169,7 +171,46 @@ export const actions: Actions = {
     const collectionUrl = `/cms/${encodeURIComponent(collection.name)}?${appendFolder(query, folder)}`;
     throw redirect(303, collectionUrl);
   },
+
+  move: async ({ locals, request, params, url }) => {
+    if (!locals.session) {
+      throw redirect(302, "/auth");
+    }
+
+    if (params.slug === "new") {
+      throw error(400, "Cannot move an entry that has not been created yet.");
+    }
+
+    const { collection, ctx, query } = await getConfiguredCollection(
+      locals.session.userId,
+      url,
+      params.collection,
+    );
+
+    const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
+    const formData = await request.formData();
+    const rawToFolder = formData.get("toFolder");
+    const rawNewSlug = formData.get("newSlug");
+
+    const toFolder = typeof rawToFolder === "string" ? rawToFolder.trim() : "";
+    let newSlug = params.slug;
+    if (typeof rawNewSlug === "string" && rawNewSlug.trim().length > 0) {
+      newSlug = rawNewSlug.trim();
+    }
+
+    try {
+      await moveCollectionEntry(collection, params.slug, folder, toFolder, ctx, newSlug);
+    } catch (cause) {
+      return fail(400, {
+        moveError: cause instanceof Error ? cause.message : "Could not move entry.",
+      });
+    }
+
+    const entryUrl = `/cms/${encodeURIComponent(collection.name)}/${encodeURIComponent(newSlug)}?${appendFolder(query, toFolder)}`;
+    throw redirect(303, entryUrl);
+  },
 };
+
 
 function appendFolder(query: string, folder: string) {
   const params = new URLSearchParams(query);

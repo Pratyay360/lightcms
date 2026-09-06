@@ -14,4 +14,5 @@ export type {
 } from "./types.js";
 
 // Write operations
-export { createFile, createOrUpdateFile, deleteFile } from "./write.js";
+export { createFile, createOrUpdateFile, deleteFile, moveFile } from "./write.js";
+

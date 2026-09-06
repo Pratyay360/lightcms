@@ -5,7 +5,9 @@ import {
   deleteFolderAtPath,
   deleteRepoFile,
   listRepoTree,
+  moveRepoFile,
 } from "$lib/server/cms";
+
 import { getRepoCmsContext } from "$lib/server/cms-context";
 import { normalizeContentPath } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
@@ -160,4 +162,59 @@ export const actions: Actions = {
     const redirectPath = currentPath ? `/cms/tree/${currentPath}?${query}` : `/cms/tree?${query}`;
     throw redirect(303, redirectPath);
   },
+
+  moveFile: async ({ locals, request, params, url }) => {
+    if (!locals.session) {
+      throw redirect(302, "/auth");
+    }
+
+    const { ctx, query } = await getRepoCmsContext(locals.session.userId, url);
+    const formData = await request.formData();
+    const rawSource = formData.get("sourcePath");
+    const rawDestinationFolder = formData.get("destinationFolder");
+    const rawNewFilename = formData.get("newFilename");
+
+    const sourcePath = typeof rawSource === "string" ? rawSource.trim() : "";
+    const destinationFolder = typeof rawDestinationFolder === "string" ? rawDestinationFolder.trim() : "";
+    const newFilename = typeof rawNewFilename === "string" ? rawNewFilename.trim() : "";
+
+    if (!sourcePath) {
+      return fail(400, { error: "Source file path is required." });
+    }
+
+    const currentFilename = sourcePath.split("/").pop() ?? "";
+    let finalFilename = currentFilename;
+    if (newFilename.length > 0) {
+      finalFilename = newFilename;
+    }
+    if (!finalFilename) {
+      return fail(400, { error: "Filename is required." });
+    }
+
+    const normalizedFolder = normalizeContentPath(destinationFolder);
+    let destinationPath = finalFilename;
+    if (normalizedFolder.length > 0) {
+      destinationPath = `${normalizedFolder}/${finalFilename}`;
+    }
+
+    if (destinationPath === sourcePath) {
+      return fail(400, { error: "Source and destination paths must be different." });
+    }
+
+    try {
+      await moveRepoFile(sourcePath, destinationPath, `Move ${sourcePath} to ${destinationPath}`, ctx);
+    } catch (cause) {
+      return fail(400, {
+        error: cause instanceof Error ? cause.message : "Could not move file.",
+      });
+    }
+
+    const currentPath = normalizeContentPath(params.path ?? "");
+    let redirectPath = `/cms/tree?${query}`;
+    if (currentPath.length > 0) {
+      redirectPath = `/cms/tree/${currentPath}?${query}`;
+    }
+    throw redirect(303, redirectPath);
+  },
 };
+

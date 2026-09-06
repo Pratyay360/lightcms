@@ -19,6 +19,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { cn } from '$lib/utils.js';
 	import {
 		AIState,
 		CONTINUE_WRITING_PROMPT,
@@ -84,7 +85,7 @@
 	) {
 		const id = Symbol('AI_THINKING_TOAST').toString();
 		const selectedText = getAIHighlightedText();
-		if (!selectedText || selectedText.trim().length === 0) {
+		if (!selectedText?.trim()) {
 			toast.error('Can not get the selected content from editor', { id });
 			return;
 		}
@@ -127,7 +128,7 @@
 
 	async function handleSubmit(e?: Event) {
 		if (e) e.preventDefault();
-		if (!inputValue || inputValue.trim().length === 0) return;
+		if (!inputValue.trim()) return;
 		const text = getAIHighlightedText() || '';
 		try {
 			const prompt = `${text}\n\n\n${inputValue}`;
@@ -416,7 +417,7 @@
 		}
 
 		if (aiState === AIState.Idle) {
-			const showQuickActions = isAIActive() && inputValue.trim()?.length === 0;
+			const showQuickActions = isAIActive() && !inputValue.trim();
 			if (showQuickActions) {
 				if (event.key === 'ArrowDown') {
 					event.preventDefault();
@@ -455,17 +456,29 @@
 
 {#snippet MenuButton(action: (typeof quickActions)[0], idx: number)}
 	{@const Icon = action.icon}
+	{@const isActive = activeOptionIndex === idx}
 	<Button
+		variant="ghost"
+		size="sm"
 		onclick={action.handler}
-		class="group/dropdown-menu-item relative flex w-full cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden transition-colors select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive {activeOptionIndex ===
-		idx
-			? 'quick-action-active bg-accent text-accent-foreground'
-			: 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'}"
+		onpointerenter={() => {
+			activeOptionIndex = idx;
+		}}
+		class={cn(
+			'relative flex h-auto w-full cursor-pointer justify-start gap-2 rounded-md px-2.5 py-1.5 text-sm font-normal outline-hidden transition-colors select-none',
+			isActive
+				? 'quick-action-active bg-accent text-accent-foreground'
+				: 'text-popover-foreground hover:bg-accent hover:text-accent-foreground'
+		)}
 	>
-		<Icon />
-		<span class="ml-2 flex-1 text-start font-medium">{action.label}</span>
-		{#if activeOptionIndex === idx}
-			<Button size="icon-sm" class="rounded-sm bg-muted/75 px-1 text-muted-foreground">Enter</Button>
+		<Icon class={cn('size-4 shrink-0', isActive ? 'text-accent-foreground' : 'text-muted-foreground')} />
+		<span class="flex-1 text-start">{action.label}</span>
+		{#if isActive}
+			<kbd
+				class="pointer-events-none ml-auto inline-flex h-5 items-center rounded border border-border/50 bg-muted/80 px-1.5 font-mono text-[10px] font-medium text-muted-foreground"
+			>
+				Enter
+			</kbd>
 		{/if}
 	</Button>
 {/snippet}
@@ -487,7 +500,7 @@
 		aiResponse = '';
 		return false;
 	}}
-	class="absolute z-100 flex max-h-120 max-w-3xl flex-col rounded-lg bg-popover text-popover-foreground p-0 shadow-2xl backdrop-blur-2xl transition-[height] duration-500"
+	class="absolute z-100 flex max-h-120 max-w-3xl flex-col p-0 transition-[height] duration-500"
 	options={{
 		strategy: 'absolute',
 		autoPlacement: {
@@ -517,11 +530,11 @@
 				<Button type="submit" size="icon-lg" class="rounded-full"><Send /></Button>
 			</form>
 
-			{#if isAIActive() && inputValue.trim()?.length === 0}
+			{#if isAIActive() && !inputValue.trim()}
 				<!-- Quick Actions List -->
 				<div
 					transition:slide={{ axis: 'y', duration: 250 }}
-					class="flex max-h-72 flex-col overflow-y-auto p-1.5"
+					class="flex max-h-72 flex-col gap-0.5 overflow-y-auto border-t border-border/40 p-1.5"
 				>
 					{#each quickActions as action, idx (action.id)}
 						{@render MenuButton(action, idx)}

@@ -3,6 +3,7 @@ export {
   deleteCollectionEntry,
   getCollectionEntry,
   listCollectionEntries,
+  moveCollectionEntry,
   updateCollectionEntry,
 } from "./entry";
 export {
@@ -33,8 +34,10 @@ export {
   getParentPath,
   getRepoFile,
   listRepoTree,
+  moveRepoFile,
   saveRepoFile,
 } from "./tree";
+
 export type {
   BreadcrumbItem,
   RepoFileDetails,

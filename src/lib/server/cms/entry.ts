@@ -6,7 +6,9 @@ import {
   deleteFile,
   getFileContent,
   listDir,
+  moveFile,
 } from "$lib/server/github";
+
 import { getSlug, joinPath, normalizeFolder, resolveEntryPath } from "$lib/server/paths";
 import { assertSlug, buildFrontMatter, parseFrontMatter, serializeEntry } from "./frontmatter";
 import { getEntryCommitMessage, resolveEntryContext } from "./slug-helpers.js";
@@ -183,10 +185,14 @@ export async function updateCollectionEntry(
   body: string,
   ctx: CmsContext,
   folder = "",
+  targetFolder = folder,
 ) {
-  const { repo, normalizedFolder, path } = resolveEntryContext(collection, slug, folder, ctx);
+  const { repo } = resolveEntryContext(collection, slug, targetFolder, ctx);
   assertSlug(currentSlug);
-  const currentPath = resolveEntryPath(collection.path, normalizedFolder, currentSlug);
+  const currentNormalizedFolder = normalizeFolder(folder);
+  const targetNormalizedFolder = normalizeFolder(targetFolder);
+  const currentPath = resolveEntryPath(collection.path, currentNormalizedFolder, currentSlug);
+  const path = resolveEntryPath(collection.path, targetNormalizedFolder, slug);
   const title = resolveTitle(collection, frontMatter);
   const message = getEntryCommitMessage(collection, "update", title);
   const content = serializeEntry(frontMatter, body);
@@ -220,6 +226,36 @@ export async function updateCollectionEntry(
   return result;
 }
 
+export async function moveCollectionEntry(
+  collection: LightCmsCollection,
+  currentSlug: string,
+  fromFolder: string,
+  toFolder: string,
+  ctx: CmsContext,
+  newSlug = currentSlug,
+) {
+  const repo = resolveRepository(ctx);
+  const normalizedFrom = normalizeFolder(fromFolder);
+  const normalizedTo = normalizeFolder(toFolder);
+  assertSlug(currentSlug);
+  assertSlug(newSlug);
+
+  const fromPath = resolveEntryPath(collection.path, normalizedFrom, currentSlug);
+  const toPath = resolveEntryPath(collection.path, normalizedTo, newSlug);
+
+  if (fromPath === toPath) {
+    return;
+  }
+
+  let targetDescription = "root";
+  if (normalizedTo.length > 0) {
+    targetDescription = normalizedTo;
+  }
+  const collectionName = collection.label ?? collection.name;
+  const message = `Move ${collectionName}: ${currentSlug} to ${targetDescription}`;
+  return moveFile(fromPath, toPath, message, ctx.client, repo, ctx.branch);
+}
+
 export async function deleteCollectionEntry(
   collection: LightCmsCollection,
   slug: string,
@@ -230,3 +266,4 @@ export async function deleteCollectionEntry(
   const message = getEntryCommitMessage(collection, "delete", slug);
   await deleteFile(path, message, ctx.client, repo, ctx.branch);
 }
+

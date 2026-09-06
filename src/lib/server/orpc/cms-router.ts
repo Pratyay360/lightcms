@@ -13,9 +13,12 @@ import {
   initializePath,
   listDirectory,
   listRepoTree,
+  moveCollectionEntry,
+  moveRepoFile,
   saveRepoFile,
   updateCollectionEntry,
 } from "$lib/server/cms";
+
 import { getCollection } from "$lib/server/config";
 import { getCmsContext } from "$lib/server/session";
 import { authedProcedure } from "./context";
@@ -327,11 +330,62 @@ const removeFile = authedProcedure
     );
   });
 
+const moveFileInput = z.object({
+  installationId: z.number().int().positive(),
+  repository: z.string().trim().min(1),
+  branch: z.string().trim().optional(),
+  fromPath: z.string().trim().min(1),
+  toPath: z.string().trim().min(1),
+  message: z.string().trim().optional(),
+});
+
+const moveFile = authedProcedure.input(moveFileInput).handler(async ({ input, context }) => {
+  const ctx = await resolveCtx(context.session.userId, input);
+  let commitMessage = `Move ${input.fromPath} to ${input.toPath}`;
+  if (input.message && input.message.length > 0) {
+    commitMessage = input.message;
+  }
+  return orpcTry(
+    () => moveRepoFile(input.fromPath, input.toPath, commitMessage, ctx),
+    "INTERNAL_SERVER_ERROR",
+    "Could not move file.",
+  );
+});
+
+const moveEntryInput = repoInput.extend({
+  currentSlug: z.string().trim().min(1),
+  newSlug: slugSchema.optional(),
+  fromFolder: z.string().default(""),
+  toFolder: z.string().default(""),
+});
+
+const moveEntry = authedProcedure.input(moveEntryInput).handler(async ({ input, context }) => {
+  const { collection, ctx } = await resolveCollectionCtx(context.session.userId, input);
+  let newSlug = input.currentSlug;
+  if (input.newSlug && input.newSlug.length > 0) {
+    newSlug = input.newSlug;
+  }
+  return orpcTry(
+    () =>
+      moveCollectionEntry(
+        collection,
+        input.currentSlug,
+        input.fromFolder,
+        input.toFolder,
+        ctx,
+        newSlug,
+      ),
+    "INTERNAL_SERVER_ERROR",
+    "Could not move collection entry.",
+  );
+});
+
 export const cmsRouter = {
   getEntry,
   createEntry,
   updateEntry,
   deleteEntry,
+  moveEntry,
   createFolder,
   createFile,
   listDir,
@@ -341,4 +395,6 @@ export const cmsRouter = {
   getFile,
   saveFile,
   removeFile,
+  moveFile,
 };
+

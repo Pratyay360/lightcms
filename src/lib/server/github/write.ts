@@ -170,3 +170,63 @@ export async function deleteFile(
     wrapGitHubError(`delete file: ${normalizedPath}`, error);
   }
 }
+
+/**
+ * Moves a file from source path to destination path.
+ */
+export async function moveFile(
+  fromPath: string,
+  toPath: string,
+  message: string,
+  client: GitHubClient,
+  repository: Repository,
+  branch?: string,
+) {
+  const normalizedFrom = fromPath.replace(/^\/+/, "");
+  const normalizedTo = toPath.replace(/^\/+/, "");
+  assertRepositoryPath(normalizedFrom);
+  assertRepositoryPath(normalizedTo);
+
+  if (normalizedFrom === normalizedTo) {
+    return;
+  }
+
+  const source = await getFileContent(normalizedFrom, client, repository, branch);
+  const result = await createFile(
+    normalizedTo,
+    source.content,
+    message,
+    client,
+    repository,
+    branch,
+  );
+
+  try {
+    await deleteFile(
+      normalizedFrom,
+      `Remove ${normalizedFrom} after moving to ${normalizedTo}`,
+      client,
+      repository,
+      branch,
+    );
+  } catch (cause) {
+    try {
+      await deleteFile(
+        normalizedTo,
+        `Rollback moved file at ${normalizedTo}`,
+        client,
+        repository,
+        branch,
+      );
+    } catch (rollbackCause) {
+      throw new AggregateError(
+        [cause, rollbackCause],
+        `The file move from ${normalizedFrom} to ${normalizedTo} could not be completed.`,
+      );
+    }
+    throw cause;
+  }
+
+  return result;
+}
+

@@ -4,6 +4,7 @@
     Clock3,
     CloudCheck,
     FileCode,
+    FolderInput,
     FolderOpen,
     Maximize,
     Minimize,
@@ -11,6 +12,7 @@
     Trash,
     Type,
   } from "@lucide/svelte";
+
   import { onMount, untrack } from "svelte";
   import { superForm } from "sveltekit-superforms";
   import { enhance as formEnhance } from "$app/forms";
@@ -227,6 +229,11 @@
   const errDesc = $derived(fieldError("description"));
   const errDate = $derived(fieldError("date"));
   const folder = $derived(data.folder ?? "");
+  let moveDialogOpen = $state(false);
+  let targetFolderInput = $state(untrack(() => data.folder ?? ""));
+  let targetSlugInput = $state(untrack(() => data.entry?.slug ?? ""));
+
+
   const collectionUrl = $derived(() => {
     const params = data?.query;
     if (params && params.length > 0) {
@@ -842,7 +849,76 @@
 
           <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
             {#if !data.isNew}
+              <Dialog bind:open={moveDialogOpen}>
+                <DialogTrigger>
+                  {#snippet child({ props })}
+                    <Button
+                      {...props}
+                      variant="outline"
+                      size="sm"
+                      class="gap-2"
+                    >
+                      <FolderInput class="h-4 w-4" />
+                      Move
+                    </Button>
+                  {/snippet}
+                </DialogTrigger>
+                <DialogContent class="sm:max-w-md">
+                  <form
+                    method="POST"
+                    action={`?/move${payloadQuery ? `&${payloadQuery}` : ""}`}
+                    class="space-y-4"
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Move Markdown Entry</DialogTitle>
+                      <DialogDescription>
+                        Move <strong class="text-foreground">{data.entry?.slug}.md</strong> to another folder in this collection.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div class="space-y-3 py-2">
+                      <div class="rounded-xl border bg-muted/40 p-3 text-xs space-y-1">
+                        <div class="text-muted-foreground">Current location:</div>
+                        <div class="font-mono font-semibold text-foreground truncate">
+                          {#if folder}
+                            {`${data.collection.path}/${folder}`}
+                          {:else}
+                            {data.collection.path} (Collection Root)
+                          {/if}
+                        </div>
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <Label for="entry-move-dest">Destination Folder</Label>
+                        <Input
+                          id="entry-move-dest"
+                          name="toFolder"
+                          bind:value={targetFolderInput}
+                          placeholder="Leave empty for collection root, or enter folder name"
+                          autocomplete="off"
+                        />
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <Label for="entry-move-slug">Entry Slug</Label>
+                        <Input
+                          id="entry-move-slug"
+                          name="newSlug"
+                          bind:value={targetSlugInput}
+                          required
+                          autocomplete="off"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter class="flex gap-2 justify-end">
+                      <Button type="button" variant="outline" onclick={() => (moveDialogOpen = false)}>Cancel</Button>
+                      <Button type="submit">Move Entry</Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
               <Dialog>
+
                 <DialogTrigger>
                   {#snippet child({ props })}
                     <Button

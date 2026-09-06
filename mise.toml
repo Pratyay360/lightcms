@@ -1,7 +1,6 @@
 [tools]
 node = "24"
 nub = { version = "latest", allow_builds = "[@nubjs/nub]" }
-aube = "latest"
 bun = "latest"
 biome = "latest"
 vp = "latest"

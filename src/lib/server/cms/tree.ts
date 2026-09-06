@@ -5,7 +5,9 @@ import {
   deleteFile,
   getFileContent,
   listDir,
+  moveFile,
 } from "$lib/server/github";
+
 import { normalizeContentPath } from "$lib/server/paths";
 import { type CmsContext, resolveRepository } from "./types";
 
@@ -243,3 +245,26 @@ export async function deleteRepoFile(
 
   return deleteFile(normalizedPath, message, ctx.client, repo, ctx.branch);
 }
+
+export async function moveRepoFile(
+  fromPath: string,
+  toPath: string,
+  message: string,
+  ctx: CmsContext,
+) {
+  const repo = resolveRepository(ctx);
+  const normalizedFrom = normalizeContentPath(fromPath);
+  const normalizedTo = normalizeContentPath(toPath);
+  if (!normalizedFrom) {
+    throw new Error("A source file path is required.");
+  }
+  if (!normalizedTo) {
+    throw new Error("A destination file path is required.");
+  }
+  if (normalizedFrom === normalizedTo) {
+    throw new Error("Source and destination paths must be different.");
+  }
+
+  return moveFile(normalizedFrom, normalizedTo, message, ctx.client, repo, ctx.branch);
+}
+

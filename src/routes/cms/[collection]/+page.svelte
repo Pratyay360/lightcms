@@ -5,6 +5,7 @@
 		File,
 		FileText,
 		Folder,
+		FolderInput,
 		FolderOpen,
 		FolderPlus,
 		Home,
@@ -27,11 +28,14 @@
 		DialogHeader,
 		DialogTitle,
 	} from "$lib/components/ui/dialog";
+	import { Input } from "$lib/components/ui/input";
+	import { Label } from "$lib/components/ui/label";
 	import { createLightCmsClient } from "$lib/orpc-client";
 	import { buildEntryUrl, buildFolderUrl, buildPayloadQuery, withFolder } from "$lib/utils/cms-url";
 	import type { PageData } from "./$types";
 
 	let { data, form }: { data: PageData; form?: { folderError?: string } | null } = $props();
+
 
 	const folderError = $derived(form?.folderError);
 
@@ -125,7 +129,66 @@
 			deleting = false;
 		}
 	}
+
+	let moveEntryTarget = $state<{ slug: string; title: string } | null>(null);
+	let destinationFolder = $state("");
+	let draggedSlug = $state<string | null>(null);
+	let dropFolderTarget = $state<string | null>(null);
+
+	function openMoveDialog(entry: { slug: string; title?: string }, prefilledFolder?: string) {
+		let entryTitle = entry.slug;
+		if (entry.title && entry.title.length > 0) {
+			entryTitle = entry.title;
+		}
+		moveEntryTarget = {
+			slug: entry.slug,
+			title: entryTitle,
+		};
+		if (prefilledFolder !== undefined) {
+			destinationFolder = prefilledFolder;
+		} else {
+			destinationFolder = folder;
+		}
+	}
+
+	function handleDragStart(e: DragEvent, entrySlug: string) {
+		draggedSlug = entrySlug;
+		if (e.dataTransfer) {
+			e.dataTransfer.effectAllowed = "move";
+			e.dataTransfer.setData("text/plain", entrySlug);
+		}
+	}
+
+	function handleDragEnd() {
+		draggedSlug = null;
+		dropFolderTarget = null;
+	}
+
+	function handleDragOverFolder(e: DragEvent, folderNameOrPath: string) {
+		if (!draggedSlug) return;
+		e.preventDefault();
+		if (e.dataTransfer) {
+			e.dataTransfer.dropEffect = "move";
+		}
+		dropFolderTarget = folderNameOrPath;
+	}
+
+	function handleDragLeaveFolder(folderNameOrPath: string) {
+		if (dropFolderTarget === folderNameOrPath) {
+			dropFolderTarget = null;
+		}
+	}
+
+	function handleDropOnFolder(e: DragEvent, targetFolderName: string) {
+		e.preventDefault();
+		dropFolderTarget = null;
+		if (!draggedSlug) return;
+		const slugToMove = draggedSlug;
+		draggedSlug = null;
+		openMoveDialog({ slug: slugToMove }, targetFolderName);
+	}
 </script>
+
 
 <svelte:head>
 	<title>{collection.label ?? collection.name} | LightCMS</title>
@@ -189,8 +252,11 @@
 	<nav aria-label="Breadcrumb" class="flex items-center gap-1 text-xs font-semibold">
 		<a
 			href={folderUrl("")}
-			class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+			class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground {dropFolderTarget === '__root__' ? 'bg-primary/10 ring-2 ring-primary/40' : ''}"
 			aria-current={isRoot ? "page" : undefined}
+			ondragover={(e) => handleDragOverFolder(e, '__root__')}
+			ondragleave={() => handleDragLeaveFolder('__root__')}
+			ondrop={(e) => handleDropOnFolder(e, '')}
 		>
 			<Home size={13} />
 			<span class="font-mono">{collection.path}</span>
@@ -203,9 +269,13 @@
 					<span class="font-mono">{segment}</span>
 				</span>
 			{:else}
+				{@const targetCrumbFolder = segments.slice(0, index + 1).join("/")}
 				<a
-					href={folderUrl(segments.slice(0, index + 1).join("/"))}
-					class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+					href={folderUrl(targetCrumbFolder)}
+					class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground {dropFolderTarget === targetCrumbFolder ? 'bg-primary/10 ring-2 ring-primary/40' : ''}"
+					ondragover={(e) => handleDragOverFolder(e, targetCrumbFolder)}
+					ondragleave={() => handleDragLeaveFolder(targetCrumbFolder)}
+					ondrop={(e) => handleDropOnFolder(e, targetCrumbFolder)}
 				>
 					<span class="font-mono">{segment}</span>
 				</a>
@@ -268,11 +338,17 @@
 		{#if folders.length > 0}
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each folders as folderEntry}
+					{@const targetChildFolder = folder ? `${folder}/${folderEntry.name}` : folderEntry.name}
 					<div
-						class="group relative rounded-2xl border border-border bg-card p-5 flex items-center gap-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:border-primary-500/40"
+						class="group relative rounded-2xl border border-border bg-card p-5 flex items-center gap-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:border-primary-500/40 {dropFolderTarget === targetChildFolder ? 'bg-primary/10 ring-2 ring-primary/40 ring-inset' : ''}"
+						role="group"
+						aria-label={`Folder ${folderEntry.name}`}
+						ondragover={(e) => handleDragOverFolder(e, targetChildFolder)}
+						ondragleave={() => handleDragLeaveFolder(targetChildFolder)}
+						ondrop={(e) => handleDropOnFolder(e, targetChildFolder)}
 					>
 						<a
-							href={folderUrl(`${folder ? folder + '/' : ''}${folderEntry.name}`)}
+							href={folderUrl(targetChildFolder)}
 							class="flex items-center gap-4 min-w-0 flex-1"
 							aria-label={`Open folder ${folderEntry.name}`}
 						>
@@ -320,28 +396,56 @@
 			</div>
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each entries as entry}
-					<a
-						href={entryUrl(entry)}
-						class="group rounded-2xl border border-border bg-card flex flex-col justify-between p-5 transition-all duration-350 hover:-translate-y-1 hover:shadow-xl hover:border-primary-500/40"
+					<div
+						class="group rounded-2xl border border-border bg-card flex flex-col justify-between p-5 transition-all duration-350 hover:-translate-y-1 hover:shadow-xl hover:border-primary-500/40 cursor-grab active:cursor-grabbing {draggedSlug === entry.slug ? 'opacity-40' : ''}"
+						role="group"
+						aria-label={`Entry ${entry.slug}`}
+						draggable="true"
+						ondragstart={(e) => handleDragStart(e, entry.slug)}
+						ondragend={handleDragEnd}
 					>
-						<div class="space-y-3">
+						<a href={entryUrl(entry)} class="space-y-3 block focus:outline-none">
+
 							<h3 class="text-base font-extrabold text-foreground group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
 								{String(entry.frontMatter?.[primaryField] ?? entry.slug)}
 							</h3>
 							<p class="font-mono text-[10px] text-muted-foreground bg-muted border px-2 py-0.5 rounded inline-block max-w-full truncate">
 								{entry.slug}
 							</p>
-						</div>
+						</a>
 
 						<div class="mt-5 flex items-center justify-between border-t border-border/50 pt-3 text-[10px] text-muted-foreground">
 							<span class="truncate font-mono">{entry.path.split('/').pop()}</span>
-							<ChevronRight size={14} class="text-muted-foreground group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all" />
+							<div class="flex items-center gap-1">
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									class="size-7 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+									title="Move entry to folder"
+									aria-label={`Move ${entry.slug}`}
+									onclick={() => openMoveDialog({
+										slug: entry.slug,
+										title: String(entry.frontMatter?.[primaryField] ?? entry.slug)
+									})}
+								>
+									<FolderInput size={13} />
+								</Button>
+								<a
+									href={entryUrl(entry)}
+									class="p-1 text-muted-foreground group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all"
+									aria-label={`Edit ${entry.slug}`}
+								>
+									<ChevronRight size={14} />
+								</a>
+							</div>
 						</div>
-					</a>
+					</div>
 				{/each}
 			</div>
 		{/if}
 	{/if}
+
 </section>
 
 <CreateFolderDialog
@@ -388,3 +492,76 @@
 		</DialogFooter>
 	</DialogContent>
 </Dialog>
+
+<!-- Move Entry Dialog -->
+{#if moveEntryTarget}
+	<Dialog open={true} onOpenChange={(open) => { if (!open) moveEntryTarget = null; }}>
+		<DialogContent class="sm:max-w-md">
+			<form method="POST" action="?/moveEntry" class="space-y-4">
+				<input type="hidden" name="slug" value={moveEntryTarget.slug} />
+				<input type="hidden" name="fromFolder" value={folder} />
+				<DialogHeader>
+					<DialogTitle>Move Markdown Entry</DialogTitle>
+					<DialogDescription>
+						Move <span class="font-mono font-bold text-foreground">{moveEntryTarget.slug}.md</span> to another folder in this collection.
+					</DialogDescription>
+				</DialogHeader>
+				<div class="space-y-3 py-2">
+					<div class="rounded-xl border bg-muted/40 p-3 text-xs space-y-1">
+						<div class="text-muted-foreground">Current Folder:</div>
+						<div class="font-mono font-semibold text-foreground">
+							{#if folder}
+								{folder}
+							{:else}
+								/ (Collection Root)
+							{/if}
+						</div>
+					</div>
+
+					<div class="space-y-1.5">
+						<Label for="entry-dest-folder">Destination Folder</Label>
+						<Input
+							id="entry-dest-folder"
+							name="toFolder"
+							bind:value={destinationFolder}
+							placeholder="Leave empty for collection root, or enter folder name"
+							autocomplete="off"
+						/>
+					</div>
+
+					{#if folders.length > 0 || !isRoot}
+						<div class="space-y-1">
+							<span class="text-[11px] font-semibold text-muted-foreground">Quick select:</span>
+							<div class="flex flex-wrap gap-1.5 pt-1">
+								{#if !isRoot}
+									<button
+										type="button"
+										class="rounded-md border bg-background px-2 py-1 text-[11px] font-mono hover:bg-muted transition-colors"
+										onclick={() => (destinationFolder = "")}
+									>
+										/ (Root)
+									</button>
+								{/if}
+								{#each folders as fEntry}
+									{@const optionFolder = folder ? `${folder}/${fEntry.name}` : fEntry.name}
+									<button
+										type="button"
+										class="rounded-md border bg-background px-2 py-1 text-[11px] font-mono hover:bg-muted transition-colors"
+										onclick={() => (destinationFolder = optionFolder)}
+									>
+										{fEntry.name}
+									</button>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				</div>
+				<DialogFooter class="flex gap-2 justify-end">
+					<Button type="button" variant="outline" onclick={() => (moveEntryTarget = null)}>Cancel</Button>
+					<Button type="submit">Move Entry</Button>
+				</DialogFooter>
+			</form>
+		</DialogContent>
+	</Dialog>
+{/if}
+

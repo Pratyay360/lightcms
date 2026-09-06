@@ -1,6 +1,7 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import matter from "gray-matter";
-import { deleteRepoFile, getRepoFile, saveRepoFile } from "$lib/server/cms";
+import { deleteRepoFile, getRepoFile, moveRepoFile, saveRepoFile } from "$lib/server/cms";
+
 import { getRepoCmsContext } from "$lib/server/cms-context";
 import { normalizeContentPath } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
@@ -115,4 +116,50 @@ export const actions: Actions = {
     const redirectPath = parentPath ? `/cms/tree/${parentPath}?${query}` : `/cms/tree?${query}`;
     throw redirect(303, redirectPath);
   },
+
+  move: async ({ locals, request, params, url }) => {
+    if (!locals.session) {
+      throw redirect(302, "/auth");
+    }
+
+    const { ctx, query } = await getRepoCmsContext(locals.session.userId, url);
+    const sourcePath = normalizeContentPath(params.path ?? "");
+    if (!sourcePath) {
+      return fail(400, { error: "File path is required." });
+    }
+
+    const formData = await request.formData();
+    const rawDestinationFolder = formData.get("destinationFolder");
+    const rawNewFilename = formData.get("newFilename");
+
+    const destinationFolder = typeof rawDestinationFolder === "string" ? rawDestinationFolder.trim() : "";
+    const newFilename = typeof rawNewFilename === "string" ? rawNewFilename.trim() : "";
+
+    const currentFilename = sourcePath.split("/").pop() ?? "";
+    let finalFilename = currentFilename;
+    if (newFilename.length > 0) {
+      finalFilename = newFilename;
+    }
+
+    const normalizedFolder = normalizeContentPath(destinationFolder);
+    let destinationPath = finalFilename;
+    if (normalizedFolder.length > 0) {
+      destinationPath = `${normalizedFolder}/${finalFilename}`;
+    }
+
+    if (destinationPath === sourcePath) {
+      return fail(400, { error: "Destination path is identical to current path." });
+    }
+
+    try {
+      await moveRepoFile(sourcePath, destinationPath, `Move ${sourcePath} to ${destinationPath}`, ctx);
+    } catch (cause) {
+      return fail(500, {
+        error: cause instanceof Error ? cause.message : "Failed to move file.",
+      });
+    }
+
+    throw redirect(303, `/cms/edit/${destinationPath}?${query}`);
+  },
 };
+

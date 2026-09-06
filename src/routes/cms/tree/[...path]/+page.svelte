@@ -2,10 +2,12 @@
   import {
     ArrowLeft,
     ChevronRight,
+
     File,
     FileCode,
     FileText,
     Folder,
+    FolderInput,
     FolderPlus,
     GitBranch,
     Home,
@@ -41,6 +43,64 @@
   let createFolderOpen = $state(false);
   let createFileOpen = $state(false);
   let deleteItemTarget = $state<{ type: "file" | "folder"; path: string; name: string } | null>(null);
+  let moveFileTarget = $state<{ path: string; name: string; currentDir: string } | null>(null);
+  let destinationFolderInput = $state("");
+  let newFilenameInput = $state("");
+  let draggedFilePath = $state<string | null>(null);
+  let dropTargetFolder = $state<string | null>(null);
+
+  function openMoveDialog(fileItem: { path: string; name: string }, prefilledTargetFolder?: string) {
+    const lastSlash = fileItem.path.lastIndexOf("/");
+    let currentDir = "";
+    if (lastSlash !== -1) {
+      currentDir = fileItem.path.slice(0, lastSlash);
+    }
+    moveFileTarget = { path: fileItem.path, name: fileItem.name, currentDir };
+    if (prefilledTargetFolder !== undefined) {
+      destinationFolderInput = prefilledTargetFolder;
+    } else {
+      destinationFolderInput = currentDir;
+    }
+    newFilenameInput = fileItem.name;
+  }
+
+  function handleDragStart(e: DragEvent, fileItem: { path: string; name: string }) {
+    draggedFilePath = fileItem.path;
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", fileItem.path);
+    }
+  }
+
+  function handleDragEnd() {
+    draggedFilePath = null;
+    dropTargetFolder = null;
+  }
+
+  function handleDragOverFolder(e: DragEvent, folderPath: string) {
+    if (!draggedFilePath) return;
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = "move";
+    }
+    dropTargetFolder = folderPath;
+  }
+
+  function handleDragLeaveFolder(folderPath: string) {
+    if (dropTargetFolder === folderPath) {
+      dropTargetFolder = null;
+    }
+  }
+
+  function handleDropOnFolder(e: DragEvent, targetFolderPath: string) {
+    e.preventDefault();
+    dropTargetFolder = null;
+    if (!draggedFilePath) return;
+    const movingPath = draggedFilePath;
+    draggedFilePath = null;
+    const filename = movingPath.split("/").pop() ?? "";
+    openMoveDialog({ path: movingPath, name: filename }, targetFolderPath);
+  }
 
   function treePathUrl(path: string): string {
     const trimmed = path.replace(/^\/+|\/+$/g, "");
@@ -134,7 +194,10 @@
     {#if parentPath !== null}
       <a
         href={treePathUrl(parentPath)}
-        class="flex items-center gap-3 border-b px-5 py-3 text-xs font-semibold text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+        class="flex items-center gap-3 border-b px-5 py-3 text-xs font-semibold text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors {dropTargetFolder === parentPath ? 'bg-primary/10 ring-2 ring-primary/40 ring-inset' : ''}"
+        ondragover={(e) => handleDragOverFolder(e, parentPath)}
+        ondragleave={() => handleDragLeaveFolder(parentPath)}
+        ondrop={(e) => handleDropOnFolder(e, parentPath)}
       >
         <ArrowLeft size={16} class="text-muted-foreground" />
         <span>.. (Parent Directory)</span>
@@ -151,7 +214,14 @@
       <div class="divide-y divide-border/60">
         <!-- Folders List -->
         {#each folders as folderItem}
-          <div class="group flex items-center justify-between px-5 py-3 hover:bg-muted/40 transition-colors">
+          <div
+            class="group flex items-center justify-between px-5 py-3 hover:bg-muted/40 transition-colors {dropTargetFolder === folderItem.path ? 'bg-primary/10 ring-2 ring-primary/40 ring-inset' : ''}"
+            role="group"
+            aria-label={`Folder ${folderItem.name}`}
+            ondragover={(e) => handleDragOverFolder(e, folderItem.path)}
+            ondragleave={() => handleDragLeaveFolder(folderItem.path)}
+            ondrop={(e) => handleDropOnFolder(e, folderItem.path)}
+          >
             <a
               href={treePathUrl(folderItem.path)}
               class="flex items-center gap-3 min-w-0 flex-1"
@@ -179,7 +249,15 @@
 
         <!-- Files List -->
         {#each files as fileItem}
-          <div class="group flex items-center justify-between px-5 py-3 hover:bg-muted/40 transition-colors">
+          <div
+            class="group flex items-center justify-between px-5 py-3 hover:bg-muted/40 transition-colors cursor-grab active:cursor-grabbing {draggedFilePath === fileItem.path ? 'opacity-40' : ''}"
+            role="group"
+            aria-label={`File ${fileItem.name}`}
+            draggable="true"
+            ondragstart={(e) => handleDragStart(e, fileItem)}
+            ondragend={handleDragEnd}
+          >
+
             <a
               href={fileItem.isEditable ? editFileUrl(fileItem.path) : undefined}
               class="flex items-center gap-3 min-w-0 flex-1 {fileItem.isEditable ? 'cursor-pointer' : 'cursor-default'}"
@@ -207,7 +285,7 @@
               </div>
             </a>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5">
               {#if fileItem.isEditable}
                 <a
                   href={editFileUrl(fileItem.path)}
@@ -220,7 +298,20 @@
                 type="button"
                 variant="ghost"
                 size="sm"
+                class="h-8 px-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                title="Move file"
+                aria-label={`Move file ${fileItem.name}`}
+                onclick={() => openMoveDialog(fileItem)}
+              >
+                <FolderInput size={14} />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
                 class="h-8 px-2 text-destructive hover:bg-destructive/10"
+                title="Delete file"
+                aria-label={`Delete file ${fileItem.name}`}
                 onclick={() => (deleteItemTarget = { type: "file", path: fileItem.path, name: fileItem.name })}
               >
                 <Trash2 size={14} />
@@ -230,6 +321,7 @@
         {/each}
       </div>
     {/if}
+
   </div>
 </div>
 
@@ -318,3 +410,95 @@
     </DialogContent>
   </Dialog>
 {/if}
+
+<!-- Move File Dialog -->
+{#if moveFileTarget}
+  <Dialog open={true} onOpenChange={(open) => { if (!open) moveFileTarget = null; }}>
+    <DialogContent class="sm:max-w-md">
+      <form method="POST" action="?/moveFile" class="space-y-4">
+        <input type="hidden" name="sourcePath" value={moveFileTarget.path} />
+        <DialogHeader>
+          <DialogTitle>Move File</DialogTitle>
+          <DialogDescription>
+            Move <span class="font-mono font-bold text-foreground">{moveFileTarget.name}</span> to another folder.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="space-y-3 py-2">
+          <div class="rounded-xl border bg-muted/40 p-3 text-xs space-y-1">
+            <div class="text-muted-foreground">Current location:</div>
+            <div class="font-mono font-semibold text-foreground truncate">
+              {#if moveFileTarget.currentDir}
+                {moveFileTarget.currentDir}
+              {:else}
+                / (Root)
+              {/if}
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <Label for="destination-folder">Destination Folder</Label>
+            <Input
+              id="destination-folder"
+              name="destinationFolder"
+              bind:value={destinationFolderInput}
+              placeholder="e.g. content/posts or leave blank for root"
+              autocomplete="off"
+            />
+          </div>
+
+          {#if folders.length > 0 || parentPath !== null || moveFileTarget.currentDir}
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-muted-foreground">Quick select folder:</span>
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                {#if moveFileTarget.currentDir}
+                  <button
+                    type="button"
+                    class="rounded-md border bg-background px-2 py-1 text-[11px] font-mono hover:bg-muted transition-colors"
+                    onclick={() => (destinationFolderInput = "")}
+                  >
+                    / (Root)
+                  </button>
+                {/if}
+                {#if parentPath !== null && parentPath !== moveFileTarget.currentDir}
+                  <button
+                    type="button"
+                    class="rounded-md border bg-background px-2 py-1 text-[11px] font-mono hover:bg-muted transition-colors"
+                    onclick={() => (destinationFolderInput = parentPath)}
+                  >
+                    .. ({#if parentPath}{parentPath}{:else}Root{/if})
+                  </button>
+                {/if}
+                {#each folders as fItem}
+                  <button
+                    type="button"
+                    class="rounded-md border bg-background px-2 py-1 text-[11px] font-mono hover:bg-muted transition-colors"
+                    onclick={() => (destinationFolderInput = fItem.path)}
+                  >
+                    {fItem.name}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {/if}
+
+          <div class="space-y-1.5">
+            <Label for="new-filename">Filename</Label>
+            <Input
+              id="new-filename"
+              name="newFilename"
+              bind:value={newFilenameInput}
+              required
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        <DialogFooter class="flex gap-2 justify-end">
+          <Button type="button" variant="outline" onclick={() => (moveFileTarget = null)}>Cancel</Button>
+          <Button type="submit">Move File</Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
+  </Dialog>
+{/if}
+

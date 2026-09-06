@@ -176,6 +176,7 @@
 			</Button>
 
 			<Button
+				variant="ghost"
 				tabindex={0}
 				aria-label={strings.extension.media.back}
 				class="absolute inset-y-0 z-20 flex w-5 cursor-col-resize items-center justify-end p-2"

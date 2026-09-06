@@ -4,7 +4,9 @@ import {
   deleteCollectionFolder,
   initializeCollection,
   listCollectionEntries,
+  moveCollectionEntry,
 } from "$lib/server/cms";
+
 import { getConfiguredCollection } from "$lib/server/cms-context";
 import { joinPath, normalizeContentPath, normalizeFolder } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
@@ -135,4 +137,48 @@ export const actions: Actions = {
     else folderQuery.delete("folder");
     throw redirect(303, `/cms/${encodeURIComponent(collection.name)}?${folderQuery}`);
   },
+
+  moveEntry: async ({ locals, params, url, request }) => {
+    if (!locals.session) throw redirect(302, "/auth");
+
+    const { collection, ctx, query } = await getConfiguredCollection(
+      locals.session.userId,
+      url,
+      params.collection,
+    );
+
+    const formData = await request.formData();
+    const rawSlug = formData.get("slug");
+    const rawFromFolder = formData.get("fromFolder");
+    const rawToFolder = formData.get("toFolder");
+
+    const slug = typeof rawSlug === "string" ? rawSlug.trim() : "";
+    const fromFolder = typeof rawFromFolder === "string" ? rawFromFolder.trim() : "";
+    const toFolder = typeof rawToFolder === "string" ? rawToFolder.trim() : "";
+
+    if (!slug) {
+      return fail(400, {
+        folder: fromFolder,
+        folderError: "Entry slug is required.",
+      });
+    }
+
+    try {
+      await moveCollectionEntry(collection, slug, fromFolder, toFolder, ctx);
+    } catch (cause) {
+      return fail(400, {
+        folder: fromFolder,
+        folderError: cause instanceof Error ? cause.message : "Could not move the entry.",
+      });
+    }
+
+    const folderQuery = new URLSearchParams(query);
+    if (toFolder.length > 0) {
+      folderQuery.set("folder", toFolder);
+    } else {
+      folderQuery.delete("folder");
+    }
+    throw redirect(303, `/cms/${encodeURIComponent(collection.name)}?${folderQuery}`);
+  },
 };
+

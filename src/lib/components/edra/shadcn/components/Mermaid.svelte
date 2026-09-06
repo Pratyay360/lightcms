@@ -321,6 +321,7 @@
 		<div class="group/preview relative w-full">
 			{#if !code || code.trim() === ''}
 				<Button
+					variant="ghost"
 					class="flex min-h-14 w-full items-center gap-2 rounded-lg border border-dashed bg-muted/30 p-4 transition-colors hover:bg-muted/50"
 					onclick={enterEditMode}
 				>
