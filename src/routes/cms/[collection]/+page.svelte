@@ -316,7 +316,7 @@
 			{/if}
 			<div class="mt-6 flex flex-wrap items-center justify-center gap-3">
 				{#if isRoot}
-					<form method="POST" action="?/initialize" use:enhance>
+					<form method="POST" action={`?/initialize${query ? `&${query}` : ""}`} use:enhance>
 						<Button type="submit" variant="outline" class="gap-2 text-xs font-semibold">
 							<Sparkles size={14} class="text-primary-500" /> Initialize Structure
 						</Button>
@@ -497,7 +497,7 @@
 {#if moveEntryTarget}
 	<Dialog open={true} onOpenChange={(open) => { if (!open) moveEntryTarget = null; }}>
 		<DialogContent class="sm:max-w-md">
-			<form method="POST" action="?/moveEntry" class="space-y-4">
+			<form method="POST" action={`?/moveEntry${query ? `&${query}` : ""}`} class="space-y-4">
 				<input type="hidden" name="slug" value={moveEntryTarget.slug} />
 				<input type="hidden" name="fromFolder" value={folder} />
 				<DialogHeader>

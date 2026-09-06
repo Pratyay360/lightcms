@@ -238,7 +238,7 @@
       <!-- Save Form -->
       <form
         method="POST"
-        action="?/save"
+        action={`?/save${query ? `&${query}` : ""}`}
         use:enhance={() => {
           if (editor && editorMode === "rich") {
             bodyContent = editor.getMarkdown();
@@ -381,7 +381,7 @@
 <!-- Delete File Confirmation Dialog -->
 <Dialog bind:open={deleteDialogOpen}>
   <DialogContent class="sm:max-w-md">
-    <form method="POST" action="?/delete" class="space-y-4">
+    <form method="POST" action={`?/delete${query ? `&${query}` : ""}`} class="space-y-4">
       <DialogHeader>
         <DialogTitle>Delete File</DialogTitle>
         <DialogDescription>
@@ -400,7 +400,7 @@
 <!-- Move File Dialog -->
 <Dialog bind:open={moveDialogOpen}>
   <DialogContent class="sm:max-w-md">
-    <form method="POST" action="?/move" class="space-y-4">
+    <form method="POST" action={`?/move${query ? `&${query}` : ""}`} class="space-y-4">
       <DialogHeader>
         <DialogTitle>Move or Rename File</DialogTitle>
         <DialogDescription>

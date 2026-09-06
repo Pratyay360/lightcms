@@ -328,7 +328,7 @@
 <!-- Create Folder Dialog -->
 <Dialog bind:open={createFolderOpen}>
   <DialogContent class="sm:max-w-md">
-    <form method="POST" action="?/createFolder" class="space-y-4">
+    <form method="POST" action={`?/createFolder${query ? `&${query}` : ""}`} class="space-y-4">
       <DialogHeader>
         <DialogTitle>Create New Folder</DialogTitle>
         <DialogDescription>
@@ -356,7 +356,7 @@
 <!-- Create File Dialog -->
 <Dialog bind:open={createFileOpen}>
   <DialogContent class="sm:max-w-md">
-    <form method="POST" action="?/createFile" class="space-y-4">
+    <form method="POST" action={`?/createFile${query ? `&${query}` : ""}`} class="space-y-4">
       <DialogHeader>
         <DialogTitle>Create New File</DialogTitle>
         <DialogDescription>
@@ -387,7 +387,7 @@
     <DialogContent class="sm:max-w-md">
       <form
         method="POST"
-        action={deleteItemTarget.type === "file" ? "?/deleteFile" : "?/deleteFolder"}
+        action={deleteItemTarget.type === "file" ? `?/deleteFile${query ? `&${query}` : ""}` : `?/deleteFolder${query ? `&${query}` : ""}`}
         class="space-y-4"
       >
         <input
@@ -415,7 +415,7 @@
 {#if moveFileTarget}
   <Dialog open={true} onOpenChange={(open) => { if (!open) moveFileTarget = null; }}>
     <DialogContent class="sm:max-w-md">
-      <form method="POST" action="?/moveFile" class="space-y-4">
+      <form method="POST" action={`?/moveFile${query ? `&${query}` : ""}`} class="space-y-4">
         <input type="hidden" name="sourcePath" value={moveFileTarget.path} />
         <DialogHeader>
           <DialogTitle>Move File</DialogTitle>
