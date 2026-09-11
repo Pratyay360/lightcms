@@ -4,7 +4,9 @@
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import { cn } from '$lib/utils.js';
 	import { commands } from '../../commands/index.js';
-	import { addAIHighlight, getEditor, useEditorTransaction } from '../../tiptap/index.js';
+	import { addAIHighlight, getEditor } from '../../tiptap/index.js';
+	import { useAiEnabled } from '../hooks/useAiEnabled.svelte.js';
+	import { useCommandState } from '../hooks/useCommandState.svelte.js';
 	import Tooltip from './Tooltip.svelte';
 	import Colors from './tools/Colors.svelte';
 	import Export from './tools/Export.svelte';
@@ -16,28 +18,13 @@
 
 	const editor = getEditor();
 
-	const transaction = useEditorTransaction(editor);
+	const isAiEnabled = useAiEnabled(editor);
+	const { isActive, isClickable } = useCommandState(editor);
 	const commandsKeys = Object.keys(commands);
-
-	function useAI() {
-		void transaction.version;
-		return editor.extensionManager.extensions.some(
-			(e) => e.name === 'ai-highlight' && e.options?.callAI != null
-		);
-	}
-
-	function isActive(command: (typeof commands)[string][number]): boolean {
-		void transaction.version;
-		return command.isActive?.(editor) ?? false;
-	}
-	function isClickable(command: (typeof commands)[string][number]): boolean {
-		void transaction.version;
-		return command.clickable?.(editor) ?? true;
-	}
 </script>
 
 <div class={cn('flex h-full w-fit items-center gap-2', className)}>
-	{#if useAI()}
+	{#if isAiEnabled()}
 		<Tooltip tooltip="Use AI">
 			<Button
 				onmousedown={(e) => {

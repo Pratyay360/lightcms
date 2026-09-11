@@ -8,6 +8,8 @@ draft: false
 description: how to configure newsletter for my blog.
 ---
 
+# Newsletter
+
 To configure a newsletter for your blog, the traditional way was to:
 
 1. Sign up for a newsletter service like Mailchimp or brevo.
@@ -19,8 +21,11 @@ To configure a newsletter for your blog, the traditional way was to:
 7. Pay heavy money for the service 10s of compliance + extras.
 8. Pay someone or manage your own mailing list.
 
-_The New way_:
+**The Newsy way**:
 
-One can say the newsy way is to utilize github as a platform to manage your newsletter. For more information, see [newsy](https://github.com/pratyay360/newsy)
+One can say the newsy way is to use github as a platform to manage your newsletter. For more information, see
+[newsy](https://github.com/pratyay360/newsy)
+
+BTW, lightcms observes the repo for newly created files of type .md .mdx and .html and then it will send the content to the subscribers.
 
 kindly read the [docs](https://newsy.surge.sh)

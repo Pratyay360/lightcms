@@ -113,3 +113,16 @@ export const isColumnActiveFromSelection = (args: GripCheckArgs) => {
   const anchorIndex = getColumnIndex(anchorCell);
   return anchorIndex === containerIndex;
 };
+
+/** Whether the given DOM node sits inside a table with a selected row/column grip. */
+export function isTableGripSelected(node: HTMLElement): boolean {
+  let container: HTMLElement | null = node;
+  while (container && !["TD", "TH"].includes(container.tagName)) {
+    container = container.parentElement;
+  }
+  if (!container) return false;
+
+  const gripColumn = container.querySelector("div.grip-column.selected");
+  const gripRow = container.querySelector("div.grip-row.selected");
+  return Boolean(gripColumn ?? gripRow);
+}

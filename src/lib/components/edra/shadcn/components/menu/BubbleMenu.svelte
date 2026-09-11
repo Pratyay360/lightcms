@@ -1,19 +1,14 @@
 <script lang="ts">
 	import { WandSparkles } from '@lucide/svelte';
-	import type { Editor } from '@tiptap/core';
-	import type { EditorState } from '@tiptap/pm/state';
-	import type { EditorView } from '@tiptap/pm/view';
+	import type { BubbleMenuPluginProps } from '@tiptap/extension-bubble-menu';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import { cn } from '$lib/utils.js';
 	import { commands } from '../../../commands/index.js';
-	import {
-		addAIHighlight,
-		BubbleMenu,
-		getEditor,
-		isTextSelection,
-		useEditorTransaction
-	} from '../../../tiptap/index.js';
+	import { isTableGripSelected } from '../../../tiptap/extensions/table/dom-utils.js';
+	import { addAIHighlight, BubbleMenu, getEditor, isTextSelection } from '../../../tiptap/index.js';
+	import { useAiEnabled } from '../../hooks/useAiEnabled.svelte.js';
+	import { useCommandState } from '../../hooks/useCommandState.svelte.js';
 	import Tooltip from '../Tooltip.svelte';
 	import AlignMent from '../tools/AlignMent.svelte';
 	import Colors from '../tools/Colors.svelte';
@@ -28,45 +23,12 @@
 
 	const editor = getEditor();
 
-	const transaction = useEditorTransaction(editor);
+	const isAiEnabled = useAiEnabled(editor);
+	const { isActive, isClickable } = useCommandState(editor);
 	const commandsKeys = Object.keys(commands).filter(
 		(c) => !['media', 'table', 'diagram', 'undo-redo', 'headings'].includes(c)
 	);
 
-	function useAI() {
-		void transaction.version;
-		return editor.extensionManager.extensions.some(
-			(e) => e.name === 'ai-highlight' && e.options?.callAI != null
-		);
-	}
-
-	function isActive(command: (typeof commands)[string][number]): boolean {
-		void transaction.version;
-		return command.isActive?.(editor) ?? false;
-	}
-	function isClickable(command: (typeof commands)[string][number]): boolean {
-		void transaction.version;
-		return command.clickable?.(editor) ?? true;
-	}
-	import type { BubbleMenuPluginProps } from '@tiptap/extension-bubble-menu';
-
-	const isTableGripSelected = (node: HTMLElement) => {
-		let container = node;
-
-		while (container && !['TD', 'TH'].includes(container.tagName)) {
-			container = container.parentElement!;
-		}
-
-		if (!container) return false;
-
-		const gripColumn = container.querySelector('div.grip-column.selected');
-		const gripRow = container.querySelector('div.grip-row.selected');
-
-		if (gripColumn || gripRow) {
-			return true;
-		}
-		return false;
-	};
 	const shouldShow: NonNullable<BubbleMenuPluginProps['shouldShow']> = (props) => {
 		const { editor: propsEditor, view, state } = props;
 
@@ -128,7 +90,7 @@
 		className
 	)}
 >
-	{#if useAI()}
+	{#if isAiEnabled()}
 		<Tooltip tooltip="Use AI">
 			<Button
 				onmousedown={(e) => {

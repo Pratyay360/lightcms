@@ -18,48 +18,39 @@ also you can selfhost with nodejs too .. please read about that in [nitro docs](
 ## First required variables
 
 ```env
-BETTER_AUTH_SECRET="" # generate this with `openssl rand -hex 32`
-BETTER_AUTH_URL='https://lightcms.pratyay.qzz.io'
-CDN_API_KEY='5386e05a3562c7a8f984e73401540836' # this is publically available for all https://imgcdn.dev/page/api
-DATABASE_URL='postgresql://db:pass@example.com/db?sslmode=require&channel_binding=require'
-GITHUB_APP_ID='appid'
-GITHUB_APP_NAME='yet another bot'
-GITHUB_CLIENT_ID='yet another bot's client id '
-GITHUB_CLIENT_SECRET=''
-GITHUB_PRIVATE_KEY='-----
-BEGIN RSA PRIVATE KEY-----
-xrdzeszsdsazdfytfytfyt-----
-END RSA PRIVATE KEY-----'
-##  if not working due to formatting related issues
-GITHUB_WEBHOOK # generate from smee.io/
-GITHUB_WEBHOOK_SECRET #generate using `openssl rand -hex 32`
-#
-MAIL_FROM='some_randommail@example.com'
-MAIL_HOST='smtp.example.com'
-MAIL_PASS=`email's passs`
-MAIL_PORT=465 ## port is provided by your email provider
-MAIL_SECURE=1 # 1/0  true(1) /false(0)
-MAIL_USER='spooky user'
-OPEN_AI_ENDPOINT =  #  https
-OPEN_AI_APIKEY = # this is for copilot option so
-OPEN_AI_MODEL = #
+BETTER_AUTH_SECRET=""
+BETTER_AUTH_URL="https://your-domain.example"
+DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
+
+# Image CDN configuration
+CDN_API_KEY="your-cdn-api-key"
+
+# GitHub App configuration
+GITHUB_APP_ID="your-app-id"
+GITHUB_APP_NAME="your-app-name"
+GITHUB_CLIENT_ID="your-client-id"
+GITHUB_CLIENT_SECRET="your-client-secret"
+GITHUB_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
+GITHUB_WEBHOOK="https://your-webhook-endpoint.example"
+GITHUB_WEBHOOK_SECRET=""
+
+# SMTP configuration
+MAIL_FROM="newsletter@example.com"
+MAIL_HOST="smtp.example.com"
+MAIL_PASS="your-smtp-password"
+MAIL_PORT="465"
+MAIL_SECURE="1"
+MAIL_USER="smtp-user"
+
+# Optional AI configuration
+OPEN_AI_ENDPOINT="https://api.openai.com/v1"
+OPEN_AI_APIKEY="your-api-key"
+OPEN_AI_MODEL="your-model"
 ```
 
-## If you have any domain using and setting up resend felt more easy [resend](https://resend.com) or if you don't have any domain don't be heavy hearted, there are multiple email providers which allows you sending mail programically [read about this](https://nodemailer.com/message/)
+`BETTER_AUTH_URL` must match the public URL where the application is served. For local development, use `http://localhost:5173`.
 
-if you are finding one then, I can suggest you setting up with zohomail.
-
-## setting up `BETTER_AUTH_SECRET`
-
-```bash
-openssl rand -hex 64
-```
-
-if openssl is not available on your system. you can use some online tools like
-
-\[betterauth;s official site]\(<https://better-auth.com/docs/installation>)
-
-also there is a python script for this too.
+Generate secrets locally instead of copying values from a website:
 
 ```bash
 python -c "import secrets; print(secrets.token_hex(32))"
@@ -71,12 +62,44 @@ also some node js based script
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-`BETTER_AUTH_URL` the endpoint of  your website
-for dev env it should be "<http://localhost:5173>"
+For more information about authentication configuration, see the [Better Auth installation guide](https://better-auth.com/docs/installation).
 
-## setting up the bot ??
+## 3. Set up the database
 
-run
+LightCMS uses PostgreSQL. You can use a managed provider such as [Neon](https://neon.com), [Nile](https://thenile.dev), or [Supabase](https://supabase.com), or run PostgreSQL yourself. Make sure the provider supports encrypted connections and that the connection string is stored only in your environment variables.
+
+After setting `DATABASE_URL`, generate and apply the repository migrations:
+
+```bash
+npx drizzle-kit generate
+npx drizzle-kit migrate
+```
+
+Use `drizzle-kit push` only for a development database when you intentionally want to synchronize the schema directly. Prefer generated migrations for shared or production databases.
+
+```bash
+npx drizzle-kit push
+```
+
+If the database schema is out of sync with the repository, inspect the database before changing it. Do not run destructive commands against production without a backup and a review of the generated SQL.
+
+## 4. Configure GitHub
+
+Create a GitHub App for the repository and copy its App ID, client credentials, webhook secret, and private key into the environment. Grant only the repository permissions required by your workflow, then subscribe the app to the events that LightCMS handles.
+
+The private key must preserve its line breaks. If your deployment platform requires a single-line value, encode the newlines using the format supported by that platform and decode them in the application configuration. The [SAMLTool private-key formatter](https://www.samltool.com/format_privatekey.php) can help inspect formatting, but never paste a production key into a third-party service.
+
+For local webhook testing, use a tunnel such as [smee.io](https://smee.io/) and set `GITHUB_WEBHOOK` to the resulting endpoint. Use the permanent HTTPS URL from your deployment in production.
+
+## 5. Configure email
+
+LightCMS sends email through SMTP. Set the `MAIL_*` variables using credentials from your email provider. [Nodemailer](https://nodemailer.com/message/) documents the available SMTP options.
+
+You can also use a provider such as [Resend](https://resend.com) if it supports the SMTP or API workflow configured for your installation. Verify the sender domain and configure SPF, DKIM, and DMARC before sending production email.
+
+## 6. Run and deploy
+
+Start the GitHub bot locally with:
 
 ```bash
 npm run bot:start
@@ -89,9 +112,7 @@ setting up db.. there are multiple free postgre providers available you can refe
 make sure you trust the db provider. that's it
 suggested services:
 
-[neon](https://neon.com)
-[nile](https://thenile.dev)
-[supabase](https://supabase.com)
+[neon](https://neon.com) [nile](https://thenile.dev) [supabase](https://supabase.com)
 
 ```bash
 npx  drizzle-kit generate

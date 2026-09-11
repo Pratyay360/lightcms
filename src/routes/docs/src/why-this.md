@@ -27,7 +27,7 @@ But no one wants to write html pages for each post.. so here comes the role of [
 where pages are generated automatically with content change through ci no manual
 deployment. In the meantime we all should be caring about Globe too like for
 heavy webapps the carbon emission is enormous . you can use
-[this](https://www.websitecarbon.com/) or [this](https://ecograder.com/)
+[Website Carbon](https://www.websitecarbon.com/) measures emissions, while [Ecograder](https://ecograder.com/) evaluates performance. Use both tools for perspective. Then reduce your footprint.
 to analyze your carbon footprint. You can go through
 [this](https://2021.stateofthebrowser.com/speakers/tom-greenwood/)
 
