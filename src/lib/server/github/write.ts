@@ -229,4 +229,3 @@ export async function moveFile(
 
   return result;
 }
-

@@ -96,9 +96,10 @@ export const actions: Actions = {
     const fullFilePath = currentPath ? `${currentPath}/${filename}` : filename;
 
     try {
-      const initialContent = filename.endsWith(".md") || filename.endsWith(".mdx")
-        ? `---\ntitle: "${filename.replace(/\.(md|mdx)$/, "")}"\ndate: "${new Date().toISOString()}"\n---\n\n`
-        : "";
+      const initialContent =
+        filename.endsWith(".md") || filename.endsWith(".mdx")
+          ? `---\ntitle: "${filename.replace(/\.(md|mdx)$/, "")}"\ndate: "${new Date().toISOString()}"\n---\n\n`
+          : "";
       await createRepoFile(fullFilePath, initialContent, `Create ${fullFilePath}`, ctx);
     } catch (cause) {
       return fail(400, {
@@ -175,7 +176,8 @@ export const actions: Actions = {
     const rawNewFilename = formData.get("newFilename");
 
     const sourcePath = typeof rawSource === "string" ? rawSource.trim() : "";
-    const destinationFolder = typeof rawDestinationFolder === "string" ? rawDestinationFolder.trim() : "";
+    const destinationFolder =
+      typeof rawDestinationFolder === "string" ? rawDestinationFolder.trim() : "";
     const newFilename = typeof rawNewFilename === "string" ? rawNewFilename.trim() : "";
 
     if (!sourcePath) {
@@ -202,7 +204,12 @@ export const actions: Actions = {
     }
 
     try {
-      await moveRepoFile(sourcePath, destinationPath, `Move ${sourcePath} to ${destinationPath}`, ctx);
+      await moveRepoFile(
+        sourcePath,
+        destinationPath,
+        `Move ${sourcePath} to ${destinationPath}`,
+        ctx,
+      );
     } catch (cause) {
       return fail(400, {
         error: cause instanceof Error ? cause.message : "Could not move file.",
@@ -217,4 +224,3 @@ export const actions: Actions = {
     throw redirect(303, redirectPath);
   },
 };
-

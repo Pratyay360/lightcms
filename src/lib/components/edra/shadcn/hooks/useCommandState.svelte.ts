@@ -1,4 +1,4 @@
-import { commands } from "../../commands/index.js";
+import type { commands } from "../../commands/index.js";
 import { type Editor, useEditorTransaction } from "../../tiptap/index.js";
 
 type Command = (typeof commands)[string][number];

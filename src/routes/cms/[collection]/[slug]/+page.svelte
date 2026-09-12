@@ -268,25 +268,26 @@
     class="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60"
   >
     <div
-      class="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4 md:px-6 lg:px-8"
+      class="mx-auto flex h-auto min-h-14 max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2 sm:h-14 sm:py-0 md:px-6 lg:px-8"
     >
-      <div class="flex items-center gap-3 min-w-0">
+      <div class="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
         <Button
           variant="ghost"
           size="sm"
-          class="gap-1.5 shrink-0"
+          class="shrink-0"
           onclick={() => goto(collectionUrl())}
+          aria-label={data.collection.label}
         >
           <ArrowLeft class="h-4 w-4" />
           <span class="hidden sm:inline">{data.collection.label}</span>
         </Button>
         <Separator orientation="vertical" class="h-6 shrink-0" />
-        <span class="font-semibold truncate max-w-50"
+        <span class="truncate font-semibold"
           >{data.isNew ? "New" : currentTitle}</span
         >
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
         <SaveStatus {saving} {hasUnsavedChanges} {lastSaved} />
 
         <Button
@@ -309,7 +310,7 @@
       >
         {data.isNew ? "New entry" : "Editing entry"}
       </p>
-      <h1 class="text-3xl font-bold mt-4 tracking-tight">
+      <h1 class="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
         {data.isNew
           ? `Create a new ${data.collection.label}`
           : `Edit ${currentTitle}`}
@@ -508,8 +509,8 @@
 
           <!-- Content Editor -->
           <div class="space-y-4">
-            <div class="flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+              <div class="flex flex-wrap items-center gap-3">
                 <h3 class="text-lg font-medium">Content</h3>
                 <fieldset
                   class="flex rounded-md border border-input"
@@ -524,7 +525,7 @@
                     class="gap-1.5 rounded-r-none border-r border-input"
                   >
                     <Type class="h-4 w-4" />
-                    Rich Text
+                    <span class="hidden sm:inline">Rich Text</span>
                   </Button>
                   <Button
                     type="button"
@@ -536,7 +537,7 @@
                     class="gap-1.5 rounded-l-none"
                   >
                     <FileCode class="h-4 w-4" />
-                    Markdown
+                    <span class="hidden sm:inline">Markdown</span>
                   </Button>
                 </fieldset>
               </div>
@@ -653,8 +654,8 @@
                     {/if}
                     <Edra.Content
                       class="*:outline-none cursor-auto overflow-y-scroll {contentFullscreen
-                        ? 'flex-1 min-h-0 w-full max-w-3xl mx-auto px-6 py-12 sm:py-16'
-                        : 'h-150 px-8 py-4'}"
+                        ? 'flex-1 min-h-0 w-full max-w-3xl mx-auto px-4 py-12 sm:px-6 sm:py-16'
+                        : 'h-72 sm:h-130 px-4 py-4 sm:px-8'}"
                     />
                     <Edra.DragHandle />
                   </Edra>
@@ -777,7 +778,7 @@
                 <div class="flex min-h-0 flex-1 flex-col">
                   <Textarea
                     id="markdown-editor"
-                    class="font-mono text-sm flex-1 min-h-0 w-full resize-none border-0 focus-visible:ring-0 px-8 py-4 {contentFullscreen
+                    class="font-mono text-sm flex-1 min-h-0 w-full resize-none border-0 focus-visible:ring-0 px-4 py-4 sm:px-8 {contentFullscreen
                       ? 'max-w-3xl mx-auto w-full'
                       : ''}"
                     value={rawMarkdown}
@@ -825,7 +826,7 @@
         <CardFooter
           class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between border-t pt-6"
         >
-          <div class="flex items-center gap-3">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
             <Button
               variant="outline"
               type="button"
@@ -834,13 +835,13 @@
               Cancel
             </Button>
             {#if !data.isNew}
-              <span class="text-sm text-muted-foreground">
-                Stored at <code class="font-mono">{displayPath}</code>.
+              <span class="basis-full text-xs text-muted-foreground sm:basis-auto sm:text-sm">
+                Stored at <code class="font-mono break-all">{displayPath}</code>.
               </span>
             {/if}
           </div>
 
-          <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3 sm:w-auto justify-end">
             {#if !data.isNew}
               <Dialog bind:open={moveDialogOpen}>
                 <DialogTrigger>

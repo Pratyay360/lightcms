@@ -22,10 +22,7 @@ export function matchBlockTrigger(
   return null;
 }
 
-export function matchInlinePair(
-  before: string,
-  pairs: readonly InlinePair[],
-): TextMatch | null {
+export function matchInlinePair(before: string, pairs: readonly InlinePair[]): TextMatch | null {
   for (const pair of pairs) {
     if (!before.endsWith(pair.trigger)) continue;
     return {
@@ -67,7 +64,11 @@ export function matchEmoji(before: string): TextMatch | null {
  */
 export function matchCompletion(
   before: string,
-  options: AutocompleteOptions = { blockTriggers: BLOCK_TRIGGERS, inlinePairs: INLINE_PAIRS, emoji: true },
+  options: AutocompleteOptions = {
+    blockTriggers: BLOCK_TRIGGERS,
+    inlinePairs: INLINE_PAIRS,
+    emoji: true,
+  },
 ): TextMatch | null {
   const block = matchBlockTrigger(before, options.blockTriggers);
   if (block) return block;

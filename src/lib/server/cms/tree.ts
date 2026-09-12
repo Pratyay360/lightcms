@@ -100,10 +100,7 @@ export function getParentPath(normalizedPath: string): string | null {
   return normalizedPath.slice(0, lastSlashIndex);
 }
 
-export async function listRepoTree(
-  targetPath: string,
-  ctx: CmsContext,
-): Promise<RepoTreeListing> {
+export async function listRepoTree(targetPath: string, ctx: CmsContext): Promise<RepoTreeListing> {
   const repo = resolveRepository(ctx);
   const normalizedPath = normalizeContentPath(targetPath);
   const entries = await listDir(normalizedPath, ctx.client, repo, ctx.branch);
@@ -147,10 +144,7 @@ export async function listRepoTree(
   };
 }
 
-export async function getRepoFile(
-  filePath: string,
-  ctx: CmsContext,
-): Promise<RepoFileDetails> {
+export async function getRepoFile(filePath: string, ctx: CmsContext): Promise<RepoFileDetails> {
   const repo = resolveRepository(ctx);
   const normalizedPath = normalizeContentPath(filePath);
   if (!normalizedPath) {
@@ -200,14 +194,7 @@ export async function saveRepoFile(
     throw new Error("A file path is required.");
   }
 
-  return createOrUpdateFile(
-    normalizedPath,
-    content,
-    message,
-    ctx.client,
-    repo,
-    ctx.branch,
-  );
+  return createOrUpdateFile(normalizedPath, content, message, ctx.client, repo, ctx.branch);
 }
 
 export async function createRepoFile(
@@ -222,21 +209,10 @@ export async function createRepoFile(
     throw new Error("A file path is required.");
   }
 
-  return createFile(
-    normalizedPath,
-    content,
-    message,
-    ctx.client,
-    repo,
-    ctx.branch,
-  );
+  return createFile(normalizedPath, content, message, ctx.client, repo, ctx.branch);
 }
 
-export async function deleteRepoFile(
-  filePath: string,
-  message: string,
-  ctx: CmsContext,
-) {
+export async function deleteRepoFile(filePath: string, message: string, ctx: CmsContext) {
   const repo = resolveRepository(ctx);
   const normalizedPath = normalizeContentPath(filePath);
   if (!normalizedPath) {
@@ -267,4 +243,3 @@ export async function moveRepoFile(
 
   return moveFile(normalizedFrom, normalizedTo, message, ctx.client, repo, ctx.branch);
 }
-

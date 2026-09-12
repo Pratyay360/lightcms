@@ -38,7 +38,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     url,
     params.collection,
   );
-  const folder = normalizeFolder(url.searchParams.get("folder") ?? '');
+  const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
   const listing = await listCollectionEntries(collection, ctx, folder);
 
   return {
@@ -87,7 +87,7 @@ export const actions: Actions = {
     if (!name) {
       throw new Error("Folder name is required.");
     }
-    const folder = normalizeFolder(url.searchParams.get("folder") ?? '');
+    const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
     await createCollectionFolder(collection, folder, name, ctx);
     const folderQuery = new URLSearchParams(query);
     if (folder) folderQuery.set("folder", folder);
@@ -103,7 +103,7 @@ export const actions: Actions = {
       params.collection,
     );
 
-    const folder = normalizeFolder(url.searchParams.get("folder") ?? '');
+    const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
     const formData = await request.formData();
     const rawName = formData.get("name");
     const rawPath = formData.get("folderPath");
@@ -181,4 +181,3 @@ export const actions: Actions = {
     throw redirect(303, `/cms/${encodeURIComponent(collection.name)}?${folderQuery}`);
   },
 };
-

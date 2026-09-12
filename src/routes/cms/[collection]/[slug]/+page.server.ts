@@ -84,7 +84,7 @@ export const actions: Actions = {
       params.collection,
     );
 
-    const folder = normalizeFolder(url.searchParams.get("folder") ?? '');
+    const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
     const schema = buildEntrySchema(collection);
     const form = await superValidate(request, zod4(schema));
 
@@ -157,7 +157,7 @@ export const actions: Actions = {
       params.collection,
     );
 
-    const folder = normalizeFolder(url.searchParams.get("folder") ?? '');
+    const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
 
     try {
       await deleteCollectionEntry(collection, params.slug, ctx, folder);
@@ -210,7 +210,6 @@ export const actions: Actions = {
     throw redirect(303, entryUrl);
   },
 };
-
 
 function appendFolder(query: string, folder: string) {
   const params = new URLSearchParams(query);

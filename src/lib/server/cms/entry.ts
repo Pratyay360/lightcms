@@ -266,4 +266,3 @@ export async function deleteCollectionEntry(
   const message = getEntryCommitMessage(collection, "delete", slug);
   await deleteFile(path, message, ctx.client, repo, ctx.branch);
 }
-

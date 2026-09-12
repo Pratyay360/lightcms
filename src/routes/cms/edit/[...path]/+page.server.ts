@@ -59,9 +59,10 @@ export const actions: Actions = {
     const rawMessage = formData.get("message");
 
     const content = typeof rawContent === "string" ? rawContent : "";
-    const commitMessage = typeof rawMessage === "string" && rawMessage.trim()
-      ? rawMessage.trim()
-      : `Update ${filePath}`;
+    const commitMessage =
+      typeof rawMessage === "string" && rawMessage.trim()
+        ? rawMessage.trim()
+        : `Update ${filePath}`;
 
     let finalContent = content;
 
@@ -99,9 +100,10 @@ export const actions: Actions = {
 
     const formData = await request.formData();
     const rawMessage = formData.get("message");
-    const commitMessage = typeof rawMessage === "string" && rawMessage.trim()
-      ? rawMessage.trim()
-      : `Delete ${filePath}`;
+    const commitMessage =
+      typeof rawMessage === "string" && rawMessage.trim()
+        ? rawMessage.trim()
+        : `Delete ${filePath}`;
 
     try {
       await deleteRepoFile(filePath, commitMessage, ctx);
@@ -132,7 +134,8 @@ export const actions: Actions = {
     const rawDestinationFolder = formData.get("destinationFolder");
     const rawNewFilename = formData.get("newFilename");
 
-    const destinationFolder = typeof rawDestinationFolder === "string" ? rawDestinationFolder.trim() : "";
+    const destinationFolder =
+      typeof rawDestinationFolder === "string" ? rawDestinationFolder.trim() : "";
     const newFilename = typeof rawNewFilename === "string" ? rawNewFilename.trim() : "";
 
     const currentFilename = sourcePath.split("/").pop() ?? "";
@@ -152,7 +155,12 @@ export const actions: Actions = {
     }
 
     try {
-      await moveRepoFile(sourcePath, destinationPath, `Move ${sourcePath} to ${destinationPath}`, ctx);
+      await moveRepoFile(
+        sourcePath,
+        destinationPath,
+        `Move ${sourcePath} to ${destinationPath}`,
+        ctx,
+      );
     } catch (cause) {
       return fail(500, {
         error: cause instanceof Error ? cause.message : "Failed to move file.",
@@ -162,4 +170,3 @@ export const actions: Actions = {
     throw redirect(303, `/cms/edit/${destinationPath}?${query}`);
   },
 };
-

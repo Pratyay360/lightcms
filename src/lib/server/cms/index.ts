@@ -39,12 +39,7 @@ export {
   saveRepoFile,
 } from "./tree";
 
-export type {
-  BreadcrumbItem,
-  RepoFileDetails,
-  RepoTreeItem,
-  RepoTreeListing,
-} from "./tree";
+export type { BreadcrumbItem, RepoFileDetails, RepoTreeItem, RepoTreeListing } from "./tree";
 export type {
   CmsContext,
   DirectoryListing,
