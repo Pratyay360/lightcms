@@ -6,19 +6,20 @@ import {
 	Info,
 	LogIn,
 	LucideFileBadge2,
-	Sparkles, 
+	Sparkles,
 } from "@lucide/svelte";
 import { ModeWatcher } from "mode-watcher";
 import { page } from "$app/state";
 import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
 import { Avatar } from "$lib/components/ui/avatar";
 import { Toaster } from "$lib/components/ui/sonner";
-
+import { injectAnalytics } from '@vercel/analytics/sveltekit';
+import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+injectAnalytics({ mode: 'production' });
+injectSpeedInsights();
 let { children, data } = $props();
 </script>
 
-<!-- defaultTheme keeps <html data-theme="catppuccin"> intact — otherwise
-     mode-watcher overwrites it with "" on hydration, killing the Skeleton theme -->
 <ModeWatcher defaultTheme="catppuccin" />
 <Toaster />
 
@@ -57,7 +58,7 @@ let { children, data } = $props();
           class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 {page.url.pathname.startsWith('/cms') ? 'bg-primary/10 text-primary' : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'}"
           href="/cms"
           aria-label="CMS workspace"
-          aria-current={page.url.pathname.startsWith("/cms") ? "page" : undefined}
+          aria-current={page.url.pathname.startsWith("/cms")}
         >
           <Blocks size={15} />
           <span class="hidden sm:inline">CMS</span>
@@ -75,7 +76,7 @@ let { children, data } = $props();
           class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 {page.url.pathname === '/about' ? 'bg-primary/10 text-primary' : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'}"
           href="/about"
           aria-label="About LightCMS"
-          aria-current={page.url.pathname === "/about" ? "page" : undefined}
+          aria-current={page.url.pathname === "/about"}
         >
           <Info size={15} />
           <span class="hidden sm:inline">About</span>

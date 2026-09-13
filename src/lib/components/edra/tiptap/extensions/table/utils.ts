@@ -1,5 +1,3 @@
-// Barrel re-export — individual modules split for maintainability
-
 export {
   isColumnActiveFromSelection,
   isColumnGripSelected,

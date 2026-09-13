@@ -12,8 +12,8 @@
 		isColumnGripSelected,
 		moveColumnLeft,
 		moveColumnRight
-	} from '../../../tiptap/extensions/table/index.js';
-	import { BubbleMenu, getEditor } from '../../../tiptap/index.js';
+	} from '../../../tiptap/extensions/table';
+	import { BubbleMenu, getEditor } from '../../../tiptap';
 
 	const editor = getEditor();
 </script>

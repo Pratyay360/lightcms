@@ -12,16 +12,19 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
     setupUrl.search = event.url.search;
     throw redirect(302, setupUrl.toString());
   }
-  event.locals.session = undefined;
-  event.locals.user = undefined;
   if (!building && !event.url.pathname.startsWith("/api/auth")) {
-    const session = await auth.api.getSession({
+    const sessionData = await auth.api.getSession({
       headers: event.request.headers,
     });
 
-    if (session) {
-      event.locals.session = session.session;
-      event.locals.user = session.user;
+    if (sessionData) {
+      if (sessionData.session) {
+        event.locals.session = sessionData.session;
+      }
+
+      if (sessionData.user) {
+        event.locals.user = sessionData.user;
+      }
     }
   }
 

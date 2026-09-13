@@ -33,13 +33,11 @@ export const TableHeader = TiptapTableHeader.extend({
   },
 
   addProseMirrorPlugins() {
-    const { isEditable } = this.editor;
-
     return [
       new Plugin({
         props: {
           decorations: (state) => {
-            if (!isEditable) {
+            if (!this.editor.isEditable) {
               return DecorationSet.empty;
             }
 
@@ -118,6 +116,7 @@ export const TableHeader = TiptapTableHeader.extend({
         showClass: "show-col-grip",
         hoverClass: "last-column-hover",
         getIndex: (cell) => (cell as HTMLTableCellElement).cellIndex,
+        isLast: (table, index) => index === (table.rows[0]?.cells.length ?? 0) - 1,
       }),
     ];
   },

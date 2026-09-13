@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       query,
       selection,
     };
-  } catch (err) {
+  } catch {
     throw error(404, `File not found: ${filePath}`);
   }
 };
@@ -47,7 +47,7 @@ export const actions: Actions = {
       throw redirect(302, "/auth");
     }
 
-    const { ctx, query } = await getRepoCmsContext(locals.session.userId, url);
+    const { ctx } = await getRepoCmsContext(locals.session.userId, url);
     const filePath = normalizeContentPath(params.path ?? "");
     if (!filePath) {
       return fail(400, { error: "File path is required." });
@@ -92,7 +92,7 @@ export const actions: Actions = {
       throw redirect(302, "/auth");
     }
 
-    const { ctx, query } = await getRepoCmsContext(locals.session.userId, url);
+    const { ctx, query: _query } = await getRepoCmsContext(locals.session.userId, url);
     const filePath = normalizeContentPath(params.path ?? "");
     if (!filePath) {
       return fail(400, { error: "File path is required." });
@@ -115,7 +115,7 @@ export const actions: Actions = {
 
     const lastSlashIndex = filePath.lastIndexOf("/");
     const parentPath = lastSlashIndex === -1 ? "" : filePath.slice(0, lastSlashIndex);
-    const redirectPath = parentPath ? `/cms/tree/${parentPath}?${query}` : `/cms/tree?${query}`;
+    const redirectPath = parentPath ? `/cms/tree/${parentPath}?${_query}` : `/cms/tree?${_query}`;
     throw redirect(303, redirectPath);
   },
 
@@ -124,7 +124,7 @@ export const actions: Actions = {
       throw redirect(302, "/auth");
     }
 
-    const { ctx, query } = await getRepoCmsContext(locals.session.userId, url);
+    const { ctx, query: _query } = await getRepoCmsContext(locals.session.userId, url);
     const sourcePath = normalizeContentPath(params.path ?? "");
     if (!sourcePath) {
       return fail(400, { error: "File path is required." });
@@ -167,6 +167,6 @@ export const actions: Actions = {
       });
     }
 
-    throw redirect(303, `/cms/edit/${destinationPath}?${query}`);
+    throw redirect(303, `/cms/edit/${destinationPath}?${_query}`);
   },
 };

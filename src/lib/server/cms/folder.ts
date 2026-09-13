@@ -8,8 +8,6 @@ import {
 } from "$lib/server/github";
 import {
   assertFolderName,
-  CONTENT_ROOT,
-  ensureUnderContentRoot,
   joinPath,
   normalizeContentPath,
   normalizeFolder,
@@ -46,7 +44,7 @@ export async function createFolderAtPath(
   opts?: { message?: string },
 ) {
   const repo = resolveRepository(ctx);
-  const normalizedParent = ensureUnderContentRoot(targetPath);
+  const normalizedParent = normalizeContentPath(targetPath);
   const normalizedName = normalizeContentPath(name);
   if (!normalizedName) throw new Error("Folder name is required.");
   for (const part of normalizedName.split("/")) assertFolderName(part);
@@ -62,11 +60,7 @@ export async function deleteFolderAtPath(
   opts?: { message?: string },
 ) {
   const repo = resolveRepository(ctx);
-  const normalized = ensureUnderContentRoot(folderPath);
-  if (normalized.length === 0 || normalized === CONTENT_ROOT) {
-    throw new Error(`Cannot delete the content root.`);
-  }
-
+  const normalized = normalizeContentPath(folderPath);
   let files: string[];
   try {
     files = await listAllFilesRecursive(normalized, ctx.client, repo, ctx.branch);
@@ -104,9 +98,6 @@ export async function deleteCollectionFolder(
   if (!normalizedFolder) throw new Error("Folder path is required.");
   for (const part of normalizedFolder.split("/")) assertFolderName(part);
   const fullPath = joinPath(collection.path, normalizedFolder);
-  if (fullPath === CONTENT_ROOT || fullPath === collection.path) {
-    throw new Error("Cannot delete the collection root. Remove individual subfolders instead.");
-  }
   const message =
     opts?.message ?? `Delete folder ${normalizedFolder} in ${collection.label ?? collection.name}`;
   return deleteFolderAtPath(fullPath, ctx, { message });

@@ -180,7 +180,7 @@ function _selectRepository(event: Event) {
       <p class="mx-auto mt-2 max-w-lg text-sm text-muted-foreground leading-relaxed">
         {_installationCount === 0
           ? "Link LightCMS to your GitHub account to grant repository access. You can configure which repositories LightCMS can access at any time."
-          : `Pick a repository and branch to mount its content collection. LightCMS reads markdown posts from ${data.contentRoot ?? "content"}/posts and lets you manage them directly from Git history.`}
+          : `Pick a repository and branch to mount its content. LightCMS discovers the markdown collections in your repository and lets you manage them directly from Git history.`}
       </p>
       {#if _installationCount === 0 || _repositoryCount === 0}
         <a class="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-xs mt-6 hover:opacity-90 transition-all" href="/github/install">
@@ -237,9 +237,9 @@ function _selectRepository(event: Event) {
 
 <CreateFolderDialog
   bind:open={_createFolderOpen}
-  targetPath={data.contentRoot ?? "content"}
+  targetPath=""
   title="New Content Folder"
-  description={`Create a new collection folder directly in ${data.contentRoot ?? "content"}/ dir`}
+  description="Create a new collection folder at the repository root"
   action={_createCollectionAction}
   error={form?.error}
 />

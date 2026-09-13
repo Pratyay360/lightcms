@@ -13,7 +13,7 @@ export function tryGetCmsSelection(url: URL): CmsSelection | null {
   const rawInstallationId =
     url.searchParams.get("installation")?.trim() ?? url.searchParams.get("installationId")?.trim();
   const installationId = rawInstallationId ? Number(rawInstallationId) : NaN;
-  const branch = url.searchParams.get("branch")?.trim() || undefined;
+  const branch = url.searchParams.get("branch")?.trim();
 
   if (!repository || !Number.isInteger(installationId) || installationId <= 0) {
     return null;

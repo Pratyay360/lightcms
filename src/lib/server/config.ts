@@ -1,3 +1,5 @@
+import { resolveCollectionPath, sanitizeCollectionName } from "$lib/server/paths";
+
 export type LightCmsField = {
   name: string;
   type: "text" | "textarea" | "datetime" | "checkbox" | "number" | "json";
@@ -39,29 +41,15 @@ export type LightCmsCollection = {
   commit?: LightCmsCommit;
 };
 
-import {
-  CONTENT_ROOT,
-  DEFAULT_COLLECTION_NAME,
-  resolveCollectionPath,
-  sanitizeCollectionName,
-} from "$lib/server/paths";
-
 export { assertCollectionName, isValidCollectionName } from "./paths";
-export { CONTENT_ROOT, DEFAULT_COLLECTION_NAME, resolveCollectionPath, sanitizeCollectionName };
+export { resolveCollectionPath, sanitizeCollectionName };
 
-export const POSTS_COLLECTION: LightCmsCollection = {
-  name: DEFAULT_COLLECTION_NAME,
+export const collection: LightCmsCollection = {
+  name: "posts",
   type: "collection",
-  label: "",
-  path: resolveCollectionPath(DEFAULT_COLLECTION_NAME),
+  path: resolveCollectionPath("posts"),
+  label: "Posts",
   fields: [
-    {
-      name: "title",
-      type: "text",
-      required: true,
-      label: "Title",
-      placeholder: "Post title",
-    },
     {
       name: "linkTitle",
       type: "text",
@@ -264,18 +252,18 @@ export const POSTS_COLLECTION: LightCmsCollection = {
   },
 };
 
-export const BUILT_IN_COLLECTIONS: LightCmsCollection[] = [POSTS_COLLECTION];
+export const BUILT_IN_COLLECTIONS: LightCmsCollection[] = [collection];
 
 export function getCollection(name: string): LightCmsCollection {
-  const collection = BUILT_IN_COLLECTIONS.find((item) => item.name === name);
-  if (collection) return collection;
+  const builtInCollection = BUILT_IN_COLLECTIONS.find((item) => item.name === name);
+  if (builtInCollection) return builtInCollection;
 
   const cleanName = sanitizeCollectionName(name);
   if (!cleanName) throw new Error(`Collection not found: ${name}`);
 
   const label = cleanName.charAt(0).toUpperCase() + cleanName.slice(1).replace(/[-_]/g, " ");
   return {
-    ...POSTS_COLLECTION,
+    ...collection,
     name: cleanName,
     label,
     path: resolveCollectionPath(cleanName),

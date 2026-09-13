@@ -14,12 +14,13 @@ To configure a newsletter for your blog, the traditional way was to:
 
 1. Sign up for a newsletter service like Mailchimp or brevo.
 2. Create a new campaign and design your email template.
-3. Add your subscribers to the list.
-4. Schedule your emails to be sent at regular intervals.
-5. Monitor the performance of your campaigns and make adjustments as needed.
-6. Monitor delivery rates.
-7. Pay heavy money for the service 10s of compliance + extras.
-8. Pay someone or manage your own mailing list.
+3. Add subscribers to your list.
+4. Schedule regular delivery.
+5. Keep your audience engaged.
+6. Monitor the performance of your campaigns and make adjustments as needed.
+7. Monitor deliverability.
+8. Pay heavy money for the service 10s of compliance + extras.
+9. Pay someone or manage your own mailing list.
 
 **The Newsy way**:
 

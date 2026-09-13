@@ -12,7 +12,7 @@ import {
 </script>
 
 <svelte:head>
-  <title>LightCMS | Content without the clutter</title>
+  <title>LightCMS </title>
   <meta
     name="description"
     content="A focused Git-backed content workspace for editing and publishing markdown."
@@ -28,16 +28,7 @@ import {
       <span>Easy to use</span>
     </div>
 
-    <div class="space-y-4">
-      <h1 class="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:leading-[1.1]">
-        A easier place to shape what you <span class="text-primary">publish</span>.
-      </h1>
-      <p class="text-lg leading-relaxed text-muted-foreground">
-        Edit structured content with a gorgeous notion like editor, and commit clean
-        markdown directly to your GitHub repository. No databases to manage, no server related headaches.
-      </p>
-    </div>
-
+    
     <div class="flex flex-wrap gap-4">
       <a class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-xs transition-transform hover:scale-[1.02] active:scale-[0.98] gap-2.5" href="/cms">
         Open workspace

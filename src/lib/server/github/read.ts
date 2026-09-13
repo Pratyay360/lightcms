@@ -86,7 +86,8 @@ export async function listAllFilesRecursive(
   const visited = new Set<string>();
 
   while (stack.length > 0) {
-    const current = stack.pop()!;
+    const current = stack.pop();
+    if (!current) continue;
     if (visited.has(current)) continue;
     visited.add(current);
     const entries = await listDir(current, client, repository, branch, {

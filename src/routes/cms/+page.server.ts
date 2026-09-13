@@ -1,9 +1,8 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { createFolderAtPath, listDirectory } from "$lib/server/cms";
 import { getCmsQuery, getCmsSelection, tryGetCmsSelection } from "$lib/server/cms-context";
-import { assertCollectionName, BUILT_IN_COLLECTIONS, getCollection } from "$lib/server/config";
+import { assertCollectionName, getCollection, type LightCmsCollection } from "$lib/server/config";
 import { isGitHubStatus, listRepositories } from "$lib/server/github";
-import { CONTENT_ROOT } from "$lib/server/paths";
 import {
   getCmsContext,
   listGitHubInstallations,
@@ -58,7 +57,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   const selection = tryGetCmsSelection(url);
   const query = selection ? getCmsQuery(selection) : "";
 
-  const collectionsList = [...BUILT_IN_COLLECTIONS];
+  const collectionsList: LightCmsCollection[] = [];
   if (selection) {
     try {
       const activeContext = await getCmsContext(
@@ -67,7 +66,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         selection.repository,
         selection.branch,
       );
-      const contentEntries = await listDirectory(CONTENT_ROOT, {
+      // Collections are discovered from the repository's root directories —
+      // there is no predefined content root or default collection.
+      const contentEntries = await listDirectory("", {
         client: activeContext.client,
         repository: selection.repository,
         branch: selection.branch,
@@ -81,7 +82,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         }
       }
     } catch {
-      // Ignore if CONTENT_ROOT directory does not exist yet
+      // Ignore errors when the repository root cannot be listed yet
     }
   }
 
@@ -91,7 +92,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     repositoryWarnings,
     selection,
     query,
-    contentRoot: CONTENT_ROOT,
     collections: collectionsList.map((collection) => ({
       name: collection.name,
       label: collection.label ?? collection.name,
@@ -133,14 +133,14 @@ export const actions: Actions = {
         selection.repository,
         selection.branch,
       );
-      await createFolderAtPath(CONTENT_ROOT, cleanName, {
+      await createFolderAtPath("", cleanName, {
         client: context.client,
         repository: selection.repository,
         branch: selection.branch,
       });
     } catch (cause) {
       return fail(400, {
-        error: cause instanceof Error ? cause.message : "Could not create folder at content level.",
+        error: cause instanceof Error ? cause.message : "Could not create collection folder.",
       });
     }
 

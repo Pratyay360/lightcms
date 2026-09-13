@@ -23,7 +23,7 @@ import MediaPlaceholderComp from "./components/MediaPlaceHolder.svelte";
 import MermaidComp from "./components/Mermaid.svelte";
 import SlashCommandComp from "./components/SlashCommand.svelte";
 import VideoExtendedComp from "./components/VideoExtended.svelte";
-import { setTocItems } from "./toc.svelte";
+import { setTocItems } from "./toc";
 
 const lowlight = createLowlight(all);
 

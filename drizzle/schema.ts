@@ -1,6 +1,5 @@
 import {
   pgTable,
-  uniqueIndex,
   index,
   foreignKey,
   text,
@@ -11,7 +10,6 @@ import {
   primaryKey,
   bigint,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
 
 export const account = pgTable(
   "account",
@@ -29,14 +27,8 @@ export const account = pgTable(
     password: text(),
     createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "string" }).notNull(),
-    issuer: text().notNull(),
   },
   (table) => [
-    uniqueIndex("account_issuer_accountId_uidx").using(
-      "btree",
-      table.issuer.asc().nullsLast().op("text_ops"),
-      table.accountId.asc().nullsLast().op("text_ops"),
-    ),
     index("account_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
     foreignKey({
       columns: [table.userId],

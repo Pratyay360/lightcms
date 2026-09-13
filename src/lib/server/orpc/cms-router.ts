@@ -208,9 +208,10 @@ const dirInput = z.object({
 });
 
 /**
- * Dynamic folder creation — no hard-coded CONTENT_ROOT.
+ * Dynamic folder creation — caller-supplied path, no hard-coded root.
  * Creates `targetPath/name/.gitkeep` via modular path helpers.
- */ const createFolder = authedProcedure.input(folderInput).handler(async ({ input, context }) => {
+ */
+const createFolder = authedProcedure.input(folderInput).handler(async ({ input, context }) => {
   const ctx = await resolveCtx(context.session.userId, input);
   return orpcTry(
     () => createFolderAtPath(input.targetPath, input.name, ctx),

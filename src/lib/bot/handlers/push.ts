@@ -1,5 +1,4 @@
 import type { Context } from "probot";
-import { POSTS_COLLECTION } from "$lib/server/config";
 import { wrapBotError } from "./error-handler.js";
 
 export async function handlePush(context: Context<"push">) {
@@ -7,7 +6,6 @@ export async function handlePush(context: Context<"push">) {
   const { ref, repository, commits, head_commit, sender } = payload;
   const defaultBranch = repository.default_branch;
   const branch = ref.replace("refs/heads/", "");
-  const contentPrefix = `${POSTS_COLLECTION.path}/`;
 
   if (branch !== defaultBranch) {
     log.debug({ branch, defaultBranch }, "Skipping non-default branch push");
@@ -15,7 +13,7 @@ export async function handlePush(context: Context<"push">) {
   }
 
   const relevant = (commits ?? []).filter((commit) =>
-    (commit.modified ?? []).some((p) => p.startsWith(contentPrefix)),
+    (commit.modified ?? []).some((p) => p.endsWith(".md")),
   );
 
   if (relevant.length === 0) {
@@ -37,7 +35,7 @@ export async function handlePush(context: Context<"push">) {
 
   for (const commit of relevant) {
     for (const file of [...(commit.modified ?? []), ...(commit.added ?? [])]) {
-      if (!file.endsWith(".md") || !file.startsWith(contentPrefix)) continue;
+      if (!file.endsWith(".md")) continue;
 
       try {
         const { data: contents } = await context.octokit.rest.repos.getContent({

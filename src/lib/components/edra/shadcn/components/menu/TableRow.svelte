@@ -7,14 +7,14 @@
 	import Trash from '@lucide/svelte/icons/trash';
 	import { Button } from '$lib/components/ui/button';
 
-	import { Separator } from '$lib/components/ui/separator/index.js';
-	import strings from '../../../strings.js';
+	import { Separator } from '$lib/components/ui/separator';
+	import strings from '../../../strings';
 	import {
 		isRowGripSelected,
 		moveRowDown,
 		moveRowUp
-	} from '../../../tiptap/extensions/table/utils.js';
-	import { BubbleMenu, getEditor } from '../../../tiptap/index.js';
+	} from '../../../tiptap/extensions/table/utils';
+	import { BubbleMenu, getEditor } from '../../../tiptap';
 
 	const editor = getEditor();
 </script>

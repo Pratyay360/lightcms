@@ -43,7 +43,6 @@ export async function sendMail({
       html,
     });
   } catch (error) {
-    // console.error(`[mail] failed to send to ${to}:`, error);
     throw new Error(`Failed to send email to ${to}`, { cause: error });
   }
 }

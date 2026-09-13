@@ -34,7 +34,6 @@ export async function renderMarkdown(source: string) {
             },
           });
         }
-        // Fallback for unsupported languages
         return `<pre><code class="language-${language}">${code}</code></pre>`;
       },
     },

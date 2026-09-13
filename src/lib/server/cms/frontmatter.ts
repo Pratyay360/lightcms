@@ -16,8 +16,6 @@ export function parseFrontMatter(source: string): FrontMatter {
   const parsed = matter(source);
   const data = parsed.data ?? {};
   const { body: _body, ...rest } = data as Record<string, unknown>;
-  // js-yaml (via gray-matter) parses ISO-8601 timestamps as Date objects,
-  // but entry schema validates datetime as string.
   for (const [key, value] of Object.entries(rest)) {
     if (value instanceof Date) {
       rest[key] = value.toISOString().replace(/\.\d{3}Z$/, "Z");

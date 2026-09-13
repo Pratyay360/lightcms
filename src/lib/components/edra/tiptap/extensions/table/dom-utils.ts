@@ -122,7 +122,7 @@ export function isTableGripSelected(node: HTMLElement): boolean {
   }
   if (!container) return false;
 
-  const gripColumn = container.querySelector("div.grip-column.selected");
-  const gripRow = container.querySelector("div.grip-row.selected");
+  const gripColumn = container.querySelector("a.grip-column.selected");
+  const gripRow = container.querySelector("a.grip-row.selected");
   return Boolean(gripColumn ?? gripRow);
 }

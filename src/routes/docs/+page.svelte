@@ -23,11 +23,7 @@ const _posts = $derived(data.posts);
     <p class="eyebrow flex items-center gap-2 font-semibold text-primary">
       <BookOpen size={16} class="text-primary" /> Getting Started with LightCMS
     </p>
-    <h1 class="page-title mt-4 text-3xl font-extrabold text-foreground">Documentation & Guides</h1>
-    <p class="mt-3 max-w-2xl text-sm text-muted-foreground leading-6">
-      Everything you need to set up repositories, configure schemas, and publish markdown files.
-    </p>
-  </header>
+    </header>
 
   <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     {#each _posts as post}

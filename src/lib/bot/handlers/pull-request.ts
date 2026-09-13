@@ -1,10 +1,7 @@
 import type { Context } from "probot";
-import { POSTS_COLLECTION } from "$lib/server/config";
-
-const contentPrefix = `${POSTS_COLLECTION.path}/`;
 
 function hasContentChanges(files: { filename: string }[]): boolean {
-  return files.some((f) => f.filename.startsWith(contentPrefix));
+  return files.some((f) => f.filename.endsWith(".md"));
 }
 export async function handlePullRequest(context: Context<"pull_request">) {
   const { payload, log } = context;
@@ -31,7 +28,7 @@ export async function handlePullRequest(context: Context<"pull_request">) {
         return;
       }
 
-      const contentFiles = files.filter((f) => f.filename.startsWith(contentPrefix));
+      const contentFiles = files.filter((f) => f.filename.endsWith(".md"));
       const summary = [
         `## 📝 LightCMS Content Review`,
         ``,

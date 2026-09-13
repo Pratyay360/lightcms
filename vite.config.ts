@@ -4,36 +4,20 @@ import { sveltekit } from "@sveltejs/kit/vite";
 // import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
 import { mdsvex } from "mdsvex";
-import { defineConfig } from "vite-plus";
+import { defineConfig, lazyPlugins } from "vite-plus";
 
 export default defineConfig({
-  fmt: {
-    ignorePatterns: [],
-  },
+  fmt: {},
   lint: {
-    plugins: ["typescript", "unicorn", "oxc"],
-    categories: {
-      correctness: "error",
-    },
-    rules: {
-      "vite-plus/prefer-vite-plus-imports": "error",
-    },
-    options: {
-      typeAware: true,
-      typeCheck: false,
-    },
-    jsPlugins: [
-      {
-        name: "vite-plus",
-        specifier: "vite-plus/oxlint-plugin",
-      },
-    ],
+    jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
+    rules: { "vite-plus/prefer-vite-plus-imports": "error" },
+    options: { typeAware: true, typeCheck: true },
   },
   server: {
     allowedHosts: true,
   },
 
-  plugins: [
+  plugins: lazyPlugins(async () => [
     {
       name: "superforms-skip-dead-default",
       enforce: "pre",
@@ -50,9 +34,6 @@ export default defineConfig({
     tailwindcss(),
     sveltekit({
       adapter: adapter(),
-      compilerOptions: {
-        experimental: { async: true },
-      },
       experimental: {
         remoteFunctions: true,
         forkPreloads: true,
@@ -64,5 +45,5 @@ export default defineConfig({
       },
     }),
     mdsvex({ extensions: [".svelte", ".md"] }),
-  ],
+  ]),
 });

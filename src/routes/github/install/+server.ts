@@ -7,10 +7,8 @@ export const GET: RequestHandler = async ({ cookies, locals }) => {
   if (!locals.session) {
     throw redirect(302, "/auth");
   }
-
-  const secret = process.env.GITHUB_WEBHOOK_SECRET!;
-
-  const state = createGitHubInstallState(locals.session.userId, secret);
+  const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET!;
+  const state = createGitHubInstallState(locals.session.userId, webhookSecret);
 
   cookies.set("lightcms_github_install_state", state, {
     path: "/github/setup",

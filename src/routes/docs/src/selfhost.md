@@ -8,7 +8,7 @@ tags:
 
 ## selfhost
 
-to make the bot yourself.. use the [mise]($mise.toml)
+to make the bot yourself.. use the
 
 it;s purely sveltekit so you can selfhost it on any serverless
 platform like netlify, vercel, cf pages or deno deploy etc,

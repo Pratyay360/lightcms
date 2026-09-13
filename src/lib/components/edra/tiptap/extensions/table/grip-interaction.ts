@@ -9,6 +9,8 @@ export interface GripInteractionOptions {
   hoverClass: string;
   /** Extract the row/column index from a cell element */
   getIndex: (cell: HTMLElement) => number;
+  /** Whether the hovered index is the last row (row grips) or last column (column grips) */
+  isLast: (table: HTMLTableElement, index: number) => boolean;
 }
 
 /**
@@ -19,7 +21,7 @@ export interface GripInteractionOptions {
  * to avoid duplicating the same ~100 lines of DOM event handling.
  */
 export function createGripInteractionPlugin(opts: GripInteractionOptions): Plugin {
-  const { gripSelector, showClass, hoverClass, getIndex } = opts;
+  const { gripSelector, showClass, hoverClass, getIndex, isLast } = opts;
 
   function updateGripVisibility(table: HTMLTableElement, activeIndex: number) {
     const grips = table.querySelectorAll<HTMLAnchorElement>(`a.${gripSelector}`);
@@ -45,15 +47,6 @@ export function createGripInteractionPlugin(opts: GripInteractionOptions): Plugi
     return { cell, table, index: getIndex(cell) };
   }
 
-  function isLastIndex(table: HTMLTableElement, index: number): boolean {
-    const rows = table.rows;
-    if (!rows || rows.length === 0) return false;
-    // For row grips: last row index; for column grips: last cell index in first row
-    const firstRowCells = rows[0]?.cells;
-    const lastIndex = firstRowCells ? firstRowCells.length - 1 : -1;
-    return index === lastIndex;
-  }
-
   return new Plugin({
     props: {
       handleDOMEvents: {
@@ -61,21 +54,21 @@ export function createGripInteractionPlugin(opts: GripInteractionOptions): Plugi
           const info = getCellIndex(event.target as HTMLElement);
           if (!info) return false;
           updateGripVisibility(info.table, info.index);
-          updateWrapperHover(info.table, isLastIndex(info.table, info.index));
+          updateWrapperHover(info.table, isLast(info.table, info.index));
           return false;
         },
         focusin: (_view, event) => {
           const info = getCellIndex(event.target as HTMLElement);
           if (!info) return false;
           updateGripVisibility(info.table, info.index);
-          updateWrapperHover(info.table, isLastIndex(info.table, info.index));
+          updateWrapperHover(info.table, isLast(info.table, info.index));
           return false;
         },
         mousedown: (_view, event) => {
           const info = getCellIndex(event.target as HTMLElement);
           if (!info) return false;
           updateGripVisibility(info.table, info.index);
-          updateWrapperHover(info.table, isLastIndex(info.table, info.index));
+          updateWrapperHover(info.table, isLast(info.table, info.index));
           return false;
         },
         mouseleave: (_view, event) => {
@@ -105,7 +98,7 @@ export function createGripInteractionPlugin(opts: GripInteractionOptions): Plugi
           const info = getCellIndex(target);
           if (!info) return false;
           updateGripVisibility(info.table, info.index);
-          updateWrapperHover(info.table, isLastIndex(info.table, info.index));
+          updateWrapperHover(info.table, isLast(info.table, info.index));
           return false;
         },
         touchmove: (_view, event) => {
@@ -113,7 +106,7 @@ export function createGripInteractionPlugin(opts: GripInteractionOptions): Plugi
           const info = getCellIndex(target);
           if (!info) return false;
           updateGripVisibility(info.table, info.index);
-          updateWrapperHover(info.table, isLastIndex(info.table, info.index));
+          updateWrapperHover(info.table, isLast(info.table, info.index));
           return false;
         },
       },

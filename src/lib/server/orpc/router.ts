@@ -15,13 +15,6 @@ const generateContent = os.input(type<{ prompt: string }>()).handler(async ({ in
   const baseURL = process.env.OPEN_AI_ENDPOINT!;
   const modelName = process.env.OPEN_AI_MODEL!;
 
-  if (!apiKey) {
-    throw new ORPCError("PRECONDITION_FAILED", {
-      message:
-        "AI API key is not configured. Set OPEN_AI_APIKEY or OPENAI_API_KEY in environment variables.",
-    });
-  }
-
   const openai = createOpenAI({
     apiKey,
     ...(baseURL ? { baseURL } : {}),

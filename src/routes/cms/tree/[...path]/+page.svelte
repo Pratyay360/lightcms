@@ -214,9 +214,8 @@
       <div class="divide-y divide-border/60">
         <!-- Folders List -->
         {#each folders as folderItem}
-          <div
+          <section
             class="group flex items-center justify-between px-5 py-3 hover:bg-muted/40 transition-colors {dropTargetFolder === folderItem.path ? 'bg-primary/10 ring-2 ring-primary/40 ring-inset' : ''}"
-            role="group"
             aria-label={`Folder ${folderItem.name}`}
             ondragover={(e) => handleDragOverFolder(e, folderItem.path)}
             ondragleave={() => handleDragLeaveFolder(folderItem.path)}
@@ -244,14 +243,13 @@
                 <Trash2 size={14} />
               </Button>
             </div>
-          </div>
+          </section>
         {/each}
 
         <!-- Files List -->
         {#each files as fileItem}
-          <div
+          <section
             class="group flex items-center justify-between px-5 py-3 hover:bg-muted/40 transition-colors cursor-grab active:cursor-grabbing {draggedFilePath === fileItem.path ? 'opacity-40' : ''}"
-            role="group"
             aria-label={`File ${fileItem.name}`}
             draggable="true"
             ondragstart={(e) => handleDragStart(e, fileItem)}
@@ -317,7 +315,7 @@
                 <Trash2 size={14} />
               </Button>
             </div>
-          </div>
+          </section>
         {/each}
       </div>
     {/if}

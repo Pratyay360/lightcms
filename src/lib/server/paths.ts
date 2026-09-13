@@ -1,7 +1,3 @@
-export const CONTENT_ROOT = "";
-
-export const DEFAULT_COLLECTION_NAME = "Posts";
-
 export function sanitizeCollectionName(name: string): string {
   return name.replace(/[^a-zA-Z0-9_-]/g, "").toLowerCase();
 }
@@ -11,11 +7,7 @@ export function resolveCollectionPath(name: string): string {
   if (!clean) {
     throw new Error(`Invalid collection name: ${name}`);
   }
-  const root = normalizeContentPath(CONTENT_ROOT);
-  if (root.length === 0) {
-    return clean;
-  }
-  return `${root}/${clean}`;
+  return clean;
 }
 
 export function isValidCollectionName(name: string): boolean {
@@ -144,44 +136,6 @@ export function assertContentPath(path: string, opts?: { allowEmpty?: boolean })
     throw new Error("Path cannot contain '..'.");
   }
   return normalized;
-}
-
-export function ensureUnderContentRoot(path: string | undefined | null): string {
-  const normalized = normalizeContentPath(path);
-  const root = normalizeContentPath(CONTENT_ROOT);
-  if (root.length === 0) {
-    return normalized;
-  }
-  if (normalized.length === 0 || normalized === root) {
-    return root;
-  }
-  if (normalized.startsWith(`${root}/`)) {
-    return normalized;
-  }
-  if (!normalized.includes("/")) {
-    return `${root}/${normalized}`;
-  }
-  throw new Error(`Path must be inside "${root}/" (got "${path}")`);
-}
-
-export function resolveContentPath(...segments: Array<string | undefined | null>): string {
-  const parts = segments.map((s) => normalizeContentPath(s)).filter((s) => s.length > 0);
-  const root = normalizeContentPath(CONTENT_ROOT);
-  if (parts.length === 0) {
-    return root;
-  }
-  const joined = parts.join("/");
-  if (root.length === 0) {
-    return joined;
-  }
-  if (joined === root || joined.startsWith(`${root}/`)) {
-    return joined;
-  }
-  return `${root}/${joined}`;
-}
-
-export function buildContentPath(...segments: string[]): string {
-  return resolveContentPath(...segments);
 }
 
 export function generateDefaultSlug(): string {

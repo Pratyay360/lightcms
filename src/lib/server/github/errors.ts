@@ -35,10 +35,6 @@ export function isGitHubStatus(error: unknown, status: number): boolean {
   return getErrorStatus(error) === status;
 }
 
-/**
- * Checks if the error indicates that the repository is empty.
- * GitHub returns a 409 with a message like "Git Repository is empty."
- */
 export function isEmptyRepoError(error: unknown): boolean {
   if (typeof error !== "object" || error === null) return false;
   const message = (error as { message?: unknown }).message;

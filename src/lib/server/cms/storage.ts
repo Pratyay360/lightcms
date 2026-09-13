@@ -1,10 +1,10 @@
 import type { LightCmsCollection } from "$lib/server/config";
 import { createFile, createOrUpdateFile, listDir } from "$lib/server/github";
-import { ensureUnderContentRoot, resolveCollectionPath } from "$lib/server/paths";
+import { normalizeContentPath, resolveCollectionPath } from "$lib/server/paths";
 import { type CmsContext, resolveRepository } from "./types";
 
 function ensureGitKeepPath(targetPath: string): string {
-  const base = ensureUnderContentRoot(targetPath);
+  const base = normalizeContentPath(targetPath);
   if (base.length === 0) {
     return ".gitkeep";
   }
@@ -18,7 +18,7 @@ export async function createFileAtPath(
   opts?: { message?: string; allowOverwrite?: boolean },
 ) {
   const repo = resolveRepository(ctx);
-  const normalized = ensureUnderContentRoot(filePath);
+  const normalized = normalizeContentPath(filePath);
   if (normalized.endsWith("/")) throw new Error("File path must include a filename.");
   const filename = normalized.split("/").at(-1) ?? "";
   if (!filename || (filename.startsWith(".") && filename !== ".gitkeep")) {
@@ -55,7 +55,7 @@ export async function initializePath(targetPath: string, ctx: CmsContext) {
   return createOrUpdateFile(
     path,
     "",
-    `Initialize ${ensureUnderContentRoot(targetPath)}`,
+    `Initialize ${normalizeContentPath(targetPath)}`,
     ctx.client,
     resolveRepository(ctx),
     ctx.branch,
@@ -63,6 +63,6 @@ export async function initializePath(targetPath: string, ctx: CmsContext) {
 }
 
 export async function listDirectory(directoryPath: string, ctx: CmsContext) {
-  const normalized = ensureUnderContentRoot(directoryPath);
+  const normalized = normalizeContentPath(directoryPath);
   return listDir(normalized, ctx.client, resolveRepository(ctx), ctx.branch);
 }
