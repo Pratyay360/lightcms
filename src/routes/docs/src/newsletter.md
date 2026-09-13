@@ -24,9 +24,13 @@ To configure a newsletter for your blog, the traditional way was to:
 
 **The Newsy way**:
 
-One can say the newsy way is to use github as a platform to manage your newsletter. For more information, see
+One can say the newsy way is to use github as a platform to manage your
+newsletter. For more information, see
 [newsy](https://github.com/pratyay360/newsy)
 
-BTW, lightcms observes the repo for newly created files of type .md .mdx and .html and then it will send the content to the subscribers.
+BTW, newsy observes the repo for newly created files of type .md .mdx and
+.html and then it will send the content to the subscribers.
 
-kindly read the [docs](https://newsy.surge.sh)
+kindly, check [newsy repo](https://github.com/pratyay360/newsy)
+
+[newsy](https://newsy.surge.sh)

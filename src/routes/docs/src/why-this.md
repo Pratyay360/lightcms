@@ -6,12 +6,18 @@ tags:
 description: why yet another cms
 ---
 
-So before introducing yet another cms .. i have initially planned , naming this as yac but later changed that cz we already have a yacc.
-Been trying several cms solutions and all of them felt kindoff missing something (for writing and managing blogs/content for ssg like hugo 11ty etc.
-only easy stuff i have had used is [frontmatter](https://frontmatter.codes) but visual studio code for writting blogs is too much for a simple thing.
-Some road blockers for me were quality of wysiwyg editor. or the overall experience like. handling images content and organizing files. contents + (reaction + comment + newsletters) all using github repository.
+So before introducing yet another cms ..
+Been trying several cms solutions
+and all of them felt kindoff missing something for writing and managing blogs/content.
 
-the main goal is to enable everyone to write and manage content all in one place. and with ultimate ease.
+only easy stuff i have had used is [frontmatter](https://frontmatter.codes) but visual studio code for writting blogs is too much for a simple thing.
+
+Some road blockers for me were quality of wysiwyg editor. or the overall
+experience like. handling images content and organizing files. contents +
+(reaction + comment + newsletters) all using github repository.
+
+the main goal is to enable everyone to write and manage content
+all in one place. and with ultimate ease and delight.
 
 Believing in the idea that every one needs their own place [in internet](https://dsokolovskiy.com/blog/all/why-you-should-run-a-blog/)
 [1](https://goinswriter.com/why-blog/)
@@ -19,22 +25,31 @@ Believing in the idea that every one needs their own place [in internet](https:/
 
 TLDR;
 Everyone has a voice and share yours.
-If you have learnt something share the experience maybe one day some one can discover you through your blog.
+If you have learnt something share the experience
+ maybe one day some one will discover you through your blog.
 
 And to start you can use some static sites.
-But no one wants to write html pages for each post.. so here comes the role of [static site generator(ssg)](https://jamstack.org/generators/)
+But no one wants to write html pages for each post..
+so here comes the role of [static site generator(ssg)](https://jamstack.org/generators/)
 
 where pages are generated automatically with content change through ci no manual
 deployment. In the meantime we all should be caring about Globe too like for
 heavy webapps the carbon emission is enormous . you can use
-[Website Carbon](https://www.websitecarbon.com/) measures emissions, while [Ecograder](https://ecograder.com/) evaluates performance. Use both tools for perspective. Then reduce your footprint.
+[Website Carbon](https://www.websitecarbon.com/) measures emissions, while
+[Ecograder](https://ecograder.com/) evaluates performance. Use both tools for
+perspective. Then reduce your footprint.
 to analyze your carbon footprint. You can go through
 [this](https://2021.stateofthebrowser.com/speakers/tom-greenwood/)
 
-There are multiple static site generators like [jekyll](https://jekyllrb.com/), [hugo](gohugo.io), [astro-starlight](https://starlight.astro.build/getting-started), [11ty](https://www.11ty.dev), [docusaurus](https://docusaurus.io/), [vitepress](https://vitepress.dev/), [mkdocs](https://www.mkdocs.org/)
+There are multiple static site generators like [jekyll](https://jekyllrb.com/),
+ [hugo](gohugo.io), [astro-starlight](https://starlight.astro.build/getting-started), 
+ [11ty](https://www.11ty.dev),
+  [docusaurus](https://docusaurus.io/), [vitepress](https://vitepress.dev/), [mkdocs](https://www.mkdocs.org/)
 [mdBook](https://rust-lang.github.io/mdBook/),
 [docsy](https://www.docsy.dev/)
-[makko](https://makko.starlightnet.work/) etc etc. but the main problem is to manage content and write content in a simplest way possible.
+[makko](https://makko.starlightnet.work/) etc. 
+But the main problem still remains and that's to manage and create content
+in a simplest way possible so that any one can get started even the least techy one.
 
 You can explore more on [jamstack](https://jamstack.org/generators/)
 

@@ -121,7 +121,6 @@
 </svelte:head>
 
 <div class="space-y-6">
-  <!-- Header / Navigation Bar -->
   <div class="flex flex-col gap-4 border-b border-border/50 pb-6 md:flex-row md:items-center md:justify-between">
     <div class="space-y-2">
       <div class="flex items-center gap-2 text-xs font-semibold text-muted-foreground">

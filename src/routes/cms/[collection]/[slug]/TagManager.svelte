@@ -15,10 +15,10 @@
     description?: string;
   }
 
-  let { tags, onTagsChange, fieldName = "tags", label = "Tags", placeholder = "Type tag and press Enter or comma...", description }: Props = $props();
+  let { tags, onTagsChange, fieldName = "tags", label = "Tags", placeholder = "press Enter or comma...", description }: Props = $props();
   let newTagInput = $state("");
 
-  function addTag() {
+  function addTag() { 
     const rawTags = newTagInput
       .split(",")
       .map((t) => t.trim())
