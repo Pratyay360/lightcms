@@ -4,91 +4,112 @@
 @import "@skeletonlabs/skeleton";
 @import "@skeletonlabs/skeleton-svelte";
 @import "@skeletonlabs/skeleton/themes/catppuccin";
+@import "@skeletonlabs/skeleton/themes/cerberus";
+@import "@skeletonlabs/skeleton/themes/concord";
+@import "@skeletonlabs/skeleton/themes/crimson";
+@import "@skeletonlabs/skeleton/themes/dracula";
+@import "@skeletonlabs/skeleton/themes/fennec";
+@import "@skeletonlabs/skeleton/themes/hamlindigo";
+@import "@skeletonlabs/skeleton/themes/legacy";
+@import "@skeletonlabs/skeleton/themes/mint";
+@import "@skeletonlabs/skeleton/themes/modern";
+@import "@skeletonlabs/skeleton/themes/mona";
+@import "@skeletonlabs/skeleton/themes/nosh";
+@import "@skeletonlabs/skeleton/themes/nouveau";
+@import "@skeletonlabs/skeleton/themes/pine";
+@import "@skeletonlabs/skeleton/themes/reign";
+@import "@skeletonlabs/skeleton/themes/rocket";
+@import "@skeletonlabs/skeleton/themes/rose";
+@import "@skeletonlabs/skeleton/themes/rosepine";
+@import "@skeletonlabs/skeleton/themes/sahara";
+@import "@skeletonlabs/skeleton/themes/seafoam";
+@import "@skeletonlabs/skeleton/themes/terminus";
+@import "@skeletonlabs/skeleton/themes/vintage";
+@import "@skeletonlabs/skeleton/themes/vox";
+@import "@skeletonlabs/skeleton/themes/wintry";
 @import "shadcn-svelte/tailwind.css";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist";
 
 /* Tailwind dark variant disabled here to avoid CSS parser warnings */
 
+/* Bridge Skeleton theme tokens to shadcn tokens so switching
+   `data-theme` recolours the whole app (bg-background, text-foreground,
+   bg-primary, borders, cards, charts, sidebar, ...).
+   Skeleton defines --color-surface-*, --color-primary-*, etc. per
+   [data-theme='...']; we reference them here instead of hardcoding. */
+
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  color-scheme: light;
+  --background: var(--color-surface-50);
+  --foreground: var(--color-surface-950);
+  --card: var(--color-surface-100);
+  --card-foreground: var(--color-surface-950);
+  --popover: var(--color-surface-100);
+  --popover-foreground: var(--color-surface-950);
+  --primary: var(--color-primary-500);
+  --primary-foreground: var(--color-primary-contrast-500);
+  --secondary: var(--color-secondary-500);
+  --secondary-foreground: var(--color-secondary-contrast-500);
+  --muted: var(--color-surface-200);
+  --muted-foreground: var(--color-surface-700);
+  --accent: var(--color-tertiary-500);
+  --accent-foreground: var(--color-tertiary-contrast-500);
+  --destructive: var(--color-error-500);
+  --destructive-foreground: var(--color-error-contrast-500);
+  --border: var(--color-surface-200);
+  --input: var(--color-surface-300);
+  --ring: var(--color-primary-500);
+  --chart-1: var(--color-primary-500);
+  --chart-2: var(--color-secondary-500);
+  --chart-3: var(--color-tertiary-500);
+  --chart-4: var(--color-success-500);
+  --chart-5: var(--color-warning-500);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--color-surface-100);
+  --sidebar-foreground: var(--color-surface-950);
+  --sidebar-primary: var(--color-primary-500);
+  --sidebar-primary-foreground: var(--color-primary-contrast-500);
+  --sidebar-accent: var(--color-surface-200);
+  --sidebar-accent-foreground: var(--color-surface-950);
+  --sidebar-border: var(--color-surface-200);
+  --sidebar-ring: var(--color-primary-500);
 }
 
-/* Catppuccin Mocha — DARK theme override */
 .dark {
-  /* Core surfaces — Mocha */
-  --background: #1e1e2e; /* base */
-  --foreground: #cdd6f4; /* text */
-  --card: #181825; /* mantle */
-  --card-foreground: #cdd6f4; /* text */
-  --popover: #313244; /* surface0 */
-  --popover-foreground: #cdd6f4;
-  /* Brand / primary — Mocha Blue */
-  --primary: #89b4fa; /* blue */
-  --primary-foreground: #1e1e2e; /* base */
-  --secondary: #313244; /* surface0 */
-  --secondary-foreground: #cdd6f4;
-  --muted: #313244; /* surface0 */
-  --muted-foreground: #a6adc8; /* subtext0 */
-  --accent: #45475a; /* surface1 */
-  --accent-foreground: #cdd6f4;
-  --destructive: #f38ba8; /* red */
-  --border: #45475a; /* surface1 */
-  --input: #45475a; /* surface1 */
-  --ring: #89b4fa; /* blue */
-  /* Charts — Mocha palette */
-  --chart-1: #89b4fa; /* blue */
-  --chart-2: #cba6f7; /* mauve */
-  --chart-3: #94e2d5; /* teal */
-  --chart-4: #a6e3a1; /* green */
-  --chart-5: #f9e2af; /* yellow */
-  /* Sidebar — Mocha mantle */
-  --sidebar: #181825; /* mantle */
-  --sidebar-foreground: #cdd6f4;
-  --sidebar-primary: #89b4fa; /* blue */
-  --sidebar-primary-foreground: #1e1e2e;
-  --sidebar-accent: #313244; /* surface0 */
-  --sidebar-accent-foreground: #cdd6f4;
-  --sidebar-border: #313244;
-  --sidebar-ring: #89b4fa;
-
-  /* Ensure Skeleton catppuccin variables align in dark mode */
-  --color-primary-500: #89b4fa;
-  --color-secondary-500: #cba6f7;
-  --color-tertiary-500: #94e2d5;
-  /* Keep the html background (overscroll area) in sync with --background (Mocha base) */
-  --color-root-bg-dark: #1e1e2e;
+  color-scheme: dark;
+  --background: var(--color-surface-950);
+  --foreground: var(--color-surface-50);
+  --card: var(--color-surface-900);
+  --card-foreground: var(--color-surface-50);
+  --popover: var(--color-surface-900);
+  --popover-foreground: var(--color-surface-50);
+  --primary: var(--color-primary-500);
+  --primary-foreground: var(--color-primary-contrast-500);
+  --secondary: var(--color-secondary-500);
+  --secondary-foreground: var(--color-secondary-contrast-500);
+  --muted: var(--color-surface-800);
+  --muted-foreground: var(--color-surface-300);
+  --accent: var(--color-tertiary-500);
+  --accent-foreground: var(--color-tertiary-contrast-500);
+  --destructive: var(--color-error-500);
+  --destructive-foreground: var(--color-error-contrast-500);
+  --border: var(--color-surface-800);
+  --input: var(--color-surface-700);
+  --ring: var(--color-primary-500);
+  --chart-1: var(--color-primary-400);
+  --chart-2: var(--color-secondary-400);
+  --chart-3: var(--color-tertiary-400);
+  --chart-4: var(--color-success-400);
+  --chart-5: var(--color-warning-400);
+  --sidebar: var(--color-surface-900);
+  --sidebar-foreground: var(--color-surface-50);
+  --sidebar-primary: var(--color-primary-500);
+  --sidebar-primary-foreground: var(--color-primary-contrast-500);
+  --sidebar-accent: var(--color-surface-800);
+  --sidebar-accent-foreground: var(--color-surface-50);
+  --sidebar-border: var(--color-surface-800);
+  --sidebar-ring: var(--color-primary-500);
 }
 
 @theme inline {

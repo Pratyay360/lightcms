@@ -10,6 +10,7 @@ import {
 } from "@lucide/svelte";
 import { ModeWatcher } from "mode-watcher";
 import { page } from "$app/state";
+import { DEFAULT_THEME_ID, MODE_STORAGE_KEY, THEME_STORAGE_KEY } from "$lib/themes.js";
 import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
 import { Avatar } from "$lib/components/ui/avatar";
 import { Toaster } from "$lib/components/ui/sonner";
@@ -20,7 +21,7 @@ injectSpeedInsights();
 let { children, data } = $props();
 </script>
 
-<ModeWatcher defaultTheme="catppuccin" />
+<ModeWatcher defaultTheme={DEFAULT_THEME_ID} modeStorageKey={MODE_STORAGE_KEY} themeStorageKey={THEME_STORAGE_KEY} />
 <Toaster />
 
 <svelte:head>
