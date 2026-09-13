@@ -212,13 +212,23 @@
     ($form as Record<string, unknown>).tags = newTags;
   }
 
-  const currentTitle = $derived(
-    String(
-      data.entry?.frontMatter?.title ||
-        data.entry?.slug ||
-        (data.isNew ? "New Entry" : ""),
-    ),
-  );
+  const currentTitle = $derived.by(() => {
+    const formTitle = ($form as Record<string, unknown>).title;
+    if (typeof formTitle === "string" && formTitle.trim().length > 0) {
+      return formTitle.trim();
+    }
+    const frontMatterTitle = data.entry?.frontMatter?.title;
+    if (typeof frontMatterTitle === "string" && frontMatterTitle.trim().length > 0) {
+      return frontMatterTitle.trim();
+    }
+    if (data.entry?.slug) {
+      return data.entry.slug;
+    }
+    if (data.isNew) {
+      return "New Entry";
+    }
+    return "";
+  });
 
   const saving = $derived($submitting || $delayed);
   let deleting = $state(false);
@@ -405,6 +415,7 @@
                   value={($form as Record<string, string>).title ?? ""}
                   oninput={(e) => {
                     ($form as Record<string, string>).title = (e.currentTarget as HTMLInputElement).value;
+                    $form = $form;
                   }}
                   placeholder="Enter title..."
                 />

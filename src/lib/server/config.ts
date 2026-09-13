@@ -51,6 +51,13 @@ export const collection: LightCmsCollection = {
   label: "Posts",
   fields: [
     {
+      name: "title",
+      type: "text",
+      required: true,
+      label: "Title",
+      placeholder: "Post title",
+    },
+    {
       name: "linkTitle",
       type: "text",
       label: "Link Title",
