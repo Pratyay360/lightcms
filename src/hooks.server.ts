@@ -1,6 +1,5 @@
 import { type Handle, redirect } from "@sveltejs/kit";
-import { svelteKitHandler } from "better-auth/svelte-kit";
-import { building } from "$app/env";
+import { building } from "$app/environment";
 import { auth } from "$lib/server/auth";
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
@@ -12,7 +11,12 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
     setupUrl.search = event.url.search;
     throw redirect(302, setupUrl.toString());
   }
-  if (!building && !event.url.pathname.startsWith("/api/auth")) {
+
+  if (!building && event.url.pathname.startsWith("/api/auth")) {
+    return auth.handler(event.request);
+  }
+
+  if (!building) {
     const sessionData = await auth.api.getSession({
       headers: event.request.headers,
     });
@@ -28,7 +32,8 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
     }
   }
 
-  return svelteKitHandler({ event, resolve, auth, building });
+  return resolve(event);
 };
 
 export const handle: Handle = handleBetterAuth;
+
