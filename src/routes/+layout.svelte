@@ -16,7 +16,7 @@ import { Avatar } from "$lib/components/ui/avatar";
 import { Toaster } from "$lib/components/ui/sonner";
 import { injectAnalytics } from '@vercel/analytics/sveltekit';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
-    import Carbonbadge from "svelte-carbonbadge";
+import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
 injectAnalytics({ mode: 'production' });
 injectSpeedInsights();
 let { children, data } = $props();
@@ -121,8 +121,8 @@ let { children, data } = $props();
       <div class="flex items-center gap-1.5 font-bold text-foreground">
         <Sparkles size={14} class="text-primary" />
         <span>LightCMS</span>
+        <Carbonbadge />
       </div>
     </div>
-    <Carbonbadge />
-  </footer>
+      </footer>
 </div>
