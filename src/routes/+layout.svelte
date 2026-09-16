@@ -16,6 +16,7 @@ import { Avatar } from "$lib/components/ui/avatar";
 import { Toaster } from "$lib/components/ui/sonner";
 import { injectAnalytics } from '@vercel/analytics/sveltekit';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+    import Carbonbadge from "svelte-carbonbadge";
 injectAnalytics({ mode: 'production' });
 injectSpeedInsights();
 let { children, data } = $props();
@@ -122,5 +123,6 @@ let { children, data } = $props();
         <span>LightCMS</span>
       </div>
     </div>
+    <Carbonbadge />
   </footer>
 </div>

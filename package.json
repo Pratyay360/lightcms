@@ -94,6 +94,7 @@
     "octokit": "^5.0.5",
     "pg": "^8.23.0",
     "probot": "^14.3.2",
+    "svelte-carbonbadge": "^0.0.1",
     "svelte-file-dropzone": "^2.0.9",
     "svelte-preprocess": "^6.0.5",
     "svelte-sonner": "^1.2.1",

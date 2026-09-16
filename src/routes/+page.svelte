@@ -28,13 +28,13 @@ import {
       <span>Easy to use</span>
     </div>
 
-    
+
     <div class="flex flex-wrap gap-4">
       <a class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-xs transition-transform hover:scale-[1.02] active:scale-[0.98] gap-2.5" href="/cms">
         Open workspace
         <GitBranch size={17} />
       </a>
-    
+
     </div>
 
     <div
@@ -63,7 +63,7 @@ import {
         <ShieldCheck size={20} class="text-primary" />
         <h3 class="text-sm font-bold text-foreground">Secure access</h3>
         <p class="text-xs leading-relaxed text-muted-foreground">
-          Leverage GitHub's platform for authentication and access control related features.
+          Leverage GitHub's platform for managing content for your static site to access control.
         </p>
       </div>
     </div>
@@ -87,8 +87,6 @@ import {
           <span>Synced</span>
         </div>
       </div>
-
-      <!-- Workspace Preview -->
       <div class="grid h-100 place-items-center bg-muted/20 p-8 text-center">
         <div class="space-y-2">
           <FileText size={24} class="mx-auto text-muted-foreground" />
