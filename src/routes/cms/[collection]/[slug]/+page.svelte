@@ -414,8 +414,10 @@
                   aria-describedby={errTitle ? "err-title" : undefined}
                   value={($form as Record<string, string>).title ?? ""}
                   oninput={(e) => {
-                    ($form as Record<string, string>).title = (e.currentTarget as HTMLInputElement).value;
-                    $form = {...form};
+                    $form = {
+                      ...$form,
+                      title: (e.currentTarget as HTMLInputElement).value,
+                    };
                   }}
                   placeholder="Enter title..."
                 />
