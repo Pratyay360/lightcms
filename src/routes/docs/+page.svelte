@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 let {
 	data,
 }: {
@@ -52,4 +52,4 @@ const _posts = $derived(data.posts);
       </article>
     {/each}
   </div>
-</section>
+</section> -->

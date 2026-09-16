@@ -415,7 +415,7 @@
                   value={($form as Record<string, string>).title ?? ""}
                   oninput={(e) => {
                     ($form as Record<string, string>).title = (e.currentTarget as HTMLInputElement).value;
-                    $form = $form;
+                    $form = {...form};
                   }}
                   placeholder="Enter title..."
                 />

@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 import { ArrowLeft } from "@lucide/svelte";
 import { Button } from "$lib/components/ui/button";
 
@@ -33,4 +33,4 @@ let {
       {@html data?.content}
     </div>
   </article>
-</div>
+</div> -->
