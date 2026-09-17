@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import { cn } from '$lib/utils.js';
+	import MicButton from '../../harper/MicButton.svelte';
 	import { commands } from '../../commands/index.js';
 	import { addAIHighlight, getEditor } from '../../tiptap/index.js';
 	import { useAiEnabled } from '../hooks/useAiEnabled.svelte.js';
@@ -21,9 +22,22 @@
 	const isAiEnabled = useAiEnabled(editor);
 	const { isActive, isClickable } = useCommandState(editor);
 	const commandsKeys = Object.keys(commands);
+
+	const insertTranscript = (text: string) => {
+		const clean = text.trim();
+		if (clean.length === 0) {
+			return;
+		}
+		// Streaming finals arrive chunk by chunk ("hello", "world").
+		// Trail with a space so consecutive chunks do not join together.
+		editor.chain().focus().insertContent(`${clean} `).run();
+	};
 </script>
 
 <div class={cn('flex h-full w-fit items-center gap-2', className)}>
+	<Tooltip tooltip="Dictate (live speech to text)">
+		<MicButton onTranscript={insertTranscript} />
+	</Tooltip>
 	{#if isAiEnabled()}
 		<Tooltip tooltip="Use AI">
 			<Button

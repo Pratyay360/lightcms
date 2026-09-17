@@ -681,3 +681,20 @@
     opacity: 1;
   }
 }
+
+/* Harper grammar / spelling suggestions */
+.tiptap .harper-issue {
+  text-decoration: underline wavy;
+  text-decoration-color: rgba(220, 38, 38, 0.65);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+.tiptap .harper-issue:hover {
+  text-decoration-color: rgba(220, 38, 38, 0.95);
+}
+
+.dark .tiptap .harper-issue {
+  text-decoration-color: rgba(248, 113, 113, 0.7);
+}

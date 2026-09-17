@@ -1,4 +1,5 @@
 import { Tiptap } from "../tiptap/index.ts";
+import Harper from "../harper/Harper.svelte";
 import Toolbar from "./components/Toolbar.svelte";
 import DragHandle from "./drag-handle.svelte";
 import Editor from "./editor.svelte";
@@ -12,6 +13,7 @@ import ToC from "./toc.svelte";
 
 const Edra = Object.assign(Tiptap, {
   Content: Editor,
+  Harper,
   Toolbar,
   BubbleMenu,
   DragHandle,

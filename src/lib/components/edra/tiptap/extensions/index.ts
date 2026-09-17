@@ -3,6 +3,7 @@ import ColorHighlighter from "./ColorHighlighter.ts";
 export * from "./ai/index.js";
 export * from "./audio/index.js";
 export * from "./Callout.ts";
+export * from "./harper/index.js";
 export * from "./iframe/index.js";
 export * from "./image/ImageExtended.ts";
 export * from "./mermaid/index.js";

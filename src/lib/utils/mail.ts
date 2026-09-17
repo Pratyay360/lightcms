@@ -11,15 +11,31 @@ export async function sendMail({
   subject: string;
   text: string;
 }) {
-  const mailHost = process.env.MAIL_HOST!;
+  const mailHost = process.env.MAIL_HOST;
   const rawPort = process.env.MAIL_PORT;
   const mailPort = rawPort ? Number.parseInt(rawPort, 10) : 587;
-  const mailUser = process.env.MAIL_USER!;
-  const mailPass = process.env.MAIL_PASS!;
-  const mailFrom = process.env.MAIL_FROM!;
-  const isSecure = process.env.MAIL_SECURE === "true";
+  const mailUser = process.env.MAIL_USER;
+  const mailPass = process.env.MAIL_PASS;
+  const mailFrom = process.env.MAIL_FROM;
+  const rawSecure = (process.env.MAIL_SECURE ?? "").trim().toLowerCase();
+
+  if (!mailHost) {
+    throw new Error("MAIL_HOST is not configured");
+  }
+  if (!mailUser || !mailPass) {
+    throw new Error("MAIL_USER / MAIL_PASS are not configured");
+  }
+  if (!mailFrom) {
+    throw new Error("MAIL_FROM is not configured");
+  }
 
   if (!Number.isFinite(mailPort)) throw new Error("MAIL_PORT must be a number");
+
+  const explicitSecure =
+    rawSecure.length > 0
+      ? ["true", "1", "yes", "on"].includes(rawSecure)
+      : null;
+  const isSecure = explicitSecure === null ? mailPort === 465 : explicitSecure;
 
   const transporter = createTransport({
     host: mailHost,

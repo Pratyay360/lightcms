@@ -7,6 +7,7 @@ import { MediaPlaceholder } from "../tiptap/extensions/MediaPlaceHolder.ts";
 import {
   AIHighlight,
   Callout,
+  Harper,
   IFrameExtended,
   ImageExtended,
   Mermaid,
@@ -50,6 +51,12 @@ export interface EdraEditorProps {
     onChunk: (chunk: string) => void,
     onError: (error: Error) => void,
   ) => Promise<void>;
+  /**
+   * Enable Harper (WASM) grammar / spelling suggestions in the editor.
+   * When true, the editor installs the Harper Tiptap extension which
+   * underlines issues and shows a popover with replacement suggestions.
+   */
+  harper?: boolean;
 }
 
 export const createEditor = (props?: EdraEditorProps) =>
@@ -76,6 +83,7 @@ export const createEditor = (props?: EdraEditorProps) =>
       AIHighlight.configure({
         callAI: props?.callAI || null,
       }),
+      ...(props?.harper ? [Harper] : []),
       TableOfContents.configure({
         getIndex: getHierarchicalIndexes,
         onUpdate: (indexes) => {

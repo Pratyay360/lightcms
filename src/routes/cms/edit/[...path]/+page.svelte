@@ -84,6 +84,7 @@
         onChunk(chunk);
       }
     },
+    harper: true,
     onUpdate: () => {
       if (!editor) return;
       bodyContent = editor.getMarkdown();
@@ -360,6 +361,7 @@
       <div class="p-6">
         <Edra {editor}>
           <Edra.UseAI />
+          <Edra.Harper />
           <Edra.BubbleMenu />
           <Edra.Content class="*:outline-none cursor-auto min-h-[500px]" />
           <Edra.DragHandle />
