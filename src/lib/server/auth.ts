@@ -22,6 +22,7 @@ function createAuth() {
     trustedOrigins: ["*lightcms.*"],
     advanced: {
       trustedProxyHeaders: true,
+      requireLocalEmailVerified: false,
     },
     socialProviders: {
       github: {
