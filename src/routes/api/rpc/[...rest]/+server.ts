@@ -6,9 +6,7 @@ import type { RequestHandler } from "./$types";
 const handler = new RPCHandler(router, {
   interceptors: [
     onError((error) => {
-      // Observe only: rethrowing here would replace ORPCError status codes
-      // (e.g. BAD_REQUEST) with a generic 500.
-      console.error("[rpc error]", error instanceof Error ? error.message : String(error));
+      throw new Error(error instanceof Error ? error.message : String(error));
     }),
   ],
 });

@@ -1,13 +1,13 @@
 import { relations } from "drizzle-orm";
 import {
   bigint,
+  boolean,
+  index,
+  integer,
   pgTable,
+  primaryKey,
   text,
   timestamp,
-  boolean,
-  integer,
-  index,
-  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {

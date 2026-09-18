@@ -1,11 +1,11 @@
 <script lang="ts">
-	import AlignCenter from '@lucide/svelte/icons/text-align-center';
-	import AlignRight from '@lucide/svelte/icons/text-align-end';
-	import AlignLeft from '@lucide/svelte/icons/text-align-start';
+	import Captions from '@lucide/svelte/icons/captions';
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import EllipsisVertical from '@lucide/svelte/icons/ellipsis-vertical';
 	import Fullscreen from '@lucide/svelte/icons/fullscreen';
-	import Captions from '@lucide/svelte/icons/captions';
+	import AlignCenter from '@lucide/svelte/icons/text-align-center';
+	import AlignRight from '@lucide/svelte/icons/text-align-end';
+	import AlignLeft from '@lucide/svelte/icons/text-align-start';
 	import Trash from '@lucide/svelte/icons/trash-2';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';

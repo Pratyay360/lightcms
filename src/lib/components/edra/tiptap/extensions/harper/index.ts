@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
+import type { Node as PMNode } from "@tiptap/pm/model";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import type { Node as PMNode } from "@tiptap/pm/model";
 import { lintText } from "../../../harper/harper-client.ts";
 import type { HarperIssue } from "../../../harper/types.ts";
 
@@ -39,7 +39,11 @@ const collectTextSegments = (doc: PMNode): Array<{ from: number; to: number; tex
   doc.descendants((node, pos) => {
     if (!node.isText) return true;
     if (node.marks.some((mark) => mark.type.name === "code")) return false;
-    segments.push({ from: pos, to: pos + node.nodeSize, text: node.text ?? "" });
+    segments.push({
+      from: pos,
+      to: pos + node.nodeSize,
+      text: node.text ?? "",
+    });
     return true;
   });
   return segments;

@@ -8,15 +8,16 @@ import {
 	LucideFileBadge2,
 	Sparkles,
 } from "@lucide/svelte";
+import { injectAnalytics } from '@vercel/analytics/sveltekit';
+import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 import { ModeWatcher } from "mode-watcher";
 import { page } from "$app/state";
-import { DEFAULT_THEME_ID, MODE_STORAGE_KEY, THEME_STORAGE_KEY } from "$lib/themes.js";
+import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
 import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
 import { Avatar } from "$lib/components/ui/avatar";
 import { Toaster } from "$lib/components/ui/sonner";
-import { injectAnalytics } from '@vercel/analytics/sveltekit';
-import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
-import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
+import { DEFAULT_THEME_ID, MODE_STORAGE_KEY, THEME_STORAGE_KEY } from "$lib/themes.js";
+
 injectAnalytics({ mode: 'production' });
 injectSpeedInsights();
 let { children, data } = $props();

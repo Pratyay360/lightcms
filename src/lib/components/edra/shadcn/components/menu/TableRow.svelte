@@ -9,12 +9,12 @@
 
 	import { Separator } from '$lib/components/ui/separator';
 	import strings from '../../../strings';
+	import { BubbleMenu, getEditor } from '../../../tiptap';
 	import {
 		isRowGripSelected,
 		moveRowDown,
 		moveRowUp
 	} from '../../../tiptap/extensions/table/utils';
-	import { BubbleMenu, getEditor } from '../../../tiptap';
 
 	const editor = getEditor();
 </script>

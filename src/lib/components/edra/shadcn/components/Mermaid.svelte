@@ -2,9 +2,9 @@
 	import type { NodeViewProps } from '@tiptap/core';
 	import { onDestroy, onMount, tick } from 'svelte';
 	import { NodeViewWrapper } from '../../tiptap/index.js';
+	import { downloadDiagramAsPng } from './mermaid/download.js';
 	import MermaidEditor from './mermaid/MermaidEditor.svelte';
 	import MermaidPreview from './mermaid/MermaidPreview.svelte';
-	import { downloadDiagramAsPng } from './mermaid/download.js';
 	import {
 		createMermaidRenderer,
 		MERMAID_EDIT_DEBOUNCE_DELAY,

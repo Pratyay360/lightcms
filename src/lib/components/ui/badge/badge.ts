@@ -1,1 +1,1 @@
-export { badgeVariants, type BadgeVariant } from "./badge.svelte";
+export { type BadgeVariant, badgeVariants } from "./badge.svelte";

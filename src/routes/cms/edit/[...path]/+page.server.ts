@@ -151,7 +151,9 @@ export const actions: Actions = {
     }
 
     if (destinationPath === sourcePath) {
-      return fail(400, { error: "Destination path is identical to current path." });
+      return fail(400, {
+        error: "Destination path is identical to current path.",
+      });
     }
 
     try {

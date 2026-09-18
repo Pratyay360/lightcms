@@ -200,7 +200,9 @@ export const actions: Actions = {
     }
 
     if (destinationPath === sourcePath) {
-      return fail(400, { error: "Source and destination paths must be different." });
+      return fail(400, {
+        error: "Source and destination paths must be different.",
+      });
     }
 
     try {

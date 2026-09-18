@@ -1,5 +1,5 @@
-import { Tiptap } from "../tiptap/index.ts";
 import Harper from "../harper/Harper.svelte";
+import { Tiptap } from "../tiptap/index.ts";
 import Toolbar from "./components/Toolbar.svelte";
 import DragHandle from "./drag-handle.svelte";
 import Editor from "./editor.svelte";

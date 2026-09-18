@@ -32,9 +32,7 @@ export async function sendMail({
   if (!Number.isFinite(mailPort)) throw new Error("MAIL_PORT must be a number");
 
   const explicitSecure =
-    rawSecure.length > 0
-      ? ["true", "1", "yes", "on"].includes(rawSecure)
-      : null;
+    rawSecure.length > 0 ? ["true", "1", "yes", "on"].includes(rawSecure) : null;
   const isSecure = explicitSecure === null ? mailPort === 465 : explicitSecure;
 
   const transporter = createTransport({

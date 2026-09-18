@@ -8,12 +8,12 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import strings from '../../../strings.js';
+	import { BubbleMenu, getEditor } from '../../../tiptap';
 	import {
 		isColumnGripSelected,
 		moveColumnLeft,
 		moveColumnRight
 	} from '../../../tiptap/extensions/table';
-	import { BubbleMenu, getEditor } from '../../../tiptap';
 
 	const editor = getEditor();
 </script>

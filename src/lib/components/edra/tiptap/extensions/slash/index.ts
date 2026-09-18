@@ -1,8 +1,8 @@
 import { Extension } from "@tiptap/core";
 import type { Component } from "svelte";
+import { SLASH_EXTENSION_NAME } from "./catalog.js";
 import { createSlashPlugin } from "./plugin.js";
 import { SlashPopup } from "./popup.js";
-import { SLASH_EXTENSION_NAME } from "./catalog.js";
 
 export default (menuList: Component<any, any, "">): Extension =>
   Extension.create({

@@ -6,8 +6,8 @@
 	import Plus from '@lucide/svelte/icons/plus';
 	import RemoveFormatting from '@lucide/svelte/icons/remove-formatting';
 	import Delete from '@lucide/svelte/icons/trash-2';
-	import { DragHandlePlugin } from '@tiptap/extension-drag-handle';
 	import type { Editor } from '@tiptap/core';
+	import { DragHandlePlugin } from '@tiptap/extension-drag-handle';
 	import type { Node } from '@tiptap/pm/model';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -15,6 +15,10 @@
 	import { cn } from '$lib/utils.js';
 	import { commands, type EdraCommand } from '../commands/index.ts';
 	import { getEditor } from '../tiptap/index.ts';
+	import AlignmentSubmenu from './drag-handle/AlignmentSubmenu.svelte';
+	import ColorsSubmenu from './drag-handle/ColorsSubmenu.svelte';
+	import CopyAsSubmenu from './drag-handle/CopyAsSubmenu.svelte';
+	import TurnIntoMenu from './drag-handle/TurnIntoMenu.svelte';
 	import {
 		handleAIHighlight,
 		handleDelete,
@@ -22,10 +26,6 @@
 		handleRemoveFormatting,
 		insertNode,
 	} from './drag-handle-actions.js';
-	import AlignmentSubmenu from './drag-handle/AlignmentSubmenu.svelte';
-	import ColorsSubmenu from './drag-handle/ColorsSubmenu.svelte';
-	import CopyAsSubmenu from './drag-handle/CopyAsSubmenu.svelte';
-	import TurnIntoMenu from './drag-handle/TurnIntoMenu.svelte';
 	import { useAiEnabled } from './hooks/useAiEnabled.svelte.js';
 
 	interface Props {

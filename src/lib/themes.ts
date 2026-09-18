@@ -10,8 +10,16 @@ export const THEME_STORAGE_KEY = "mode-watcher-theme";
 export const DEFAULT_THEME_ID = "catppuccin";
 
 export const APP_THEMES: readonly AppTheme[] = [
-  { id: "catppuccin", label: "Catppuccin", description: "Soft pastel dark-first theme" },
-  { id: "cerberus", label: "Cerberus", description: "Skeleton default neutral theme" },
+  {
+    id: "catppuccin",
+    label: "Catppuccin",
+    description: "Soft pastel dark-first theme",
+  },
+  {
+    id: "cerberus",
+    label: "Cerberus",
+    description: "Skeleton default neutral theme",
+  },
   { id: "concord", label: "Concord", description: "Clean slate gray theme" },
   { id: "crimson", label: "Crimson", description: "Bold red accent theme" },
   { id: "dracula", label: "Dracula", description: "Classic dark purple theme" },
@@ -27,7 +35,11 @@ export const APP_THEMES: readonly AppTheme[] = [
   { id: "reign", label: "Reign", description: "Royal purple theme" },
   { id: "rocket", label: "Rocket", description: "Vibrant violet theme" },
   { id: "rose", label: "Rose", description: "Soft pink theme" },
-  { id: "rosepine", label: "Rosé Pine", description: "Muted pine and rose theme" },
+  {
+    id: "rosepine",
+    label: "Rosé Pine",
+    description: "Muted pine and rose theme",
+  },
   { id: "sahara", label: "Sahara", description: "Warm sand theme" },
   { id: "seafoam", label: "Seafoam", description: "Cool ocean teal theme" },
   { id: "terminus", label: "Terminus", description: "Terminal green theme" },

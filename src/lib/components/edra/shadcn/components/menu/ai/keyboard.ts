@@ -35,7 +35,10 @@ export function resolveAiKeydown(event: KeyboardEvent, context: AiKeydownContext
     return { type: "move", index: (activeIndex + 1) % actionCount };
   }
   if (event.key === "ArrowUp") {
-    return { type: "move", index: (activeIndex - 1 + actionCount) % actionCount };
+    return {
+      type: "move",
+      index: (activeIndex - 1 + actionCount) % actionCount,
+    };
   }
   if (event.key === "Enter") {
     return { type: "run", index: activeIndex };

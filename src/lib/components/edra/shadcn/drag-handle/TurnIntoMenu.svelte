@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Command from '@lucide/svelte/icons/command';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import type { Node } from '@tiptap/pm/model';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import type { EdraCommand } from '../../commands/index.js';
 	import type { Editor } from '../../tiptap/index.js';
 

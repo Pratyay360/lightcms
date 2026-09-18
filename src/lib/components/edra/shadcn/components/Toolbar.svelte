@@ -3,8 +3,8 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import { cn } from '$lib/utils.js';
-	import MicButton from '../../harper/MicButton.svelte';
 	import { commands } from '../../commands/index.js';
+	import MicButton from '../../harper/MicButton.svelte';
 	import { addAIHighlight, getEditor } from '../../tiptap/index.js';
 	import { useAiEnabled } from '../hooks/useAiEnabled.svelte.js';
 	import { useCommandState } from '../hooks/useCommandState.svelte.js';

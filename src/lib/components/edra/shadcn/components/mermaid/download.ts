@@ -1,7 +1,9 @@
 /** Serialize the rendered SVG and trigger a PNG download. */
 export function downloadDiagramAsPng(svg: SVGSVGElement): void {
   const svgString = new XMLSerializer().serializeToString(svg);
-  const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+  const svgBlob = new Blob([svgString], {
+    type: "image/svg+xml;charset=utf-8",
+  });
   const DOMURL = window.URL || window.webkitURL || window;
   const url = DOMURL.createObjectURL(svgBlob);
 

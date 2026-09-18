@@ -12,13 +12,13 @@
 		SUMMARIZE_PROMPT,
 	} from '../../../commands/index.js';
 	import { BubbleMenu, getEditor, removeAIHighlight, useEditorTransaction } from '../../../tiptap/index.js';
-	import { createAIContentManager } from './ai-content-manager.js';
 	import AiActionBar from './ai/AiActionBar.svelte';
 	import AiPromptForm from './ai/AiPromptForm.svelte';
 	import AiQuickActions from './ai/AiQuickActions.svelte';
 	import AiStreamingIndicator from './ai/AiStreamingIndicator.svelte';
 	import { resolveAiKeydown } from './ai/keyboard.js';
-	import { QUICK_ACTIONS, type AiActionId, type QuickAction } from './ai/quick-actions.js';
+	import { type AiActionId, QUICK_ACTIONS, type QuickAction } from './ai/quick-actions.js';
+	import { createAIContentManager } from './ai-content-manager.js';
 
 	const editor = getEditor();
 	const manager = createAIContentManager(editor);

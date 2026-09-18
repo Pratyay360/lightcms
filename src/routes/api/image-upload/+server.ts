@@ -13,10 +13,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
   try {
     const form = new FormData();
-    form.set("key", "5386e05a3562c7a8f984e73401540836");
+    form.set("key", process.env.CDN_KEY!);
     form.set("source", base64);
 
-    const response = await fetch("https://imgcdn.dev/api/1/upload", {
+    const response = await fetch(process.env.CDN_URL!, {
       method: "POST",
       body: form,
     });
