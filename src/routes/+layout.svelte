@@ -105,8 +105,6 @@ let { children, data } = $props();
       </nav>
     </div>
   </header>
-
-  <!-- Main Content container with background glow -->
   <div class="relative overflow-hidden">
     <main
       id="main-content"

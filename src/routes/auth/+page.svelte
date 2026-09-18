@@ -9,6 +9,7 @@
   import { untrack } from "svelte";
   import { superForm } from "sveltekit-superforms";
   import { goto } from "$app/navigation";
+  import { page } from "$app/state";
   import { authClient, signIn, signOut } from "$lib/auth-client";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
@@ -29,6 +30,16 @@
 
   async function signInWithGitHub() {
     await signIn.social({ provider: "github", callbackURL: "/cms" });
+  }
+
+  let isLinkingGitHub = $state(false);
+  async function linkGitHub() {
+    isLinkingGitHub = true;
+    try {
+      await authClient.linkSocial({ provider: "github", callbackURL: "/cms" });
+    } finally {
+      isLinkingGitHub = false;
+    }
   }
 
   async function signOutUser() {
@@ -95,6 +106,20 @@
           : "Connect your GitHub account or request a magic link"}
       </p>
     </div>
+
+    {#if page.url.searchParams.get("error")}
+      {@const authError = page.url.searchParams.get("error")}
+      <div
+        class="rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-xs font-medium text-destructive"
+        role="alert"
+      >
+        {#if authError === "account_not_linked"}
+          An account already exists with this email address. Automatic account linking is now enabled—please click Continue with GitHub again to link your accounts.
+        {:else}
+          Authentication error: {authError}. Please try again.
+        {/if}
+      </div>
+    {/if}
 
     {#if data.session && data.user}
       <div
@@ -209,9 +234,9 @@
             />
           </div>
         </div>
-        {#if $authErrors.email?.length}
+        {#if $authErrors.email}
           <p class="text-xs font-medium text-destructive">
-            {$authErrors.email[0]}
+            {Array.isArray($authErrors.email) ? $authErrors.email[0] : $authErrors.email}
           </p>
         {/if}
         <Button

@@ -20,6 +20,12 @@ function createAuth() {
     baseURL: process.env.BETTER_AUTH_URL!,
     secret: process.env.BETTER_AUTH_SECRET!,
     trustedOrigins: ["*lightcms.*"],
+    account: {
+      accountLinking: {
+        enabled: true,
+        trustedProviders: ["github"],
+      },
+    },
     advanced: {
       trustedProxyHeaders: true,
       requireLocalEmailVerified: false,

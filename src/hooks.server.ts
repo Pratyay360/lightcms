@@ -5,7 +5,8 @@ import { auth } from "$lib/server/auth";
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
   if (
     event.url.pathname === "/api/auth/callback/github" &&
-    event.url.searchParams.has("installation_id")
+    event.url.searchParams.has("installation_id") &&
+    !event.url.searchParams.has("code")
   ) {
     const setupUrl = new URL("/github/setup", event.url.origin);
     setupUrl.search = event.url.search;
