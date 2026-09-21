@@ -30,8 +30,7 @@ export const GET: RequestHandler = async ({ cookies, locals, url }) => {
   cookies.delete("lightcms_github_install_state", { path: "/github/setup" });
 
   const isAuthorized =
-    isStateValid ||
-    (await canUserAdministerInstallation(locals.session.userId, installationId));
+    isStateValid || (await canUserAdministerInstallation(locals.session.userId, installationId));
 
   if (!isAuthorized) {
     throw new ORPCError(
