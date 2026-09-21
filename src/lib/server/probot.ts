@@ -3,19 +3,11 @@ import botApp from "$lib/bot/index.js";
 
 let cachedProbot: Probot | undefined;
 
-function readRequiredEnv(name: string): string {
-	const value = process.env[name];
-	if (value === undefined || value === "") {
-		throw new Error(`Missing required environment variable ${name}`);
-	}
-	return value;
-}
-
 function normalizePrivateKey(value: string): string {
-	if (value.includes("\\n")) {
-		return value.replace(/\\n/g, "\n");
-	}
-	return value;
+  if (value.includes("\\n")) {
+    return value.replace(/\\n/g, "\n");
+  }
+  return value;
 }
 
 /**
@@ -27,26 +19,25 @@ function normalizePrivateKey(value: string): string {
  * by every call to the webhook endpoint.
  */
 export async function getProbot(): Promise<Probot> {
-	if (cachedProbot !== undefined) {
-		return cachedProbot;
-	}
+  if (cachedProbot !== undefined) {
+    return cachedProbot;
+  }
 
-	const appIdValue = readRequiredEnv("GITHUB_APP_ID");
-	const appId = Number(appIdValue);
-	if (Number.isNaN(appId)) {
-		throw new Error("Environment variable GITHUB_APP_ID must be a number");
-	}
+  const appIdValue = process.env.GITHUB_APP_ID!;
+  const appId = Number(appIdValue);
+  if (Number.isNaN(appId)) {
+    throw new Error("Environment variable GITHUB_APP_ID must be a number");
+  }
+  const privateKey = normalizePrivateKey(process.env.GITHUB_PRIVATE_KEY!);
+  const secret = process.env.GITHUB_WEBHOOK_SECRET!;
 
-	const privateKey = normalizePrivateKey(readRequiredEnv("GITHUB_PRIVATE_KEY"));
-	const secret = readRequiredEnv("GITHUB_WEBHOOK_SECRET");
+  const probot = new Probot({
+    appId,
+    privateKey,
+    secret,
+  });
 
-	const probot = new Probot({
-		appId,
-		privateKey,
-		secret,
-	});
-
-	await probot.load(botApp);
-	cachedProbot = probot;
-	return probot;
+  await probot.load(botApp);
+  cachedProbot = probot;
+  return probot;
 }
