@@ -1,4 +1,4 @@
-# Be strict at code review and always follow the standard code quality guidelines ..
+# Be strict at code review and always follow the standard code quality guidelines
 
 no sloppy ternary operators use of or operator and operator unnecessaryly
 follow all the best practices in code. like all the best practices
@@ -22,7 +22,7 @@ follow all the best practices in code. like all the best practices
 
 This project is using Vite+, a unified toolchain built on top of Vite, Rolldown, Vitest, tsdown, Oxlint, Oxfmt, and Vite Task. Vite+ wraps runtime management, package management, and frontend tooling in a single global CLI called `vp`. Vite+ is distinct from Vite, and it invokes Vite through `vp dev` and `vp build`. Run `vp help` to print a list of commands and `vp <command> --help` for information about a specific command.
 
-Docs are local at `node_modules/vite-plus/docs` or online at https://viteplus.dev/guide/.
+Docs are local at `node_modules/vite-plus/docs` or online at <https://viteplus.dev/guide/>.
 
 ## Built-in Commands vs Scripts
 

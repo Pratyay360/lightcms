@@ -19,8 +19,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       throw new ORPCError(
         "Sign in with the GitHub account that can administer this installation, or re-authenticate your GitHub account.",
       );
-    }
-
+    } 
+    
     const response = await getGitHubApp().octokit.rest.apps.getInstallation({
       installation_id: installationId,
     });

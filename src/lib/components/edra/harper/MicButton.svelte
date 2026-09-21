@@ -94,9 +94,8 @@
 			</span>
 		</button>
 
-		<div
+		<section
 			class="absolute top-full left-0 z-50 mt-2 w-64 rounded-lg border border-border bg-popover/95 p-3 text-xs text-popover-foreground shadow-lg backdrop-blur-sm transition-all"
-			role="region"
 			aria-live="polite"
 		>
 			<div class="flex items-center justify-between gap-2 border-b border-border/50 pb-2">
@@ -132,7 +131,7 @@
 					Stop
 				</button>
 			</div>
-		</div>
+		</section>
 	{:else}
 		<Tooltip tooltip={isSupported ? tooltip : 'Speech recognition not supported in this browser'}>
 			<button

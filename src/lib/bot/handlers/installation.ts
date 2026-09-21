@@ -1,53 +1,75 @@
 import type { Context } from "probot";
-import { wrapBotError } from "./error-handler.js";
 
-export async function handleInstallation(context: Context<"installation">) {
-  const { payload, log } = context;
-  const { action, repositories, installation, sender } = payload;
-  const account = installation?.account;
-  const accountLogin =
-    account && "login" in account
-      ? account.login
-      : account && "slug" in account
-        ? account.slug
-        : sender?.login;
+type InstallationPayload = Context<"installation">["payload"];
 
-  switch (action) {
-    case "created": {
-      const repoCount = repositories?.length;
-      log.info(
-        {
-          account: accountLogin,
-          repos: repoCount,
-        },
-        "LightCMS bot installed",
-      );
+/**
+ * Resolve a human-readable login for the account that installed the app.
+ * Returns `undefined` when GitHub omits every identifier instead of
+ * falling back to an empty string that would break Octokit calls.
+ */
+function resolveAccountLogin(payload: InstallationPayload): string | undefined {
+	const account = payload.installation?.account;
 
-      if (repositories && repositories.length > 0) {
-        for (const repo of repositories.slice(0, 5)) {
-          try {
-            await context.octokit.rest.issues.create({
-              owner: accountLogin,
-              repo: repo.name,
-              title: "👋 LightCMS bot is now active",
-              body: "",
-            });
-          } catch (error) {
-            wrapBotError(error);
-          }
-        }
-      }
-      break;
-    }
+	if (account !== undefined && account !== null && "login" in account) {
+		const login = account.login;
+		if (typeof login === "string" && login.length > 0) {
+			return login;
+		}
+	}
 
-    case "deleted": {
-      log.info(
-        {
-          account: accountLogin,
-        },
-        "LightCMS bot uninstalled",
-      );
-      break;
-    }
-  }
+	if (account !== undefined && account !== null && "slug" in account) {
+		const slug = account.slug;
+		if (typeof slug === "string" && slug.length > 0) {
+			return slug;
+		}
+	}
+
+	const senderLogin = payload.sender?.login;
+	if (typeof senderLogin === "string" && senderLogin.length > 0) {
+		return senderLogin;
+	}
+
+	return undefined;
+}
+
+/**
+ * Handle installation lifecycle events.
+ *
+ * The handler records installs and uninstalls. It deliberately creates
+ * no issues or comments: GitHub rejects empty issue bodies, and opening
+ * issues on every install is spammy for repositories the app was just
+ * granted access to.
+ */
+export async function handleInstallation(
+	context: Context<"installation">,
+): Promise<void> {
+	const { payload, log } = context;
+	const accountLogin = resolveAccountLogin(payload);
+	const repositoryCount = payload.repositories?.length ?? 0;
+
+	if (payload.action === "created") {
+		log.info(
+			{
+				account: accountLogin,
+				repositories: repositoryCount,
+			},
+			"LightCMS bot installed",
+		);
+		return;
+	}
+
+	if (payload.action === "deleted") {
+		log.info(
+			{
+				account: accountLogin,
+			},
+			"LightCMS bot uninstalled",
+		);
+		return;
+	}
+
+	log.debug(
+		{ action: payload.action },
+		"Ignoring unsupported installation action",
+	);
 }
