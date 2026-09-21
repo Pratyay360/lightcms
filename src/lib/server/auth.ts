@@ -19,7 +19,10 @@ function createAuth() {
     }),
     baseURL: process.env.BETTER_AUTH_URL!,
     secret: process.env.BETTER_AUTH_SECRET!,
-    trustedOrigins: ["*lightcms.*"],
+    trustedOrigins: ["*"],
+    onAPIError: {
+      errorURL: "/auth",
+    },
     account: {
       accountLinking: {
         enabled: true,
