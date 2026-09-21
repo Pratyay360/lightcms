@@ -28,15 +28,22 @@
   let isUsingPasskey = $state(false);
   let isAddingPasskey = $state(false);
 
+  let isSigningInWithGitHub = $state(false);
   async function signInWithGitHub() {
-    await signIn.social({ provider: "github", callbackURL: "/cms" });
+    if (isSigningInWithGitHub) return;
+    isSigningInWithGitHub = true;
+    try {
+      await signIn.social({ provider: "github", callbackURL: "/cms", errorCallbackURL: "/auth" });
+    } finally {
+      isSigningInWithGitHub = false;
+    }
   }
 
   let isLinkingGitHub = $state(false);
   async function linkGitHub() {
     isLinkingGitHub = true;
     try {
-      await authClient.linkSocial({ provider: "github", callbackURL: "/cms" });
+      await authClient.linkSocial({ provider: "github", callbackURL: "/cms", errorCallbackURL: "/auth" });
     } finally {
       isLinkingGitHub = false;
     }
@@ -175,9 +182,10 @@
         <Button
           size="lg"
           class="w-full justify-center gap-2.5 text-sm font-semibold py-2.5 shadow-xs"
+          disabled={isSigningInWithGitHub}
           onclick={signInWithGitHub}
         >
-          <GitBranch size={18} /> Continue with GitHub
+          <GitBranch size={18} /> {isSigningInWithGitHub ? "Redirecting to GitHub..." : "Continue with GitHub"}
         </Button>
         <Button
           variant="outline"

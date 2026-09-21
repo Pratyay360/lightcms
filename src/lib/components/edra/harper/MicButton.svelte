@@ -1,147 +1,154 @@
 <script lang="ts">
-	import { LoaderCircle, Mic, MicOff } from '@lucide/svelte';
+	import { Mic, MicAudioLines, MicOff } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
+	import { type ButtonSize, type ButtonVariant, buttonVariants } from '$lib/components/ui/button/index.js';
+	import { cn } from '$lib/utils.js';
+	import Tooltip from '../shadcn/components/Tooltip.svelte';
+	import { createSpeechRecognition } from './speech-recognition.svelte.js';
 
-	interface SpeechRecognitionEventMap {
-		result: SpeechRecognitionEvent;
-		error: SpeechRecognitionErrorEvent;
-		end: Event;
-	}
-	interface SpeechRecognition {
-		continuous: boolean;
-		interimResults: boolean;
-		lang: string;
-		onresult: ((e: SpeechRecognitionEvent) => void) | null;
-		onerror: ((e: SpeechRecognitionErrorEvent) => void) | null;
-		onend: (() => void) | null;
-		start(): void;
-		stop(): void;
-		readonly error: string;
-	}
-	interface SpeechRecognitionEvent {
-		readonly resultIndex: number;
-		readonly results: SpeechRecognitionResultSet;
-	}
-	interface SpeechRecognitionResultSet {
-		readonly length: number;
-		item(index: number): SpeechRecognitionResult;
-		[index: number]: SpeechRecognitionResult;
-	}
-	interface SpeechRecognitionResult {
-		readonly isFinal: boolean;
-		item(index: number): SpeechRecognitionAlternative;
-		[index: number]: SpeechRecognitionAlternative;
-	}
-	interface SpeechRecognitionAlternative {
-		readonly transcript: string;
-		readonly confidence: number;
-	}
-	interface SpeechRecognitionErrorEvent extends Event {
-		readonly error: string;
-	}
-	type Status = 'idle' | 'listening' | 'error';
 	interface Props {
 		onTranscript: (text: string) => void;
-		chunkMs?: number;
+		onInterim?: (text: string) => void;
+		lang?: string;
 		class?: string;
-		size?: 'icon' | 'icon-sm' | 'icon-lg';
-		variant?: 'ghost' | 'outline' | 'secondary';
+		size?: ButtonSize;
+		variant?: ButtonVariant;
+		tooltip?: string;
 	}
 
-	let { onTranscript, chunkMs = 4000, class: className = '', size = 'icon', variant = 'ghost' }: Props = $props();
+	let {
+		onTranscript,
+		onInterim,
+		lang,
+		class: className = '',
+		size = 'icon',
+		variant = 'ghost',
+		tooltip = 'Dictate (live speech to text)'
+	}: Props = $props();
 
-	let status = $state<Status>('idle');
-	let recognition: SpeechRecognition | null = null;
-	let finalText = '';
-
-	const getRecognition = (): SpeechRecognition | null => {
-		const Ctor = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
-		if (!Ctor) return null;
-		const r = new Ctor();
-		r.continuous = true;
-		r.interimResults = true;
-		r.lang = 'en-US';
-		return r;
-	};
-
-	const setError = (message: string) => {
-		status = 'error';
-		toast.error(message);
-		setTimeout(() => { if (status === 'error') status = 'idle'; }, 1500);
-	};
-
-	const start = () => {
-		if (status !== 'idle') return;
-		const r = getRecognition();
-		if (!r) { setError('Speech recognition is not supported in this browser.'); return; }
-
-		recognition = r;
-		finalText = '';
-
-		r.onresult = (e: SpeechRecognitionEvent) => {
-			let interim = '';
-			for (let i = e.resultIndex; i < e.results.length; i++) {
-				if (e.results[i].isFinal) {
-					finalText += e.results[i][0].transcript;
-				} else {
-					interim += e.results[i][0].transcript;
-				}
+	const speech = createSpeechRecognition({
+		lang,
+		onTranscript(finalChunk) {
+			onTranscript(finalChunk);
+		},
+		onInterim(interimChunk) {
+			if (onInterim) {
+				onInterim(interimChunk);
 			}
-			const display = finalText + interim;
-			if (display.trim()) onTranscript(display.trim());
-		};
+		},
+		onError(err) {
+			toast.error(err.message);
+		}
+	});
 
-		r.onerror = (_e: SpeechRecognitionErrorEvent) => {
-			if (r.error === 'no-speech' || r.error === 'aborted') return;
-			setError('Live transcription failed.');
-			cleanup();
-		};
+	const activeLang = $derived(
+		lang ?? (typeof navigator !== 'undefined' && navigator.language ? navigator.language : 'en-US')
+	);
 
-		r.onend = () => {
-			if (status === 'listening') {
-				try { r.stop(); } catch {}
-				cleanup();
-			}
-		};
+	const isListening = $derived(speech.isListening);
+	const isSpeaking = $derived(speech.isSpeaking);
+	const isSupported = $derived(speech.isSupported);
+	const interimTranscript = $derived(speech.interimTranscript);
 
-		try { r.start(); } catch { setError('Could not start live dictation.'); return; }
-		status = 'listening';
+	const buttonAriaLabel = $derived(
+		isListening ? 'Stop live dictation' : 'Start live dictation'
+	);
+
+	const handleClick = () => {
+		if (!isSupported) {
+			toast.error('Speech recognition is not supported in this browser.');
+			return;
+		}
+		speech.toggle();
 	};
 
-	const stop = () => {
-		if (status !== 'listening' || !recognition) return;
-		try { recognition.stop(); } catch {}
-		cleanup();
-	};
-
-	const cleanup = () => {
-		finalText = '';
-		recognition = null;
-		status = 'idle';
-	};
-
-	const toggle = () => { if (status === 'listening') stop(); else if (status === 'idle') void start(); };
-	const isActive = $derived(status === 'listening');
-	const buttonLabel = $derived(status === 'listening' ? 'Stop live dictation' : 'Start live dictation');
-	const showLiveBadge = $derived(isActive);
-
-	$effect(() => () => {
-		if (recognition) { try { recognition.stop(); } catch {} recognition = null; }
-		status = 'idle';
+	$effect(() => {
+		return () => {
+			speech.destroy();
+		};
 	});
 </script>
 
-<div class="relative inline-flex items-start gap-2">
-	<button type="button" onclick={toggle} aria-label={buttonLabel} aria-pressed={isActive} disabled={status === 'error'}
-		class="relative inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground {className}">
-		{#if status === 'listening'}<MicOff class="size-4 text-red-500" />
-		{:else}<Mic class="size-4" />{/if}
-		{#if status === 'listening'}<span class="absolute -top-1 -right-1 size-2 animate-pulse rounded-full bg-red-500"></span>{/if}
-	</button>
-	{#if showLiveBadge}
-		<div class="absolute top-full left-0 z-50 mt-2 w-56 rounded-md border bg-popover p-2 text-xs shadow-md">
-			<p class="flex items-center gap-1 font-medium"><span class="size-1.5 animate-pulse rounded-full bg-red-500"></span>Live dictation</p>
-			<p class="mt-1 opacity-80">Speaking… (Web Speech API)</p>
-		</div>
+<div class="relative inline-flex items-center">
+	{#if isListening}
+		<button
+			type="button"
+			onclick={handleClick}
+			class={cn(
+				buttonVariants({ variant, size }),
+				'relative text-red-500 hover:text-red-600 dark:text-red-400',
+				className
+			)}
+			aria-label={buttonAriaLabel}
+			aria-pressed={true}
+			data-state="active"
+		>
+			{#if isSpeaking}
+				<MicAudioLines class="size-4 animate-pulse" />
+			{:else}
+				<MicOff class="size-4" />
+			{/if}
+			<span class="absolute -top-0.5 -right-0.5 flex size-2">
+				<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+				<span class="relative inline-flex size-2 rounded-full bg-red-500"></span>
+			</span>
+		</button>
+
+		<section
+			class="absolute top-full left-0 z-50 mt-2 w-64 rounded-lg border border-border bg-popover/95 p-3 text-xs text-popover-foreground shadow-lg backdrop-blur-sm transition-all"
+			aria-live="polite"
+		>
+			<div class="flex items-center justify-between gap-2 border-b border-border/50 pb-2">
+				<div class="flex items-center gap-1.5 font-medium">
+					<span class="relative flex size-2">
+						<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+						<span class="relative inline-flex size-2 rounded-full bg-red-500"></span>
+					</span>
+					<span>{isSpeaking ? 'Speaking…' : 'Listening…'}</span>
+				</div>
+				<span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono uppercase text-muted-foreground">
+					{activeLang}
+				</span>
+			</div>
+
+			{#if interimTranscript.length > 0}
+				<div class="mt-2 max-h-24 overflow-y-auto rounded-md border border-border/40 bg-muted/60 p-2 font-mono text-xs italic text-foreground">
+					&ldquo;{interimTranscript}&rdquo;
+				</div>
+			{:else}
+				<p class="mt-2 leading-relaxed text-muted-foreground">
+					Speak into your microphone…
+				</p>
+			{/if}
+
+			<div class="mt-2.5 flex items-center justify-between border-t border-border/40 pt-2 text-[11px] text-muted-foreground">
+				<span>Web Speech</span>
+				<button
+					type="button"
+					onclick={() => speech.stop()}
+					class="rounded px-1.5 py-0.5 font-medium text-foreground transition-colors hover:bg-muted"
+				>
+					Stop
+				</button>
+			</div>
+		</section>
+	{:else}
+		<Tooltip tooltip={isSupported ? tooltip : 'Speech recognition not supported in this browser'}>
+			<button
+				type="button"
+				onclick={handleClick}
+				disabled={!isSupported}
+				class={cn(
+					buttonVariants({ variant, size }),
+					!isSupported && 'cursor-not-allowed opacity-40',
+					className
+				)}
+				aria-label={buttonAriaLabel}
+				aria-pressed={false}
+				data-state="idle"
+			>
+				<Mic class="size-4" />
+			</button>
+		</Tooltip>
 	{/if}
 </div>

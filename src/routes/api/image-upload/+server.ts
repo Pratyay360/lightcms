@@ -12,21 +12,39 @@ export const POST: RequestHandler = async ({ request }) => {
   const dataUrl = `data:${source.type};base64,${base64}`;
 
   try {
-    const form = new FormData();
-    form.set("key", process.env.CDN_KEY!);
-    form.set("source", base64);
+    const apiKey = process.env.CDN_KEY!;
+    const cdnUrl = process.env.CDN_URL!;
+    const uploadUrl = new URL(cdnUrl);
+    if (!uploadUrl.searchParams.has("key")) {
+      uploadUrl.searchParams.set("key", apiKey);
+    }
 
-    const response = await fetch(process.env.CDN_URL!, {
+    const form = new FormData();
+    form.set("image", base64);
+    form.set("name", source.name);
+
+    const response = await fetch(uploadUrl.toString(), {
       method: "POST",
       body: form,
     });
 
     if (response.ok) {
       const result = (await response.json()) as {
+        data?: {
+          url?: string;
+          display_url?: string;
+          image?: { url?: string };
+        };
         image?: { url?: string; display_url?: string };
         url?: string;
       };
-      const url = result.image?.url ?? result.image?.display_url ?? result.url;
+      const url =
+        result.data?.url ??
+        result.data?.display_url ??
+        result.data?.image?.url ??
+        result.image?.url ??
+        result.image?.display_url ??
+        result.url;
       if (url) {
         return json({ url });
       }

@@ -1,10 +1,23 @@
-import { ORPCError } from "@orpc/server";
+import type { Context } from "probot";
+
+type BotLogContext = Pick<Context, "log">;
 
 /**
- * Wrap an unknown error into an ORPCError with the original message.
- * Eliminates the repeated `error instanceof Error ? error.message : String(error)` pattern.
+ * Log a bot failure without interrupting sibling operations.
+ *
+ * Probot handlers must never throw framework-agnostic RPC errors for
+ * routine GitHub API failures. Logging keeps one failing file or comment
+ * from aborting the rest of the webhook, while `onError` in
+ * `src/lib/bot/index.ts` still captures truly unexpected throws.
  */
-export function wrapBotError(error: unknown): never {
-  const message = error instanceof Error ? error.message : String(error);
-  throw new ORPCError("INTERNAL_SERVER_ERROR", { message });
+export function logBotError(
+	context: BotLogContext,
+	message: string,
+	error: unknown,
+): void {
+	if (error instanceof Error) {
+		context.log.error({ err: error }, message);
+		return;
+	}
+	context.log.error({ err: String(error) }, message);
 }

@@ -35,9 +35,7 @@
 </script>
 
 <div class={cn('flex h-full w-fit items-center gap-2', className)}>
-	<Tooltip tooltip="Dictate (live speech to text)">
-		<MicButton onTranscript={insertTranscript} />
-	</Tooltip>
+	<MicButton onTranscript={insertTranscript} />
 	{#if isAiEnabled()}
 		<Tooltip tooltip="Use AI">
 			<Button

@@ -15,10 +15,6 @@ export type AiKeydownResult =
   | { type: "run"; index: number }
   | null;
 
-/**
- * Pure keyboard resolver for the AI bubble menu. Keeps the component's
- * `<svelte:document onkeydown>` handler focused on applying the result.
- */
 export function resolveAiKeydown(event: KeyboardEvent, context: AiKeydownContext): AiKeydownResult {
   const { aiActive, aiState, hasInput, actionCount, activeIndex } = context;
 

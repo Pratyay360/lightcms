@@ -1,78 +1,201 @@
 import type { Context } from "probot";
-import { wrapBotError } from "./error-handler.js";
+import { COMMIT_STATUS_CONTEXT } from "../constants.js";
+import { isContentPath } from "../content.js";
+import { logBotError } from "./error-handler.js";
 
-export async function handlePush(context: Context<"push">) {
-  const { payload, log } = context;
-  const { ref, repository, commits, head_commit, sender } = payload;
-  const defaultBranch = repository.default_branch;
-  const branch = ref.replace("refs/heads/", "");
+type PushContext = Context<"push">;
 
-  if (branch !== defaultBranch) {
-    log.debug({ branch, defaultBranch }, "Skipping non-default branch push");
-    return;
-  }
+const REFS_HEADS_PREFIX = "refs/heads/";
+const FRONT_MATTER_DELIMITER = "---";
 
-  const relevant = (commits ?? []).filter((commit) =>
-    (commit.modified ?? []).some((p) => p.endsWith(".md")),
-  );
+/** Collect every added or modified content path from the push. */
+function collectContentPaths(context: PushContext): string[] {
+	const commits = context.payload.commits ?? [];
+	const paths = new Set<string>();
 
-  if (relevant.length === 0) {
-    log.debug("No content changes in this push");
-    return;
-  }
+	for (const commit of commits) {
+		const added = commit.added ?? [];
+		const modified = commit.modified ?? [];
+		for (const path of [...added, ...modified]) {
+			if (isContentPath(path)) {
+				paths.add(path);
+			}
+		}
+	}
 
-  log.info(
-    {
-      commits: relevant.length,
-      sender: sender?.login,
-      branch,
-    },
-    "Content push detected",
-  );
+	return [...paths];
+}
 
-  const owner = repository.owner?.login ?? "";
-  const repoName = repository?.name ?? "";
+function branchFromRef(ref: string): string | undefined {
+	if (ref.startsWith(REFS_HEADS_PREFIX) === false) {
+		return undefined;
+	}
+	return ref.slice(REFS_HEADS_PREFIX.length);
+}
 
-  for (const commit of relevant) {
-    for (const file of [...(commit.modified ?? []), ...(commit.added ?? [])]) {
-      if (!file.endsWith(".md")) continue;
+function hasUnclosedFrontMatter(body: string): boolean {
+	if (body.startsWith(FRONT_MATTER_DELIMITER) === false) {
+		return false;
+	}
+	const closingIndex = body.indexOf(
+		FRONT_MATTER_DELIMITER,
+		FRONT_MATTER_DELIMITER.length,
+	);
+	return closingIndex === -1;
+}
 
-      try {
-        const { data: contents } = await context.octokit.rest.repos.getContent({
-          owner,
-          repo: repoName,
-          path: file,
-          ref: head_commit?.id ?? branch,
-        });
+async function validateContentFile(
+	context: PushContext,
+	owner: string,
+	repo: string,
+	path: string,
+	ref: string,
+): Promise<string | undefined> {
+	const { data } = await context.octokit.rest.repos.getContent({
+		owner,
+		repo,
+		path,
+		ref,
+	});
 
-        if ("content" in contents && typeof contents.content === "string") {
-          const decoded = Buffer.from(contents.content, "base64").toString("utf-8");
-          const hasFrontMatter = decoded.startsWith("---");
+	if (Array.isArray(data)) {
+		context.log.warn({ file: path }, "Expected a file but found a directory");
+		return `Unexpected directory at ${path}`;
+	}
 
-          if (hasFrontMatter) {
-            const endIndex = decoded.indexOf("---", 3);
-            if (endIndex === -1) {
-              log.warn({ file }, "Unclosed frontmatter delimiter in content file");
-            }
-          }
-        }
-      } catch (error) {
-        wrapBotError(error);
-      }
-    }
-  }
-  if (head_commit) {
-    try {
-      await context.octokit.rest.repos.createCommitStatus({
-        owner,
-        repo: repoName,
-        sha: head_commit.id,
-        state: "success",
-        context: "lightcms/content",
-        description: `${relevant.length} content commit(s) processed`,
-      });
-    } catch (error) {
-      wrapBotError(error);
-    }
-  }
+	if ("content" in data === false || typeof data.content !== "string") {
+		return undefined;
+	}
+
+	const encoding = "base64" as BufferEncoding;
+	const decoded = Buffer.from(data.content, encoding).toString("utf-8");
+
+	if (hasUnclosedFrontMatter(decoded)) {
+		context.log.warn(
+			{ file: path },
+			"Unclosed frontmatter delimiter in content file",
+		);
+		return `Unclosed frontmatter in ${path}`;
+	}
+
+	return undefined;
+}
+
+async function reportContentStatus(
+	context: PushContext,
+	owner: string,
+	repo: string,
+	sha: string,
+	processedCount: number,
+	problems: string[],
+): Promise<void> {
+	let state: "success" | "failure" = "success";
+	if (problems.length > 0) {
+		state = "failure";
+	}
+
+	let description = `${processedCount} content file(s) validated`;
+	if (problems.length > 0) {
+		description = `${problems.length} content file(s) need attention`;
+	}
+
+	try {
+		await context.octokit.rest.repos.createCommitStatus({
+			owner,
+			repo,
+			sha,
+			state,
+			context: COMMIT_STATUS_CONTEXT,
+			description,
+		});
+	} catch (error) {
+		logBotError(context, "Failed to create content commit status", error);
+	}
+}
+
+/**
+ * Validate CMS content on pushes to the default branch.
+ *
+ * Only added and modified content files are fetched. Each file is
+ * validated independently so one missing file cannot abort the rest,
+ * and the final commit status reflects the aggregate result instead of
+ * unconditionally reporting success.
+ */
+export async function handlePush(context: PushContext): Promise<void> {
+	const { payload, log } = context;
+
+	const branch = branchFromRef(payload.ref);
+	if (branch === undefined) {
+		log.debug({ ref: payload.ref }, "Skipping non-branch push");
+		return;
+	}
+
+	const defaultBranch = payload.repository.default_branch;
+	if (branch !== defaultBranch) {
+		log.debug({ branch, defaultBranch }, "Skipping non-default branch push");
+		return;
+	}
+
+	const owner = payload.repository.owner?.login;
+	if (owner === undefined || owner === "") {
+		log.warn("Skipping push with missing repository owner");
+		return;
+	}
+
+	const repoName = payload.repository.name;
+	if (repoName === undefined || repoName === "") {
+		log.warn("Skipping push with missing repository name");
+		return;
+	}
+
+	const contentPaths = collectContentPaths(context);
+	if (contentPaths.length === 0) {
+		log.debug("No content changes in this push");
+		return;
+	}
+
+	log.info(
+		{
+			files: contentPaths.length,
+			sender: payload.sender?.login,
+			branch,
+		},
+		"Content push detected",
+	);
+
+	const headSha = payload.head_commit?.id;
+	let fetchRef = branch;
+	if (typeof headSha === "string" && headSha.length > 0) {
+		fetchRef = headSha;
+	}
+
+	const problems: string[] = [];
+	for (const path of contentPaths) {
+		try {
+			const problem = await validateContentFile(
+				context,
+				owner,
+				repoName,
+				path,
+				fetchRef,
+			);
+			if (problem !== undefined) {
+				problems.push(problem);
+			}
+		} catch (error) {
+			logBotError(context, `Failed to validate content file ${path}`, error);
+			problems.push(`Could not validate ${path}`);
+		}
+	}
+
+	if (typeof headSha === "string" && headSha.length > 0) {
+		await reportContentStatus(
+			context,
+			owner,
+			repoName,
+			headSha,
+			contentPaths.length,
+			problems,
+		);
+	}
 }

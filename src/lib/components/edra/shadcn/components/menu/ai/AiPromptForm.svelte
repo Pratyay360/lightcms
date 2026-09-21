@@ -15,19 +15,28 @@
 		inputRef = $bindable(null),
 	}: Props = $props();
 
-	function autogrow(event: Event) {
-		const target = event.currentTarget as HTMLTextAreaElement;
-		target.style.height = `${target.scrollHeight}px`;
+	function autogrow() {
+		if (!inputRef) return;
+		inputRef.style.height = 'auto';
+		if (value.length > 0) {
+			inputRef.style.height = `${inputRef.scrollHeight}px`;
+		}
 	}
 
 	$effect(() => {
-		if (value === '' && inputRef) {
-			inputRef.style.height = 'auto';
-		}
+		void value;
+		autogrow();
 	});
 
 	const appendTranscript = (text: string) => {
-		value = `${value}${value && !value.endsWith(' ') ? ' ' : ''}${text}`.trimStart();
+		const clean = text.trim();
+		if (clean.length === 0) return;
+
+		if (value.length > 0 && !value.endsWith(' ')) {
+			value = `${value} ${clean}`;
+		} else {
+			value = `${value}${clean}`;
+		}
 		inputRef?.focus();
 	};
 </script>

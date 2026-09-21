@@ -1,4 +1,5 @@
 import { Probot } from "probot";
+import botApp from "$lib/bot/index.js";
 
 import app from "$lib/bot/index";
 
