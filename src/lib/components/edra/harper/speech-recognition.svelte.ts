@@ -70,11 +70,12 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
 
   let mediaStream: MediaStream | null = null;
   let audioContext: AudioContext | null = null;
-  let scriptProcessor: ScriptProcessorNode | null = null;
+  let audioWorklet: AudioWorkletNode | null = null;
   let mediaSource: MediaStreamAudioSourceNode | null = null;
   let recordedChunks: Float32Array[] = [];
   let interimTimer: ReturnType<typeof setInterval> | null = null;
   let isTranscribing = false;
+  let inputSampleRate = TARGET_SAMPLE_RATE;
 
   const cleanupAudioPipeline = () => {
     if (interimTimer !== null) {
@@ -82,10 +83,10 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
       interimTimer = null;
     }
 
-    if (scriptProcessor) {
-      scriptProcessor.disconnect();
-      scriptProcessor.onaudioprocess = null;
-      scriptProcessor = null;
+    if (audioWorklet) {
+      audioWorklet.port.onmessage = null;
+      audioWorklet.disconnect();
+      audioWorklet = null;
     }
 
     if (mediaSource) {
@@ -136,9 +137,9 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
 
   const sendAudioToWit = async (
     audioSamples: Float32Array,
-    inputSampleRate: number,
+    sampleRate: number,
   ): Promise<string> => {
-    const downsampled = downsampleBuffer(audioSamples, inputSampleRate, TARGET_SAMPLE_RATE);
+    const downsampled = downsampleBuffer(audioSamples, sampleRate, TARGET_SAMPLE_RATE);
     const wavBytes = encodeWav(downsampled, TARGET_SAMPLE_RATE);
 
     const response = await fetch("/api/speech/transcribe", {
@@ -209,34 +210,37 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       const ctx = new AudioCtx();
       audioContext = ctx;
+      inputSampleRate = ctx.sampleRate;
+
+      await ctx.audioWorklet.addModule("/audio-processor.js");
 
       const source = ctx.createMediaStreamSource(stream);
       mediaSource = source;
 
-      // Use buffer size of 4096 samples
-      const processor = ctx.createScriptProcessor(4096, 1, 1);
-      scriptProcessor = processor;
+      const worklet = new AudioWorkletNode(ctx, "audio-processor");
+      audioWorklet = worklet;
 
-      processor.onaudioprocess = (event: AudioProcessingEvent) => {
-        const inputData = event.inputBuffer.getChannelData(0);
-        const chunkCopy = new Float32Array(inputData.length);
-        chunkCopy.set(inputData);
-        recordedChunks.push(chunkCopy);
+      worklet.port.onmessage = (event: MessageEvent) => {
+        const data = event.data as { type: string; samples: Float32Array } | undefined;
+        if (data?.type === "audio" && data.samples.length > 0) {
+          const chunkCopy = new Float32Array(data.samples.length);
+          chunkCopy.set(data.samples);
+          recordedChunks.push(chunkCopy);
 
-        // Compute volume level to determine speech presence
-        let sumSquares = 0;
-        for (let i = 0; i < inputData.length; i += 1) {
-          const sample = inputData[i];
-          if (typeof sample === "number") {
-            sumSquares += sample * sample;
+          let sumSquares = 0;
+          for (let i = 0; i < data.samples.length; i += 1) {
+            const sample = data.samples[i];
+            if (typeof sample === "number") {
+              sumSquares += sample * sample;
+            }
           }
+          const rms = Math.sqrt(sumSquares / data.samples.length);
+          isSpeaking = rms > SPEECH_VOLUME_THRESHOLD;
         }
-        const rms = Math.sqrt(sumSquares / inputData.length);
-        isSpeaking = rms > SPEECH_VOLUME_THRESHOLD;
       };
 
-      source.connect(processor);
-      processor.connect(ctx.destination);
+      source.connect(worklet);
+      worklet.connect(ctx.destination);
 
       status = "listening";
       interimTimer = setInterval(() => {
@@ -250,9 +254,8 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
         }
 
         isTranscribing = true;
-        const currentRate = ctx.sampleRate;
 
-        sendAudioToWit(consolidated, currentRate)
+        sendAudioToWit(consolidated, inputSampleRate)
           .then((partialText) => {
             if (partialText.length > 0) {
               interimTranscript = partialText;
