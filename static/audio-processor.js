@@ -2,12 +2,20 @@ class AudioProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
     this.buffer = new Float32Array(0);
+    this.flushThreshold = 4096; // Send data when buffer reaches this size
+
     this.port.onmessage = (event) => {
       if (event.data === "flush") {
-        this.port.postMessage({ type: "audio", samples: this.buffer });
-        this.buffer = new Float32Array(0);
+        this.flushBuffer();
       }
     };
+  }
+
+  flushBuffer() {
+    if (this.buffer.length > 0) {
+      this.port.postMessage({ type: "audio", samples: this.buffer });
+      this.buffer = new Float32Array(0);
+    }
   }
 
   process(inputs) {
@@ -25,6 +33,11 @@ class AudioProcessor extends AudioWorkletProcessor {
     newBuffer.set(this.buffer, 0);
     newBuffer.set(channelData, this.buffer.length);
     this.buffer = newBuffer;
+
+    // Automatically flush when buffer reaches threshold
+    if (this.buffer.length >= this.flushThreshold) {
+      this.flushBuffer();
+    }
 
     return true;
   }

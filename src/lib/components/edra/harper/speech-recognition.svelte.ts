@@ -84,6 +84,8 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
     }
 
     if (audioWorklet) {
+      // Flush any remaining audio data before disconnecting
+      audioWorklet.port.postMessage("flush");
       audioWorklet.port.onmessage = null;
       audioWorklet.disconnect();
       audioWorklet = null;
