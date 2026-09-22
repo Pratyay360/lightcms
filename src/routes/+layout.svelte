@@ -8,6 +8,7 @@ import {
 	LucideFileBadge2,
 	Sparkles,
 } from "@lucide/svelte";
+import { dev } from "$app/environment";
 import { injectAnalytics } from '@vercel/analytics/sveltekit';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 import { ModeWatcher } from "mode-watcher";
@@ -18,8 +19,10 @@ import { Avatar } from "$lib/components/ui/avatar";
 import { Toaster } from "$lib/components/ui/sonner";
 import { DEFAULT_THEME_ID, MODE_STORAGE_KEY, THEME_STORAGE_KEY } from "$lib/themes.js";
 
-injectAnalytics({ mode: 'production' });
-injectSpeedInsights();
+if (!dev) {
+	injectAnalytics({ mode: 'production' });
+	injectSpeedInsights();
+}
 let { children, data } = $props();
 </script>
 

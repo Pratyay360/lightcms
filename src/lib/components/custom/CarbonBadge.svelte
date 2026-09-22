@@ -11,14 +11,6 @@
 	let isDark = $state<boolean>(false);
 
 	onMount(() => {
-		const isLocalhost =
-			window.location.hostname === 'localhost' ||
-			window.location.hostname === '127.0.0.1' ||
-			window.location.hostname === '[::1]';
-
-		if (dev || isLocalhost) {
-			return;
-		}
 
 		let mediaQuery: MediaQueryList | null = null;
 
@@ -36,9 +28,9 @@
 			isDark = dark;
 		}
 
-		void import('website-carbon-badges/b.min.js').catch(() => {
-			// Ignore badge loading failure
-		});
+		// void import('website-carbon-badges/b.min.js').catch(() => {
+		// 	// Ignore badge loading failure
+		// });
 
 		return () => {
 			if (mediaQuery !== null) {

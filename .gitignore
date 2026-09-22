@@ -25,7 +25,6 @@ Agents.md
 # Vite
 vite.config.timestamp-*
 vite.config.ts.timestamp-*
-.mimocode/
 .vscode/
 .opencode/
 .lightcms
@@ -34,3 +33,5 @@ session-ses_08e9.md
 # Turborepo
 .turbo
 .commandcode/*
+.commandcode/
+.crush/

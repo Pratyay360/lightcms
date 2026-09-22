@@ -10,14 +10,10 @@ type BotLogContext = Pick<Context, "log">;
  * from aborting the rest of the webhook, while `onError` in
  * `src/lib/bot/index.ts` still captures truly unexpected throws.
  */
-export function logBotError(
-	context: BotLogContext,
-	message: string,
-	error: unknown,
-): void {
-	if (error instanceof Error) {
-		context.log.error({ err: error }, message);
-		return;
-	}
-	context.log.error({ err: String(error) }, message);
+export function logBotError(context: BotLogContext, message: string, error: unknown): void {
+  if (error instanceof Error) {
+    context.log.error({ err: error }, message);
+    return;
+  }
+  context.log.error({ err: String(error) }, message);
 }

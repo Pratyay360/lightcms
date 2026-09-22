@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { Mic, MicAudioLines, MicOff } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { type ButtonSize, type ButtonVariant, buttonVariants } from '$lib/components/ui/button/index.js';
@@ -26,8 +27,16 @@
 		tooltip = 'Dictate (live speech to text)'
 	}: Props = $props();
 
+	let mounted = $state(false);
+
+	onMount(() => {
+		mounted = true;
+	});
+
 	const speech = createSpeechRecognition({
-		lang,
+		get lang() {
+			return lang;
+		},
 		onTranscript(finalChunk) {
 			onTranscript(finalChunk);
 		},
@@ -42,17 +51,27 @@
 	});
 
 	const activeLang = $derived(
-		lang ?? (typeof navigator !== 'undefined' && navigator.language ? navigator.language : 'en-US')
+		lang ?? (mounted && typeof navigator !== 'undefined' && navigator.language ? navigator.language : 'en-US')
 	);
 
-	const isListening = $derived(speech.isListening);
-	const isSpeaking = $derived(speech.isSpeaking);
-	const isSupported = $derived(speech.isSupported);
-	const interimTranscript = $derived(speech.interimTranscript);
+	const isListening = $derived(mounted && speech.isListening);
+	const isSpeaking = $derived(mounted && speech.isSpeaking);
+	const isSupported = $derived(mounted ? speech.isSupported : true);
+	const interimTranscript = $derived(mounted ? speech.interimTranscript : '');
 
 	const buttonAriaLabel = $derived(
 		isListening ? 'Stop live dictation' : 'Start live dictation'
 	);
+
+	const statusText = $derived.by(() => {
+		if (speech.status === 'transcribing') {
+			return 'Transcribing…';
+		}
+		if (isSpeaking) {
+			return 'Speaking…';
+		}
+		return 'Listening…';
+	});
 
 	const handleClick = () => {
 		if (!isSupported) {
@@ -104,7 +123,7 @@
 						<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
 						<span class="relative inline-flex size-2 rounded-full bg-red-500"></span>
 					</span>
-					<span>{isSpeaking ? 'Speaking…' : 'Listening…'}</span>
+					<span>{statusText}</span>
 				</div>
 				<span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono uppercase text-muted-foreground">
 					{activeLang}
@@ -122,7 +141,7 @@
 			{/if}
 
 			<div class="mt-2.5 flex items-center justify-between border-t border-border/40 pt-2 text-[11px] text-muted-foreground">
-				<span>Web Speech</span>
+				<span>Wit.ai Speech</span>
 				<button
 					type="button"
 					onclick={() => speech.stop()}

@@ -1,14 +1,10 @@
 import {
-  getSpeechRecognitionConstructor,
+  encodeWav,
   isSpeechRecognitionSupported,
   mapSpeechRecognitionError,
-  processSpeechResults,
-  type ISpeechRecognition,
   type SpeechErrorInfo,
-  type SpeechRecognitionErrorEvent,
-  type SpeechRecognitionEvent,
   type SpeechRecognitionStatus,
-} from "./speech-recognition";
+} from "./speech-recognition.js";
 
 export interface SpeechRecognitionOptions {
   lang?: string;
@@ -19,6 +15,51 @@ export interface SpeechRecognitionOptions {
   onError?: (error: SpeechErrorInfo) => void;
 }
 
+const TARGET_SAMPLE_RATE = 16000;
+const SPEECH_VOLUME_THRESHOLD = 0.015;
+
+function downsampleBuffer(
+  buffer: Float32Array,
+  inputSampleRate: number,
+  targetSampleRate: number,
+): Float32Array {
+  if (inputSampleRate === targetSampleRate) {
+    return buffer;
+  }
+
+  const ratio = inputSampleRate / targetSampleRate;
+  const newLength = Math.round(buffer.length / ratio);
+  const result = new Float32Array(newLength);
+
+  let offsetResult = 0;
+  let offsetBuffer = 0;
+
+  while (offsetResult < result.length) {
+    const nextOffsetBuffer = Math.round((offsetResult + 1) * ratio);
+    let sum = 0;
+    let count = 0;
+
+    for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i += 1) {
+      const sample = buffer[i];
+      if (typeof sample === "number") {
+        sum += sample;
+        count += 1;
+      }
+    }
+
+    if (count > 0) {
+      result[offsetResult] = sum / count;
+    } else {
+      result[offsetResult] = 0;
+    }
+
+    offsetResult += 1;
+    offsetBuffer = nextOffsetBuffer;
+  }
+
+  return result;
+}
+
 export function createSpeechRecognition(options: SpeechRecognitionOptions) {
   let status = $state<SpeechRecognitionStatus>("idle");
   let isSpeaking = $state<boolean>(false);
@@ -27,213 +68,266 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
 
   const isSupported = isSpeechRecognitionSupported();
 
-  let recognition: ISpeechRecognition | null = null;
-  let userWantsListening = false;
-  let restartTimer: ReturnType<typeof setTimeout> | null = null;
+  let mediaStream: MediaStream | null = null;
+  let audioContext: AudioContext | null = null;
+  let scriptProcessor: ScriptProcessorNode | null = null;
+  let mediaSource: MediaStreamAudioSourceNode | null = null;
+  let recordedChunks: Float32Array[] = [];
+  let interimTimer: ReturnType<typeof setInterval> | null = null;
+  let isTranscribing = false;
 
-  const clearRestartTimer = () => {
-    if (restartTimer !== null) {
-      clearTimeout(restartTimer);
-      restartTimer = null;
+  const cleanupAudioPipeline = () => {
+    if (interimTimer !== null) {
+      clearInterval(interimTimer);
+      interimTimer = null;
     }
+
+    if (scriptProcessor) {
+      scriptProcessor.disconnect();
+      scriptProcessor.onaudioprocess = null;
+      scriptProcessor = null;
+    }
+
+    if (mediaSource) {
+      mediaSource.disconnect();
+      mediaSource = null;
+    }
+
+    if (audioContext && audioContext.state !== "closed") {
+      void audioContext.close();
+      audioContext = null;
+    }
+
+    if (mediaStream) {
+      const tracks = mediaStream.getTracks();
+      for (const track of tracks) {
+        track.stop();
+      }
+      mediaStream = null;
+    }
+
+    isSpeaking = false;
   };
 
-  const getPreferredLanguage = (): string => {
-    if (options.lang && options.lang.trim().length > 0) {
-      return options.lang.trim();
+  const getConsolidatedAudio = (): Float32Array | null => {
+    if (recordedChunks.length === 0) {
+      return null;
     }
-    if (typeof navigator !== "undefined" && navigator.language) {
-      return navigator.language;
+
+    let totalLength = 0;
+    for (const chunk of recordedChunks) {
+      totalLength += chunk.length;
     }
-    return "en-US";
+
+    if (totalLength === 0) {
+      return null;
+    }
+
+    const consolidated = new Float32Array(totalLength);
+    let currentOffset = 0;
+
+    for (const chunk of recordedChunks) {
+      consolidated.set(chunk, currentOffset);
+      currentOffset += chunk.length;
+    }
+
+    return consolidated;
   };
 
-  const startSession = () => {
-    const Ctor = getSpeechRecognitionConstructor();
-    if (!Ctor) {
+  const sendAudioToWit = async (
+    audioSamples: Float32Array,
+    inputSampleRate: number,
+  ): Promise<string> => {
+    const downsampled = downsampleBuffer(audioSamples, inputSampleRate, TARGET_SAMPLE_RATE);
+    const wavBytes = encodeWav(downsampled, TARGET_SAMPLE_RATE);
+
+    const response = await fetch("/api/speech/transcribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "audio/wav",
+      },
+      body: wavBytes,
+    });
+
+    if (!response.ok) {
+      const errorJson = (await response.json().catch(() => null)) as {
+        error?: string;
+        code?: string;
+      } | null;
+
+      const message =
+        errorJson && errorJson.error
+          ? errorJson.error
+          : `Transcription failed with HTTP status ${response.status}`;
+
+      throw new Error(message);
+    }
+
+    const data = (await response.json()) as { text?: string };
+    if (typeof data.text === "string") {
+      return data.text.trim();
+    }
+
+    return "";
+  };
+
+  const start = async () => {
+    if (status === "listening" || status === "transcribing") {
+      return;
+    }
+
+    if (!isSupported) {
       status = "unsupported";
-      const err: SpeechErrorInfo = {
-        code: "unsupported",
-        message: "Speech recognition is not supported in this browser.",
-        isFatal: true,
-      };
+      const err = mapSpeechRecognitionError("Speech recognition is not supported in this browser.");
       errorMessage = err.message;
       options.onError?.(err);
       return;
     }
 
+    errorMessage = null;
+    recordedChunks = [];
+    interimTranscript = "";
+
     try {
-      if (recognition) {
-        try {
-          recognition.abort();
-        } catch {
-          // Ignore abort error
-        }
-        recognition = null;
+      if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Microphone access is not supported in this browser environment.");
       }
 
-      const r = new Ctor();
-      r.continuous = options.continuous ?? true;
-      r.interimResults = options.interimResults ?? true;
-      r.lang = getPreferredLanguage();
-      r.maxAlternatives = 1;
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 1,
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
 
-      r.onstart = () => {
-        status = "listening";
-        errorMessage = null;
-      };
+      mediaStream = stream;
 
-      r.onspeechstart = () => {
-        isSpeaking = true;
-      };
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = new AudioCtx();
+      audioContext = ctx;
 
-      r.onspeechend = () => {
-        isSpeaking = false;
-      };
+      const source = ctx.createMediaStreamSource(stream);
+      mediaSource = source;
 
-      r.onresult = (event: SpeechRecognitionEvent) => {
-        const outcome = processSpeechResults(event);
+      // Use buffer size of 4096 samples
+      const processor = ctx.createScriptProcessor(4096, 1, 1);
+      scriptProcessor = processor;
 
-        for (let idx = 0; idx < outcome.finalTranscripts.length; idx += 1) {
-          const finalPhrase = outcome.finalTranscripts[idx];
-          if (finalPhrase) {
-            options.onTranscript(finalPhrase);
+      processor.onaudioprocess = (event: AudioProcessingEvent) => {
+        const inputData = event.inputBuffer.getChannelData(0);
+        const chunkCopy = new Float32Array(inputData.length);
+        chunkCopy.set(inputData);
+        recordedChunks.push(chunkCopy);
+
+        // Compute volume level to determine speech presence
+        let sumSquares = 0;
+        for (let i = 0; i < inputData.length; i += 1) {
+          const sample = inputData[i];
+          if (typeof sample === "number") {
+            sumSquares += sample * sample;
           }
         }
-
-        interimTranscript = outcome.interimTranscript;
-        if (options.onInterim) {
-          options.onInterim(outcome.interimTranscript);
-        }
+        const rms = Math.sqrt(sumSquares / inputData.length);
+        isSpeaking = rms > SPEECH_VOLUME_THRESHOLD;
       };
 
-      r.onerror = (event: SpeechRecognitionErrorEvent) => {
-        const code = event.error;
-        // Silence ('no-speech') or user abort ('aborted') are expected events
-        if (code === "no-speech" || code === "aborted") {
+      source.connect(processor);
+      processor.connect(ctx.destination);
+
+      status = "listening";
+      interimTimer = setInterval(() => {
+        if (!isSpeaking || isTranscribing || recordedChunks.length === 0) {
           return;
         }
 
-        const errInfo = mapSpeechRecognitionError(code);
-        if (errInfo.isFatal) {
-          userWantsListening = false;
-          status = "error";
-          errorMessage = errInfo.message;
-          options.onError?.(errInfo);
-        } else {
-          options.onError?.(errInfo);
-        }
-      };
-
-      r.onend = () => {
-        isSpeaking = false;
-
-        // If there is any trailing unfinalized interim speech, flush it now
-        const pendingInterim = interimTranscript.trim();
-        if (pendingInterim.length > 0) {
-          options.onTranscript(pendingInterim);
-          interimTranscript = "";
-          if (options.onInterim) {
-            options.onInterim("");
-          }
+        const consolidated = getConsolidatedAudio();
+        if (!consolidated || consolidated.length < TARGET_SAMPLE_RATE) {
+          return;
         }
 
-        // If user still wants listening and no fatal error occurred, restart session
-        if (userWantsListening && status !== "error" && status !== "unsupported") {
-          clearRestartTimer();
-          restartTimer = setTimeout(() => {
-            if (userWantsListening && status !== "error") {
-              startSession();
+        isTranscribing = true;
+        const currentRate = ctx.sampleRate;
+
+        sendAudioToWit(consolidated, currentRate)
+          .then((partialText) => {
+            if (partialText.length > 0) {
+              interimTranscript = partialText;
+              options.onInterim?.(partialText);
             }
-          }, 150);
-        } else {
-          status = "idle";
-        }
-      };
-
-      recognition = r;
-      r.start();
-      status = "listening";
+          })
+          .catch(() => {
+            // Ignore interim errors silently to keep listening fluid
+          })
+          .finally(() => {
+            isTranscribing = false;
+          });
+      }, 3500);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Could not start speech recognition.";
+      cleanupAudioPipeline();
       status = "error";
-      errorMessage = message;
-      userWantsListening = false;
-      options.onError?.({
-        code: "start-failed",
-        message,
-        isFatal: true,
-      });
+      const mapped = mapSpeechRecognitionError(error);
+      errorMessage = mapped.message;
+      options.onError?.(mapped);
     }
   };
 
-  const start = () => {
-    if (status === "listening") {
-      return;
-    }
-    if (!isSupported) {
-      status = "unsupported";
-      options.onError?.({
-        code: "unsupported",
-        message: "Speech recognition is not supported in this browser.",
-        isFatal: true,
-      });
+  const stop = async () => {
+    if (status !== "listening") {
       return;
     }
 
-    userWantsListening = true;
-    errorMessage = null;
-    startSession();
-  };
+    const consolidated = getConsolidatedAudio();
+    const sampleRate = audioContext ? audioContext.sampleRate : TARGET_SAMPLE_RATE;
 
-  const stop = () => {
-    userWantsListening = false;
-    clearRestartTimer();
+    cleanupAudioPipeline();
 
-    if (recognition) {
-      try {
-        recognition.stop();
-      } catch {
-        // Ignore
-      }
-    }
-
-    const pendingInterim = interimTranscript.trim();
-    if (pendingInterim.length > 0) {
-      options.onTranscript(pendingInterim);
+    if (!consolidated || consolidated.length === 0) {
+      status = "idle";
       interimTranscript = "";
-      if (options.onInterim) {
-        options.onInterim("");
-      }
+      return;
     }
 
-    status = "idle";
-    isSpeaking = false;
+    status = "transcribing";
+
+    try {
+      const finalTranscript = await sendAudioToWit(consolidated, sampleRate);
+      if (finalTranscript.length > 0) {
+        options.onTranscript(finalTranscript);
+      }
+      interimTranscript = "";
+      status = "idle";
+    } catch (error) {
+      status = "error";
+      const mapped = mapSpeechRecognitionError(error);
+      errorMessage = mapped.message;
+      options.onError?.(mapped);
+    } finally {
+      recordedChunks = [];
+      if (status !== "error") {
+        status = "idle";
+      }
+    }
   };
 
   const toggle = () => {
     if (status === "listening") {
-      stop();
+      void stop();
     } else {
-      start();
+      void start();
     }
   };
 
   const destroy = () => {
-    userWantsListening = false;
-    clearRestartTimer();
-    if (recognition) {
-      try {
-        recognition.abort();
-      } catch {
-        // Ignore
-      }
-      recognition = null;
-    }
+    cleanupAudioPipeline();
+    recordedChunks = [];
     status = "idle";
     isSpeaking = false;
     interimTranscript = "";
+    errorMessage = null;
   };
 
   return {
@@ -241,7 +335,7 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
       return status;
     },
     get isListening() {
-      return status === "listening";
+      return status === "listening" || status === "transcribing";
     },
     get isSpeaking() {
       return isSpeaking;
