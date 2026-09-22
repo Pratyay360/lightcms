@@ -146,7 +146,7 @@ export function createSpeechRecognition(options: SpeechRecognitionOptions) {
       headers: {
         "Content-Type": "audio/wav",
       },
-      body: wavBytes,
+      body: new Blob([wavBytes.buffer as ArrayBuffer], { type: "audio/wav" }),
     });
 
     if (!response.ok) {

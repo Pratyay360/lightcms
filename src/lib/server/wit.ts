@@ -10,12 +10,14 @@ export interface WitTranscriptionResult {
   raw?: unknown;
 }
 
-/**
- * Check whether Wit.ai is configured with an API token.
- */
-export function isWitConfigured(): boolean {
-  const token = getWitToken();
-  return Boolean(token && token.trim().length > 0);
+function cleanToken(raw?: string | null): string {
+  if (!raw) {
+    return "";
+  }
+  return raw
+    .trim()
+    .replace(/^["']|["']$/g, "")
+    .trim();
 }
 
 /**
@@ -23,13 +25,13 @@ export function isWitConfigured(): boolean {
  */
 export function getWitTokens(): string[] {
   const tokens: string[] = [];
-  const clientToken = process.env.WIT_AI_CLIENT_TOKEN!;
-  const serverToken = process.env.WIT_AI_TOKEN!;
+  const clientToken = cleanToken(process.env.WIT_AI_CLIENT_TOKEN);
+  const serverToken = cleanToken(process.env.WIT_AI_TOKEN ?? process.env.WIT_TOKEN);
 
-  if (clientToken && clientToken.length > 0) {
+  if (clientToken.length > 0) {
     tokens.push(clientToken);
   }
-  if (serverToken && serverToken.length > 0 && !tokens.includes(serverToken)) {
+  if (serverToken.length > 0 && !tokens.includes(serverToken)) {
     tokens.push(serverToken);
   }
 
@@ -41,20 +43,39 @@ export function getWitTokens(): string[] {
  */
 export function getWitToken(): string | null {
   const tokens = getWitTokens();
-  return tokens.length > 0 ? tokens[0] : null;
+  if (tokens.length > 0) {
+    return tokens[0];
+  }
+  return null;
 }
 
 /**
- * Transcribe binary audio data using the Wit.ai Speech API.
+ * Check whether Wit.ai is configured with an API token.
+ */
+export function isWitConfigured(): boolean {
+  const tokens = getWitTokens();
+  return tokens.length > 0;
+}
+
+/**
+ * Transcribe binary audio data using the Wit.ai Speech / Dictation API.
  * Falls back across endpoints and available client/server tokens with timeout protection.
  */
 export async function transcribeAudioWithWit(
   audioData: ArrayBuffer | Uint8Array,
   contentType: string = "audio/wav",
 ): Promise<WitTranscriptionResult> {
-  const tokens = process.env.WIT_AI_TOKEN!;
+  const tokens = getWitTokens();
+  if (tokens.length === 0) {
+    throw new Error(
+      "Wit.ai token is not configured on the server. Please set WIT_AI_TOKEN or WIT_AI_CLIENT_TOKEN.",
+    );
+  }
 
   const normalizedContentType = contentType.trim() || "audio/wav";
+  const buffer: ArrayBuffer =
+    audioData instanceof Uint8Array ? (audioData.buffer as ArrayBuffer) : audioData;
+  const body = new Blob([buffer], { type: normalizedContentType });
   let lastError: Error | null = null;
 
   for (const token of tokens) {
@@ -67,7 +88,7 @@ export async function transcribeAudioWithWit(
           "Content-Type": normalizedContentType,
           Accept: "application/json",
         },
-        body: audioData,
+        body,
         signal: AbortSignal.timeout(15000),
       });
 
@@ -77,11 +98,19 @@ export async function transcribeAudioWithWit(
         if (parsed.text.length > 0) {
           return parsed;
         }
-      } else if (speechResponse.status === 401) {
-        lastError = new Error(`Wit.ai authentication failed (401 Unauthorized)`);
-        continue;
       } else {
         const errorBody = await speechResponse.text();
+        const isAuthError =
+          speechResponse.status === 401 ||
+          (speechResponse.status === 400 && errorBody.includes("no-auth"));
+
+        if (isAuthError) {
+          lastError = new Error(
+            `Wit.ai authentication failed (Invalid token): ${errorBody.trim()}`,
+          );
+          continue;
+        }
+
         lastError = new Error(
           `Wit.ai speech API failed with status ${speechResponse.status}: ${errorBody}`,
         );
@@ -99,7 +128,7 @@ export async function transcribeAudioWithWit(
           "Content-Type": normalizedContentType,
           Accept: "application/json",
         },
-        body: audioData,
+        body,
         signal: AbortSignal.timeout(15000),
       });
 
@@ -109,11 +138,19 @@ export async function transcribeAudioWithWit(
         if (parsed.text.length > 0) {
           return parsed;
         }
-      } else if (dictationResponse.status === 401) {
-        lastError = new Error(`Wit.ai authentication failed (401 Unauthorized)`);
-        continue;
       } else {
         const errorBody = await dictationResponse.text();
+        const isAuthError =
+          dictationResponse.status === 401 ||
+          (dictationResponse.status === 400 && errorBody.includes("no-auth"));
+
+        if (isAuthError) {
+          lastError = new Error(
+            `Wit.ai authentication failed (Invalid token): ${errorBody.trim()}`,
+          );
+          continue;
+        }
+
         lastError = new Error(
           `Wit.ai dictation API failed with status ${dictationResponse.status}: ${errorBody}`,
         );
@@ -150,6 +187,7 @@ export function parseWitDictationResponse(responseText: string): WitTranscriptio
     try {
       const payload = JSON.parse(line) as {
         text?: string;
+        _text?: string;
         is_final?: boolean;
         type?: string;
         error?: string;
@@ -161,17 +199,18 @@ export function parseWitDictationResponse(responseText: string): WitTranscriptio
         throw new Error(payload.error);
       }
 
-      if (typeof payload.text === "string" && payload.text.trim().length > 0) {
+      const textValue = payload.text ?? payload._text;
+      if (typeof textValue === "string" && textValue.trim().length > 0) {
         const isExplicitlyPartial =
           payload.is_final === false || payload.type === "PARTIAL_TRANSCRIPTION";
         if (
-          payload.is_final ||
+          payload.is_final === true ||
           payload.type === "FINAL_TRANSCRIPTION" ||
           (!isExplicitlyPartial && lines.length === 1)
         ) {
-          finalTranscript = payload.text.trim();
+          finalTranscript = textValue.trim();
         } else {
-          interimTranscript = payload.text.trim();
+          interimTranscript = textValue.trim();
         }
       }
     } catch {

@@ -157,7 +157,8 @@
   },
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@0.3.2",
-    "vitest": "4.1.11"
+    "vitest": "4.1.11",
+    "zod": "^4.6.5"
   },
   "devEngines": {
     "packageManager": {

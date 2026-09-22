@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vite-plus/test";
-import { isWitConfigured, parseWitDictationResponse } from "./wit.js";
+// eslint-disable-next-line vite-plus/prefer-vite-plus-imports
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { getWitTokens, isWitConfigured, parseWitDictationResponse } from "./wit.js";
 
 describe("Wit server module", () => {
   describe("parseWitDictationResponse", () => {
@@ -12,6 +13,17 @@ describe("Wit server module", () => {
 
       const parsed = parseWitDictationResponse(response);
       expect(parsed.text).toBe("hello world");
+      expect(parsed.isFinal).toBe(true);
+    });
+
+    it("parses legacy _text field if present", () => {
+      const response = JSON.stringify({
+        _text: "legacy speech result",
+        is_final: true,
+      });
+
+      const parsed = parseWitDictationResponse(response);
+      expect(parsed.text).toBe("legacy speech result");
       expect(parsed.isFinal).toBe(true);
     });
 
@@ -60,10 +72,39 @@ describe("Wit server module", () => {
     });
   });
 
-  describe("isWitConfigured", () => {
-    it("returns boolean reflecting token availability", () => {
-      const configured = isWitConfigured();
-      expect(typeof configured).toBe("boolean");
+  describe("getWitTokens", () => {
+    const originalEnv = { ...process.env };
+
+    beforeEach(() => {
+      delete process.env.WIT_AI_CLIENT_TOKEN;
+      delete process.env.WIT_AI_TOKEN;
+      delete process.env.WIT_TOKEN;
+    });
+
+    afterEach(() => {
+      process.env = { ...originalEnv };
+    });
+
+    it("returns empty array when no token is set", () => {
+      expect(getWitTokens()).toEqual([]);
+      expect(isWitConfigured()).toBe(false);
+    });
+
+    it("returns array with sanitized client and server tokens without quotes or spaces", () => {
+      process.env.WIT_AI_CLIENT_TOKEN = ' "CLIENT_ABC" ';
+      process.env.WIT_AI_TOKEN = " SERVER_123 ";
+
+      const tokens = getWitTokens();
+      expect(tokens).toEqual(["CLIENT_ABC", "SERVER_123"]);
+      expect(isWitConfigured()).toBe(true);
+    });
+
+    it("falls back to WIT_TOKEN if WIT_AI_TOKEN is not set", () => {
+      process.env.WIT_TOKEN = "FALLBACK_TOKEN";
+
+      const tokens = getWitTokens();
+      expect(tokens).toEqual(["FALLBACK_TOKEN"]);
+      expect(isWitConfigured()).toBe(true);
     });
   });
 });

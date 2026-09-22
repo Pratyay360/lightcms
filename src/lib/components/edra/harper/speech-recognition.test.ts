@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vite-plus/test";
+// eslint-disable-next-line vite-plus/prefer-vite-plus-imports
+import { describe, expect, it } from "vitest";
 import {
   encodeWav,
   mapSpeechRecognitionError,

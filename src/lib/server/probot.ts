@@ -1,6 +1,5 @@
 import { Probot } from "probot";
 import app from "$lib/bot/index";
-import botApp from "$lib/bot/index.js";
 
 let probotInstance: Probot | null = null;
 
