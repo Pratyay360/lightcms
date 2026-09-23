@@ -4,7 +4,7 @@
 	import Moon from '@lucide/svelte/icons/moon';
 	import Sun from '@lucide/svelte/icons/sun';
 	import { mode, resetMode, setMode, setTheme, theme, userPrefersMode } from 'mode-watcher';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
+	import { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import type { ModePreference } from '$lib/themes.js';
 	import { APP_THEMES, getThemeById, normalizeModePreference, normalizeThemeId } from '$lib/themes.js';

@@ -9,7 +9,6 @@ export class SvelteRenderer {
 
   private componentInstance: Record<string, unknown> | null = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private component: Component<any>;
 
   private store = $state<Record<string, unknown>>({});

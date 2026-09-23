@@ -82,7 +82,7 @@ async function reportContentStatus(
   sha: string,
   processedCount: number,
   problems: string[],
-): Promise<void> {
+) {
   let state: "success" | "failure" = "success";
   if (problems.length > 0) {
     state = "failure";
@@ -115,7 +115,7 @@ async function reportContentStatus(
  * and the final commit status reflects the aggregate result instead of
  * unconditionally reporting success.
  */
-export async function handlePush(context: PushContext): Promise<void> {
+export async function handlePush(context: PushContext) {
   const { payload, log } = context;
 
   const branch = branchFromRef(payload.ref);

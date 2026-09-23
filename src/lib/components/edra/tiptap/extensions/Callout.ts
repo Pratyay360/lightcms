@@ -35,7 +35,7 @@ export const Callout = (component: Component<NodeViewProps>) =>
         return src.indexOf("$");
       },
 
-      tokenize: (src: string, tokens: any, lexer: any) => {
+      tokenize: (src: string, _tokens: any, lexer: any) => {
         // Match $callout[emoji]\ncontent\n$
         const match = /^\$callout\s*(.*)?\n([\s\S]*?)\n\$/.exec(src);
 

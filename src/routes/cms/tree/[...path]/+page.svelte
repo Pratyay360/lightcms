@@ -12,7 +12,6 @@
     GitBranch,
     Home,
     Plus,
-    Sparkles,
     Trash2,
   } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";

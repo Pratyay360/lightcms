@@ -39,13 +39,13 @@
     }
   }
 
-  let isLinkingGitHub = $state(false);
-  async function linkGitHub() {
-    isLinkingGitHub = true;
+  let _isLinkingGitHub = $state(false);
+  async function _linkGitHub() {
+    _isLinkingGitHub = true;
     try {
       await authClient.linkSocial({ provider: "github", callbackURL: "/cms", errorCallbackURL: "/auth" });
     } finally {
-      isLinkingGitHub = false;
+      _isLinkingGitHub = false;
     }
   }
 

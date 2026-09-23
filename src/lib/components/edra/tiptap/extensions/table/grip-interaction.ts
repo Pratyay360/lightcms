@@ -85,7 +85,7 @@ export function createGripInteractionPlugin(opts: GripInteractionOptions): Plugi
           const table = target.closest("table") as HTMLTableElement | null;
           const to = (event as MouseEvent).relatedTarget as HTMLElement | null;
           if (!table) return false;
-          if (!to || !to.closest("table") || to.closest("table") !== table) {
+          if (!to?.closest("table") || to.closest("table") !== table) {
             const grips = table.querySelectorAll<HTMLAnchorElement>(`a.${gripSelector}`);
             grips.forEach((g) => g.classList.remove(showClass));
             const wrapper = table.closest(".tableWrapper");

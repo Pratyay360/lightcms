@@ -98,7 +98,7 @@ async function upsertReviewComment(
   repo: string,
   prNumber: number,
   summary: string,
-): Promise<void> {
+) {
   const existingCommentId = await findBotCommentId(context, owner, repo, prNumber);
 
   if (existingCommentId !== undefined) {
@@ -124,7 +124,7 @@ async function ensureContentLabel(
   owner: string,
   repo: string,
   prNumber: number,
-): Promise<void> {
+) {
   const { data: labels } = await context.octokit.rest.issues.listLabelsOnIssue({
     owner,
     repo,
@@ -145,7 +145,7 @@ async function ensureContentLabel(
   });
 }
 
-async function reviewContentChanges(context: PullRequestContext): Promise<void> {
+async function reviewContentChanges(context: PullRequestContext) {
   const { payload, log } = context;
   const owner = payload.repository.owner.login;
   const repo = payload.repository.name;
@@ -176,7 +176,7 @@ async function reviewContentChanges(context: PullRequestContext): Promise<void> 
  * a `content` label. Merged events are logged for observability. Every
  * Octokit call is guarded so one API failure cannot crash the webhook.
  */
-export async function handlePullRequest(context: PullRequestContext): Promise<void> {
+export async function handlePullRequest(context: PullRequestContext) {
   const { payload, log } = context;
 
   if (isBotAuthor(context)) {

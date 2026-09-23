@@ -63,8 +63,8 @@ export const moveColumnLeft = (tr: Transaction) => {
   const targetCells = getCellsInColumn(target)(sel);
   if (hasSpans(sourceCells, targetCells)) return tr;
 
-  for (let i = 0; i < sourceCells!.length; i++) {
-    tr = swapCells(tr, sourceCells![i], targetCells![i]);
+  for (let i = 0; i < sourceCells?.length; i++) {
+    tr = swapCells(tr, sourceCells?.[i], targetCells?.[i]);
   }
   return tr;
 };
@@ -82,8 +82,8 @@ export const moveColumnRight = (tr: Transaction) => {
   const targetCells = getCellsInColumn(target)(sel);
   if (hasSpans(sourceCells, targetCells)) return tr;
 
-  for (let i = 0; i < sourceCells!.length; i++) {
-    tr = swapCells(tr, sourceCells![i], targetCells![i]);
+  for (let i = 0; i < sourceCells?.length; i++) {
+    tr = swapCells(tr, sourceCells?.[i], targetCells?.[i]);
   }
   return tr;
 };
@@ -101,8 +101,8 @@ export const moveRowUp = (tr: Transaction) => {
   const targetRow = getCellsInRow(target)(sel);
   if (hasSpans(sourceRow, targetRow)) return tr;
 
-  for (let i = 0; i < sourceRow!.length; i++) {
-    tr = swapCells(tr, sourceRow![i], targetRow![i]);
+  for (let i = 0; i < sourceRow?.length; i++) {
+    tr = swapCells(tr, sourceRow?.[i], targetRow?.[i]);
   }
   return tr;
 };
@@ -120,8 +120,8 @@ export const moveRowDown = (tr: Transaction) => {
   const targetRow = getCellsInRow(target)(sel);
   if (hasSpans(sourceRow, targetRow)) return tr;
 
-  for (let i = 0; i < sourceRow!.length; i++) {
-    tr = swapCells(tr, sourceRow![i], targetRow![i]);
+  for (let i = 0; i < sourceRow?.length; i++) {
+    tr = swapCells(tr, sourceRow?.[i], targetRow?.[i]);
   }
   return tr;
 };

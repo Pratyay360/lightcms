@@ -15,16 +15,16 @@ import { SvelteRenderer } from "./SvelteRenderer.svelte.js";
 
 export interface SvelteNodeViewRendererOptions extends NodeViewRendererOptions {
   update:
-    | ((props: {
-        oldNode: ProseMirrorNode;
-        oldDecorations: readonly Decoration[];
-        oldInnerDecorations: DecorationSource;
-        newNode: ProseMirrorNode;
-        newDecorations: readonly Decoration[];
-        innerDecorations: DecorationSource;
-        updateProps: () => void;
-      }) => boolean)
-    | null;
+  | ((props: {
+    oldNode: ProseMirrorNode;
+    oldDecorations: readonly Decoration[];
+    oldInnerDecorations: DecorationSource;
+    newNode: ProseMirrorNode;
+    newDecorations: readonly Decoration[];
+    innerDecorations: DecorationSource;
+    updateProps: () => void;
+  }) => boolean)
+  | null;
 }
 
 class SvelteNodeView extends NodeView<Component, Editor, SvelteNodeViewRendererOptions> {
@@ -87,7 +87,7 @@ class SvelteNodeView extends NodeView<Component, Editor, SvelteNodeViewRendererO
   }
 
   get dom() {
-    if (!this.renderer.element || !this.renderer.element.hasAttribute("data-node-view-wrapper")) {
+    if (!this.renderer.element?.hasAttribute("data-node-view-wrapper")) {
       throw Error("Please use the NodeViewWrapper component for your node view.");
     }
 

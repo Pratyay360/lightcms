@@ -3,7 +3,6 @@
     ArrowLeft,
     Check,
     Code,
-    FileText,
     FolderInput,
     GitBranch,
     LoaderCircle,

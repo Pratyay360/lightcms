@@ -43,3 +43,7 @@ release. Add a tool name to select part of the graph. For example, run
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
 <!--VITE PLUS END-->
+
+Don't look into version control history for code review. Only look into the current code and follow the best practices in code. Do not suggest any code that has been deleted.
+
+Don't assume anything about the code. Always ask for clarification if you are not sure about the code. Do not make any assumptions.

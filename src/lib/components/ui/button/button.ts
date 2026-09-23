@@ -1,6 +1,1 @@
-export {
-  type ButtonProps,
-  type ButtonSize,
-  type ButtonVariant,
-  buttonVariants,
-} from "./button.svelte";
+export { type ButtonProps, type ButtonVariant, buttonVariants } from "./button.svelte";

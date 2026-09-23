@@ -32,8 +32,7 @@ export const isColumnGripSelected = (args: GripCheckArgs) => {
     return false;
   }
 
-  const gripColumn =
-    container && container.querySelector && container.querySelector("a.grip-column.selected");
+  const gripColumn = container?.querySelector?.("a.grip-column.selected");
 
   return !!gripColumn;
 };
@@ -46,8 +45,7 @@ export const isRowGripSelected = (args: GripCheckArgs) => {
     return false;
   }
 
-  const gripRow =
-    container && container.querySelector && container.querySelector("a.grip-row.selected");
+  const gripRow = container?.querySelector?.("a.grip-row.selected");
 
   return !!gripRow;
 };

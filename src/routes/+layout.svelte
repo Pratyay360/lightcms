@@ -8,10 +8,10 @@ import {
 	LucideFileBadge2,
 	Sparkles,
 } from "@lucide/svelte";
-import { dev } from "$app/environment";
 import { injectAnalytics } from '@vercel/analytics/sveltekit';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 import { ModeWatcher } from "mode-watcher";
+import { dev } from "$app/environment";
 import { page } from "$app/state";
 import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
 import ToggleMode from "$lib/components/custom/ToggleMode.svelte";

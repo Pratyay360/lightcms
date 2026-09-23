@@ -148,7 +148,7 @@ export const Video = Node.create<VideoOptions>({
   },
 
   addNodeView() {
-    if (!this.options.resize || !this.options.resize.enabled || typeof document === "undefined") {
+    if (!this.options.resize?.enabled || typeof document === "undefined") {
       return null;
     }
 

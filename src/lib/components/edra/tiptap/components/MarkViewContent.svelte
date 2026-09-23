@@ -4,8 +4,8 @@
 
 {#key 'mvc'}
 
-	<div class={className} data-mark-view-content="" style="white-space: inherit"
+	<svelte:element this={as} class={className} data-mark-view-content="" style="white-space: inherit"
 	>
 	{@render children?.()}
-	</div>
+	</svelte:element>
 {/key}

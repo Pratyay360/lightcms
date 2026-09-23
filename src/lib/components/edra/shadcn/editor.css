@@ -134,7 +134,7 @@
   padding: 0;
   color: inherit;
   background-color: transparent;
-  border-radius: 0 !important;
+  border-radius: 0;
 }
 
 .tiptap ul,
@@ -619,7 +619,7 @@
   min-width: 0;
 }
 
-.tiptap .edra-callout-content > p {
+.tiptap :where(.edra-callout-content) > p {
   margin: 0;
 }
 
@@ -627,16 +627,16 @@
   margin-top: 0.5rem;
 }
 
+.ProseMirror-selectednode > .group,
 .is-media-selected > .group,
-.ProseMirror-selectednode.is-media-selected > .group,
-.ProseMirror-selectednode > .group {
+.ProseMirror-selectednode.is-media-selected > .group {
   position: relative;
   overflow: visible;
 }
 
+.ProseMirror-selectednode > .group::after,
 .is-media-selected > .group::after,
-.ProseMirror-selectednode.is-media-selected > .group::after,
-.ProseMirror-selectednode > .group::after {
+.ProseMirror-selectednode.is-media-selected > .group::after {
   content: "";
   position: absolute;
   inset: -3px;

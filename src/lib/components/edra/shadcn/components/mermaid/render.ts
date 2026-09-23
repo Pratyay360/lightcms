@@ -30,7 +30,7 @@ export function createMermaidRenderer(callbacks: MermaidRendererCallbacks = {}) 
   let renderCounter = 0;
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
-  async function render(target: HTMLDivElement | null, source: string): Promise<void> {
+  async function render(target: HTMLDivElement | null, source: string) {
     if (!target || !source.trim()) {
       if (target) target.innerHTML = "";
       callbacks.onErrorChange?.(null);

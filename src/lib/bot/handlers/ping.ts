@@ -7,7 +7,7 @@ import type { Context } from "probot";
  * arbitrary open issue, which is noisy and surprising, so this handler
  * intentionally performs no Octokit calls and only records the handshake.
  */
-export async function handlePing(context: Context<"ping">): Promise<void> {
+export async function handlePing(context: Context<"ping">) {
   const { payload, log } = context;
 
   log.info(

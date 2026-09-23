@@ -5,7 +5,7 @@ import { handlePullRequest } from "./handlers/pull-request.js";
 import { handlePush } from "./handlers/push.js";
 
 const app: ApplicationFunction = (probotApp: Probot): void => {
-  probotApp.onError(async (error: Error): Promise<void> => {
+  probotApp.onError(async (error: Error) => {
     probotApp.log.error({ err: error }, "Unhandled bot error");
   });
 

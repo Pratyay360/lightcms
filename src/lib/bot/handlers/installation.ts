@@ -40,7 +40,7 @@ function resolveAccountLogin(payload: InstallationPayload): string | undefined {
  * issues on every install is spammy for repositories the app was just
  * granted access to.
  */
-export async function handleInstallation(context: Context<"installation">): Promise<void> {
+export async function handleInstallation(context: Context<"installation">) {
   const { payload, log } = context;
   const accountLogin = resolveAccountLogin(payload);
   const repositoryCount = payload.repositories?.length ?? 0;

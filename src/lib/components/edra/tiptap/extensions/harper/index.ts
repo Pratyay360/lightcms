@@ -177,7 +177,7 @@ export const Harper = Extension.create({
         key: HARPER_PLUGIN_KEY,
         state: {
           init: () => DecorationSet.empty,
-          apply(tr, oldState, oldEditorState, newEditorState) {
+          apply(tr, oldState, _oldEditorState, newEditorState) {
             if (tr.docChanged) schedule();
             const meta = tr.getMeta(HARPER_PLUGIN_KEY) as { metas: IssueMeta[] } | undefined;
             if (meta) {

@@ -14,7 +14,7 @@
   let cleanup: (() => void) | null = null;
 
   const handleClick = (event: MouseEvent) => {
-    if (popover && popover.contains(event.target as Node)) return;
+    if (popover?.contains(event.target as Node)) return;
     const target = event.target as HTMLElement | null;
     if (!target) return;
     const idAttr = target.closest<HTMLElement>("[data-harper-id]");
