@@ -49,8 +49,8 @@
 		{#each lists as list (list)}
 			{@const Icon = list.icon}
 			<DropdownMenu.Item onclick={() => list.onClick?.(editor)}>
-				<Icon />
-				{list.tooltip}
+				<Icon class="text-muted-foreground" />
+				<span>{list.tooltip}</span>
 				<DropdownMenu.Shortcut>{list.shortCut}</DropdownMenu.Shortcut>
 			</DropdownMenu.Item>
 		{/each}

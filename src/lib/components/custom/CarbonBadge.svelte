@@ -27,10 +27,6 @@
 			isDark = dark;
 		}
 
-		// void import('website-carbon-badges/b.min.js').catch(() => {
-		// 	// Ignore badge loading failure
-		// });
-
 		return () => {
 			if (mediaQuery !== null) {
 				mediaQuery.removeEventListener('change', handleChange);

@@ -8,7 +8,6 @@ type PushContext = Context<"push">;
 const REFS_HEADS_PREFIX = "refs/heads/";
 const FRONT_MATTER_DELIMITER = "---";
 
-/** Collect every added or modified content path from the push. */
 function collectContentPaths(context: PushContext): string[] {
   const commits = context.payload.commits ?? [];
   const paths = new Set<string>();

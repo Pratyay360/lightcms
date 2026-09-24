@@ -2,11 +2,6 @@ import type { Context } from "probot";
 
 type InstallationPayload = Context<"installation">["payload"];
 
-/**
- * Resolve a human-readable login for the account that installed the app.
- * Returns `undefined` when GitHub omits every identifier instead of
- * falling back to an empty string that would break Octokit calls.
- */
 function resolveAccountLogin(payload: InstallationPayload): string | undefined {
   const account = payload.installation?.account;
 
@@ -32,14 +27,6 @@ function resolveAccountLogin(payload: InstallationPayload): string | undefined {
   return undefined;
 }
 
-/**
- * Handle installation lifecycle events.
- *
- * The handler records installs and uninstalls. It deliberately creates
- * no issues or comments: GitHub rejects empty issue bodies, and opening
- * issues on every install is spammy for repositories the app was just
- * granted access to.
- */
 export async function handleInstallation(context: Context<"installation">) {
   const { payload, log } = context;
   const accountLogin = resolveAccountLogin(payload);

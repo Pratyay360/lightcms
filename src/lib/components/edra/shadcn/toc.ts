@@ -1,1 +1,1 @@
-export { setTocItems } from "./toc.svelte";
+export { setTocItems, type TocItems } from "./toc.svelte";

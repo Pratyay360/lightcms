@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vite-plus/test";
 import {
   getAudioExtension,
   getGroqApiKey,
@@ -91,9 +91,9 @@ describe("Groq server module", () => {
   describe("transcribeAudioWithGroq", () => {
     it("throws when GROQ_API_KEY is missing", async () => {
       delete process.env.GROQ_API_KEY;
-      await expect(
-        transcribeAudioWithGroq(new Uint8Array([1, 2, 3])),
-      ).rejects.toThrow("GROQ_API_KEY is not configured");
+      await expect(transcribeAudioWithGroq(new Uint8Array([1, 2, 3]))).rejects.toThrow(
+        "GROQ_API_KEY is not configured",
+      );
     });
 
     it("returns empty text for empty buffer", async () => {

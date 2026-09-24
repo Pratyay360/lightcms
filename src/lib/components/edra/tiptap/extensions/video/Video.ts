@@ -148,11 +148,12 @@ export const Video = Node.create<VideoOptions>({
   },
 
   addNodeView() {
-    if (!this.options.resize?.enabled || typeof document === "undefined") {
+    const { resize } = this.options;
+    if (typeof document === "undefined" || !resize || !resize.enabled) {
       return null;
     }
 
-    const { directions, minWidth, minHeight, alwaysPreserveAspectRatio } = this.options.resize;
+    const { directions, minWidth, minHeight, alwaysPreserveAspectRatio } = resize;
 
     return ({ node, getPos, HTMLAttributes, editor }) => {
       const el = document.createElement("video");
@@ -222,8 +223,6 @@ export const Video = Node.create<VideoOptions>({
       });
 
       const dom = nodeView.dom as HTMLElement;
-
-      // when Video metadata is loaded, show the node view to get the correct dimensions
       dom.style.visibility = "hidden";
       dom.style.pointerEvents = "none";
       el.onloadedmetadata = () => {

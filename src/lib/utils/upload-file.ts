@@ -2,13 +2,9 @@ import Uppy from "@uppy/core";
 import XHRUpload from "@uppy/xhr-upload";
 
 interface UploadOptions {
-  /** Max file size in bytes (default: 10MB) */
   maxFileSize?: number;
-  /** Allowed file types (default: ["image/*"]) */
   allowedFileTypes?: string[];
-  /** Upload endpoint (default: "/api/image-upload") */
   endpoint?: string;
-  /** Form field name (default: "source") */
   fieldName?: string;
 }
 

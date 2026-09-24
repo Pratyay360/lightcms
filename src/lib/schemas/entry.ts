@@ -67,11 +67,13 @@ function buildFieldSchema(field: LightCmsField): z.ZodTypeAny {
               z
                 .string()
                 .min(1, `${field.label ?? field.name} is required.`)
-                .datetime({ local: true }),
+                .pipe(z.iso.datetime({ local: true })),
             )
           : z.preprocess(
               normalizeDateValue,
-              z.union([z.string().datetime({ local: true }), z.literal("")]).default(""),
+              z
+                .union([z.string().pipe(z.iso.datetime({ local: true })), z.literal("")])
+                .default(""),
             );
       }
       break;

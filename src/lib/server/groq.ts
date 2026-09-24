@@ -46,7 +46,6 @@ export function getAudioExtension(contentType?: string): string {
       return "mp3";
     case "audio/flac":
       return "flac";
-    case "audio/webm":
     default:
       return "webm";
   }
@@ -74,9 +73,7 @@ export async function transcribeAudioWithGroq(
 ): Promise<GroqTranscriptionResult> {
   const apiKey = getGroqApiKey();
   if (!apiKey) {
-    throw new Error(
-      "GROQ_API_KEY is not configured on the server. Please set GROQ_API_KEY.",
-    );
+    throw new Error("GROQ_API_KEY is not configured on the server. Please set GROQ_API_KEY.");
   }
 
   let buffer: Buffer;

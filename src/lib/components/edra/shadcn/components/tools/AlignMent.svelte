@@ -50,8 +50,8 @@
 		{#each alignments as alignment (alignment)}
 			{@const Icon = alignment.icon}
 			<DropdownMenu.Item onclick={() => alignment.onClick?.(editor)}>
-				<Icon />
-				{alignment.tooltip}
+				<Icon class="text-muted-foreground" />
+				<span>{alignment.tooltip}</span>
 				<DropdownMenu.Shortcut>
 					{alignment.shortCut}
 				</DropdownMenu.Shortcut>

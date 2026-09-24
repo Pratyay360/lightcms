@@ -1,7 +1,5 @@
-// @ts-nocheck
 import adapter from "@sveltejs/adapter-vercel";
 import { sveltekit } from "@sveltejs/kit/vite";
-// import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
 import { mdsvex } from "mdsvex";
 import { defineConfig, lazyPlugins } from "vite-plus";
@@ -21,7 +19,7 @@ export default defineConfig({
     {
       name: "superforms-skip-dead-default",
       enforce: "pre",
-      async resolveId(source, importer) {
+      async resolveId(source: string, importer: string | undefined) {
         if (source === "sveltekit-superforms") {
           const resolved = await this.resolve("sveltekit-superforms/client", importer, {
             skipSelf: true,

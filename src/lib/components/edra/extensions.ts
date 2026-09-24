@@ -23,7 +23,6 @@ import {
 } from "./tiptap/index.ts";
 
 export interface DefaultExtensionsOptions {
-  /** Whether to enable history (undo/redo). Disabled for collaboration (Yjs) */
   undoRedo?: boolean;
 }
 

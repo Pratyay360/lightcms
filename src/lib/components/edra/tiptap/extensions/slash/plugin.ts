@@ -18,7 +18,7 @@ export interface SlashPluginOptions {
 }
 
 export function createSlashPlugin({ editor, menu, getPopup }: SlashPluginOptions) {
-  let renderer: SvelteRenderer | undefined;
+  let renderer: SvelteRenderer;
 
   return Suggestion({
     editor,

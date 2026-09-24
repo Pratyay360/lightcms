@@ -62,10 +62,6 @@ async function resolveCtx(
   return getCmsContext(sessionUserId, input.installationId, input.repository, input.branch);
 }
 
-/**
- * Execute an async operation and wrap any error in an ORPCError.
- * Eliminates the repeated try/catch + cause.message pattern across handlers.
- */
 async function orpcTry<T>(
   fn: () => Promise<T>,
   errorCode: "BAD_REQUEST" | "INTERNAL_SERVER_ERROR" | "NOT_FOUND",

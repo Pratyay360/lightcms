@@ -28,8 +28,6 @@
 		if (clean.length === 0) {
 			return;
 		}
-		// Streaming finals arrive chunk by chunk ("hello", "world").
-		// Trail with a space so consecutive chunks do not join together.
 		editor.chain().focus().insertContent(`${clean} `).run();
 	};
 </script>

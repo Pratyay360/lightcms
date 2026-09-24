@@ -1,4 +1,3 @@
-
 export const CONTENT_EXTENSIONS: readonly string[] = [".md", ".smd", ".mdx"];
 
 /** Label applied to pull requests that touch content files. */

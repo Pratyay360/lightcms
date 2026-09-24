@@ -61,10 +61,13 @@ export const moveColumnLeft = (tr: Transaction) => {
   const sel = tr.selection as CellSelection;
   const sourceCells = getCellsInColumn(source)(sel);
   const targetCells = getCellsInColumn(target)(sel);
-  if (hasSpans(sourceCells, targetCells)) return tr;
+  if (!sourceCells || !targetCells || hasSpans(sourceCells, targetCells)) return tr;
 
-  for (let i = 0; i < sourceCells?.length; i++) {
-    tr = swapCells(tr, sourceCells?.[i], targetCells?.[i]);
+  for (let i = 0; i < sourceCells.length; i++) {
+    const sourceCell = sourceCells[i];
+    const targetCell = targetCells[i];
+    if (!sourceCell || !targetCell) continue;
+    tr = swapCells(tr, sourceCell, targetCell);
   }
   return tr;
 };
@@ -80,10 +83,13 @@ export const moveColumnRight = (tr: Transaction) => {
   const sel = tr.selection as CellSelection;
   const sourceCells = getCellsInColumn(source)(sel);
   const targetCells = getCellsInColumn(target)(sel);
-  if (hasSpans(sourceCells, targetCells)) return tr;
+  if (!sourceCells || !targetCells || hasSpans(sourceCells, targetCells)) return tr;
 
-  for (let i = 0; i < sourceCells?.length; i++) {
-    tr = swapCells(tr, sourceCells?.[i], targetCells?.[i]);
+  for (let i = 0; i < sourceCells.length; i++) {
+    const sourceCell = sourceCells[i];
+    const targetCell = targetCells[i];
+    if (!sourceCell || !targetCell) continue;
+    tr = swapCells(tr, sourceCell, targetCell);
   }
   return tr;
 };
@@ -99,10 +105,13 @@ export const moveRowUp = (tr: Transaction) => {
   const sel = tr.selection as CellSelection;
   const sourceRow = getCellsInRow(source)(sel);
   const targetRow = getCellsInRow(target)(sel);
-  if (hasSpans(sourceRow, targetRow)) return tr;
+  if (!sourceRow || !targetRow || hasSpans(sourceRow, targetRow)) return tr;
 
-  for (let i = 0; i < sourceRow?.length; i++) {
-    tr = swapCells(tr, sourceRow?.[i], targetRow?.[i]);
+  for (let i = 0; i < sourceRow.length; i++) {
+    const sourceCell = sourceRow[i];
+    const targetCell = targetRow[i];
+    if (!sourceCell || !targetCell) continue;
+    tr = swapCells(tr, sourceCell, targetCell);
   }
   return tr;
 };
@@ -118,10 +127,13 @@ export const moveRowDown = (tr: Transaction) => {
   const sel = tr.selection as CellSelection;
   const sourceRow = getCellsInRow(source)(sel);
   const targetRow = getCellsInRow(target)(sel);
-  if (hasSpans(sourceRow, targetRow)) return tr;
+  if (!sourceRow || !targetRow || hasSpans(sourceRow, targetRow)) return tr;
 
-  for (let i = 0; i < sourceRow?.length; i++) {
-    tr = swapCells(tr, sourceRow?.[i], targetRow?.[i]);
+  for (let i = 0; i < sourceRow.length; i++) {
+    const sourceCell = sourceRow[i];
+    const targetCell = targetRow[i];
+    if (!sourceCell || !targetCell) continue;
+    tr = swapCells(tr, sourceCell, targetCell);
   }
   return tr;
 };

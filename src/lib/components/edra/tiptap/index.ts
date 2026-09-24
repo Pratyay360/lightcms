@@ -10,9 +10,9 @@ export { Editor } from "./Editor.ts";
 export { useEditor } from "./hooks/useEditor.svelte.js";
 export { useEditorState } from "./hooks/useEditorState.svelte.js";
 export { useEditorTransaction } from "./hooks/useEditorTransaction.svelte.js";
-export { SvelteMarkViewRenderer } from "./renderers/SvelteMarkViewRenderer.js";
-export { SvelteNodeViewRenderer } from "./renderers/SvelteNodeViewRenderer.js";
-export { SvelteRenderer } from "./renderers/SvelteRenderer.svelte.js";
+export { SvelteMarkViewRenderer } from "./renderers/SvelteMarkViewRenderer";
+export { SvelteNodeViewRenderer } from "./renderers/SvelteNodeViewRenderer";
+export { SvelteRenderer } from "./renderers/SvelteRenderer";
 
 export const Tiptap = Object.assign(TiptapRoot, { Content: TiptapContent });
 

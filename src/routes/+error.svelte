@@ -4,6 +4,21 @@ import { page } from "$app/state";
 
 const status = $derived(page.status);
 const message = $derived(page.error?.message);
+
+function getErrorTitle(status: number): string {
+	if (status === 404) {
+		return "Page not found";
+	}
+	if (status === 403) {
+		return "Access denied";
+	}
+	if (status === 401) {
+		return "Sign in required";
+	}
+	return "Something went wrong";
+}
+
+const errorTitle = $derived(getErrorTitle(status));
 </script>
 
 <svelte:head>
@@ -16,7 +31,7 @@ const message = $derived(page.error?.message);
 	</span>
 	<div>
 		<p class="eyebrow font-semibold text-primary">Error {status}</p>
-		<h1 class="page-title mt-3 text-3xl font-extrabold text-foreground">{status === 404 ? "Page not found" : status === 403 ? "Access denied" : status === 401 ? "Sign in required" : "Something went wrong"}</h1>
+		<h1 class="page-title mt-3 text-3xl font-extrabold text-foreground">{errorTitle}</h1>
 		<p class="mt-3 text-sm leading-6 text-muted-foreground">
 			{#if status}
 				The page you were looking for doesn't exist or has been moved. Please check the URL or return to the homepage.

@@ -16,8 +16,7 @@ export function isSpeechRecognitionSupported(): boolean {
     return false;
   }
   const hasMediaDevices =
-    typeof navigator !== "undefined" &&
-    typeof navigator.mediaDevices?.getUserMedia === "function";
+    typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getUserMedia === "function";
   const hasMediaRecorder = typeof MediaRecorder !== "undefined";
   return hasMediaDevices && hasMediaRecorder;
 }

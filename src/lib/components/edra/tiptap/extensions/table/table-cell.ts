@@ -61,7 +61,6 @@ export const TableCell = TiptapTableCell.extend({
               });
             }
 
-            // Add-row "+" button — anchored to the last row (first column)
             if (firstColCells && firstColCells.length > 0) {
               const lastRowCell = firstColCells[firstColCells.length - 1];
               decorations.push(

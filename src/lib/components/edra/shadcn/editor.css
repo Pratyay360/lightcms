@@ -319,7 +319,6 @@
   border-radius: 0.25rem;
 }
 
-/* Math Equations (KaTeX) */
 .tiptap-mathematics-render:hover {
   background-color: var(--color-muted);
 }

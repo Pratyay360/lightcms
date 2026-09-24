@@ -14,8 +14,7 @@ import type { Editor } from "../Editor.ts";
 import { SvelteRenderer } from "./SvelteRenderer.svelte.js";
 
 export interface SvelteNodeViewRendererOptions extends NodeViewRendererOptions {
-  update:
-  | ((props: {
+  update: (props: {
     oldNode: ProseMirrorNode;
     oldDecorations: readonly Decoration[];
     oldInnerDecorations: DecorationSource;
@@ -23,8 +22,7 @@ export interface SvelteNodeViewRendererOptions extends NodeViewRendererOptions {
     newDecorations: readonly Decoration[];
     innerDecorations: DecorationSource;
     updateProps: () => void;
-  }) => boolean)
-  | null;
+  }) => boolean;
 }
 
 class SvelteNodeView extends NodeView<Component, Editor, SvelteNodeViewRendererOptions> {

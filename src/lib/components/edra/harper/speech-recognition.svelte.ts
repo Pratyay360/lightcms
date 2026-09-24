@@ -109,8 +109,7 @@ export function createSpeechRecognition(
         options.onTranscript(cleanText, true);
       }
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to transcribe audio with Groq.";
+      const message = err instanceof Error ? err.message : "Failed to transcribe audio with Groq.";
       options.onError?.({ message });
     } finally {
       interimTranscript = "";
