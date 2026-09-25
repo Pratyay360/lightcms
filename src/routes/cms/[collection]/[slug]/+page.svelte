@@ -48,12 +48,37 @@
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
+
+  function buildClientValidators() {
+    const requiredFields = data.collection.fields.filter(
+      (f) => f.required && f.name !== "body" && f.name !== "slug" && !f.list && f.type !== "checkbox",
+    );
+    return {
+      async validate(data: Record<string, unknown>) {
+        const issues: { path: string[]; message: string }[] = [];
+        for (const field of requiredFields) {
+          const value = data[field.name];
+          const label = field.label ?? field.name;
+          if (field.type === "number") {
+            if (value === "" || value === undefined || value === null) {
+              issues.push({ path: [field.name], message: `${label} is required.` });
+            }
+          } else if (value === undefined || value === null || (typeof value === "string" && value.trim() === "")) {
+            issues.push({ path: [field.name], message: `${label} is required.` });
+          }
+        }
+        return { success: issues.length === 0, data, issues };
+      },
+    };
+  }
+
   const { form, errors, enhance, delayed, message, submitting } = untrack(
     () => {
       return superForm(data.form, {
         dataType: "json",
         resetForm: false,
         invalidateAll: false,
+        validators: buildClientValidators(),
         warnings: { duplicateId: false },
         onUpdated({ form: f }) {
           if (f.valid && f.message) {
@@ -409,7 +434,7 @@
                 <Input
                   id="field-title"
                   name="title"
-                  required
+                  aria-required="true"
                   aria-invalid={!!errTitle}
                   aria-describedby={errTitle ? "err-title" : undefined}
                   value={($form as Record<string, string>).title ?? ""}
@@ -462,7 +487,7 @@
                 id="field-date"
                 type="datetime-local"
                 name="date"
-                required
+                aria-required="true"
                 aria-invalid={!!errDate}
                 value={($form as Record<string, string>).date ?? ""}
                 oninput={(e) => {

@@ -34,6 +34,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
   if (params.slug === "new") {
     const emptyEntry = buildEmptyFormData(collection);
     const form = await superValidate(emptyEntry, zod4(schema));
+    form.errors = {};
 
     return {
       isNew: true,
