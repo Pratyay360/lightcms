@@ -123,8 +123,8 @@ let { children, data } = $props();
       <div class="flex items-center gap-1.5 font-bold text-foreground">
         <Sparkles size={14} class="text-primary" />
         <span>LightCMS</span>
-        <Carbonbadge />
       </div>
+      <Carbonbadge />
     </div>
       </footer>
 </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	interface Props {
 		dark?: boolean;
@@ -10,7 +11,6 @@
 	let isDark = $state<boolean>(false);
 
 	onMount(() => {
-
 		let mediaQuery: MediaQueryList | null = null;
 
 		function handleChange(event: MediaQueryListEvent): void {
@@ -32,6 +32,30 @@
 				mediaQuery.removeEventListener('change', handleChange);
 			}
 		};
+	});
+
+	let scriptLoaded = $state(false);
+
+	function loadBadgeScript(): void {
+		if (!browser || scriptLoaded) return;
+
+		const existingScript = document.querySelector('script[src*="website-carbon-badges"]');
+		if (existingScript) {
+			scriptLoaded = true;
+			return;
+		}
+
+		const script = document.createElement('script');
+		script.src = 'https://unpkg.com/website-carbon-badges@1.1.3/b.min.js';
+		script.defer = true;
+		script.onload = () => {
+			scriptLoaded = true;
+		};
+		document.head.appendChild(script);
+	}
+
+	$effect(() => {
+		loadBadgeScript();
 	});
 </script>
 
