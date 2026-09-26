@@ -20,8 +20,6 @@ export const TableCell = TiptapTableCell.extend({
             const { doc, selection } = state;
             const decorations: Decoration[] = [];
             const firstColCells = getCellsInColumn(0)(selection);
-
-            // Row grips (left edge) — appear for first column cells
             if (firstColCells) {
               firstColCells.forEach(({ pos }: { pos: number }, index: number) => {
                 decorations.push(

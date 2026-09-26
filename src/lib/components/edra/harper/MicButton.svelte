@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Loader2, Mic, MicAudioLines, MicOff } from '@lucide/svelte';
+	import { Loader2Icon, Mic, MicAudioLines, MicOff } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { type ButtonSize, type ButtonVariant, buttonVariants } from '$lib/components/ui/button/index.js';
 	import { cn } from '$lib/utils.js';
@@ -89,7 +89,7 @@
 			data-state="active"
 		>
 			{#if speech.isTranscribing}
-				<Loader2 class="size-4 animate-spin text-primary" />
+				<Loader2Icon class="size-4 animate-spin text-primary" />
 			{:else if speech.isSpeaking}
 				<MicAudioLines class="size-4 animate-pulse" />
 			{:else}
@@ -110,7 +110,7 @@
 			<div class="flex items-center justify-between gap-2 border-b border-border/50 pb-2">
 				<div class="flex items-center gap-1.5 font-medium">
 					{#if speech.isTranscribing}
-						<Loader2 class="size-3.5 animate-spin text-primary" />
+						<Loader2Icon class="size-3.5 animate-spin text-primary" />
 						<span>Transcribing…</span>
 					{:else}
 						<span class="relative flex size-2">

@@ -55,9 +55,7 @@ describe("speech-recognition utilities", () => {
     });
 
     it("returns false when MediaRecorder is missing", () => {
-      // @ts-expect-error mocking
       globalThis.window = {};
-      // @ts-expect-error mocking
       globalThis.navigator = {
         mediaDevices: {
           getUserMedia: () => Promise.resolve(),
@@ -78,13 +76,11 @@ describe("speech-recognition utilities", () => {
     });
 
     it("returns empty string when MediaRecorder is undefined", () => {
-      // @ts-expect-error mocking
       delete globalThis.MediaRecorder;
       expect(getSupportedAudioMimeType()).toBe("");
     });
 
     it("returns the first supported mime type", () => {
-      // @ts-expect-error mocking
       globalThis.MediaRecorder = {
         isTypeSupported: (type: string) => type.includes("webm"),
       };

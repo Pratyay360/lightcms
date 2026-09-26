@@ -339,9 +339,8 @@
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each folders as folderEntry}
 					{@const targetChildFolder = folder ? `${folder}/${folderEntry.name}` : folderEntry.name}
-					<div
+					<span
 						class="group relative rounded-2xl border border-border bg-card p-5 flex items-center gap-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:border-primary-500/40 {dropFolderTarget === targetChildFolder ? 'bg-primary/10 ring-2 ring-primary/40 ring-inset' : ''}"
-						role="group"
 						aria-label={`Folder ${folderEntry.name}`}
 						ondragover={(e) => handleDragOverFolder(e, targetChildFolder)}
 						ondragleave={() => handleDragLeaveFolder(targetChildFolder)}
@@ -381,7 +380,7 @@
 								class="shrink-0 text-muted-foreground transition-all group-hover:text-primary-500 group-hover:translate-x-0.5 pointer-events-none"
 							/>
 						</div>
-					</div>
+					</span>
 				{/each}
 			</div>
 		{/if}
@@ -396,9 +395,8 @@
 			</div>
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each entries as entry}
-					<div
+					<span
 						class="group rounded-2xl border border-border bg-card flex flex-col justify-between p-5 transition-all duration-350 hover:-translate-y-1 hover:shadow-xl hover:border-primary-500/40 cursor-grab active:cursor-grabbing {draggedSlug === entry.slug ? 'opacity-40' : ''}"
-						role="group"
 						aria-label={`Entry ${entry.slug}`}
 						draggable="true"
 						ondragstart={(e) => handleDragStart(e, entry.slug)}
@@ -440,7 +438,7 @@
 								</a>
 							</div>
 						</div>
-					</div>
+					</span>
 				{/each}
 			</div>
 		{/if}

@@ -67,7 +67,6 @@ export function createSlashPlugin({ editor, menu, getPopup }: SlashPluginOptions
       onExit() {
         getPopup()?.clear();
         renderer?.destroy();
-        renderer = undefined;
       },
     }),
   });

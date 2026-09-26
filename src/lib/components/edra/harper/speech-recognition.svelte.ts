@@ -1,9 +1,9 @@
 import { createLightCmsClient } from "$lib/orpc-client";
 import {
+  type GroqTranscriptionResult,
   getSupportedAudioMimeType,
   isSpeechRecognitionSupported,
   normalizeLanguageCode,
-  type GroqTranscriptionResult,
   type SpeechRecognitionError,
 } from "./speech-recognition.js";
 
@@ -119,7 +119,9 @@ export function createSpeechRecognition(
 
   async function startListening() {
     if (!isSupported) {
-      options.onError?.({ message: "Speech recognition is not supported in this browser." });
+      options.onError?.({
+        message: "Speech recognition is not supported in this browser.",
+      });
       return;
     }
 
@@ -232,7 +234,9 @@ export function createSpeechRecognition(
 
   function toggle(): void {
     if (!isSupported) {
-      options.onError?.({ message: "Speech recognition is not supported in this browser." });
+      options.onError?.({
+        message: "Speech recognition is not supported in this browser.",
+      });
       return;
     }
     if (isTranscribing) {

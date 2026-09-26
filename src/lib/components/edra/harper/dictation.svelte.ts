@@ -1,8 +1,8 @@
 import { toast } from "svelte-sonner";
 import {
+  type DictationPhase,
   isDictationStopEvent,
   isDictationToggleEvent,
-  type DictationPhase,
 } from "./speech-recognition.js";
 import {
   createSpeechRecognition,
