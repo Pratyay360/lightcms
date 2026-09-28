@@ -1,11 +1,3 @@
-<svelte:head>
-  <title>About | LightCMS</title>
-  <meta
-    name="description"
-    content="Learn about LightCMS, a modern and simple CMS built with SvelteKit."
-  />
-</svelte:head>
-
 <section class="mx-auto max-w-3xl px-4 py-8 sm:py-12" aria-labelledby="about-title">
   <p class="eyebrow font-semibold text-primary">About LightCMS</p>
 

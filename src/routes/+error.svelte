@@ -1,6 +1,7 @@
 <script lang="ts">
 import { ArrowLeft, CircleAlert } from "@lucide/svelte";
 import { page } from "$app/state";
+import { SITE } from "$lib/seo";
 
 const status = $derived(page.status);
 const message = $derived(page.error?.message);
@@ -22,7 +23,8 @@ const errorTitle = $derived(getErrorTitle(status));
 </script>
 
 <svelte:head>
-	<title>{status} | LightCMS</title>
+	<title>{status === 404 ? "Page not found" : errorTitle} | {SITE.name}</title>
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <section class="mx-auto flex max-w-xl flex-col items-center gap-5 py-16 text-center">

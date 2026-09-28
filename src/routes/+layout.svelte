@@ -5,8 +5,8 @@ import {
 	BookOpen,
 	Info,
 	LogIn,
-	LucideFileBadge2,
 	Sparkles,
+  FileBadge2Icon,
 } from "@lucide/svelte";
 import { injectAnalytics } from '@vercel/analytics/sveltekit';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
@@ -14,6 +14,7 @@ import { ModeWatcher } from "mode-watcher";
 import { dev } from "$app/environment";
 import { page } from "$app/state";
 import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
+import MetaTags from "$lib/components/custom/MetaTags.svelte";
 import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
 import { Avatar } from "$lib/components/ui/avatar";
 import { Toaster } from "$lib/components/ui/sonner";
@@ -29,9 +30,7 @@ let { children, data } = $props();
 <ModeWatcher defaultTheme={DEFAULT_THEME_ID} modeStorageKey={MODE_STORAGE_KEY} themeStorageKey={THEME_STORAGE_KEY} />
 <Toaster />
 
-<svelte:head>
-  <title>LightCMS</title>
-</svelte:head>
+<MetaTags />
 
 <div class="min-h-screen bg-background text-foreground transition-colors duration-300">
   <a
@@ -52,7 +51,7 @@ let { children, data } = $props();
         <span
           class="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-105 group-hover:rotate-3"
         >
-          <LucideFileBadge2 size={20} />
+          <FileBadge2Icon size={20} />
         </span>
         <span
           class="hidden text-sm font-black tracking-wider uppercase text-foreground sm:inline"

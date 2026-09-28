@@ -11,14 +11,6 @@ import {
 } from "@lucide/svelte";
 </script>
 
-<svelte:head>
-  <title>LightCMS </title>
-  <meta
-    name="description"
-    content="A focused Git-backed content workspace for editing and publishing markdown."
-  />
-</svelte:head>
-
 <section
   class="grid min-h-[calc(100vh-12rem)] items-center gap-12 py-6 lg:grid-cols-[1.1fr_0.9fr] lg:py-12"
 >
