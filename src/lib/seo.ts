@@ -3,17 +3,25 @@ export const SITE = {
   origin: "https://lightcms.me",
   locale: "en_US",
   repository: "https://github.com/Pratyay360/lightcms",
+  contactEmail: "pratyaymustafi@outlook.com",
+  contactFormUrl: "https://forms.zoho.in/pratyay749zoho1/form/ContactUs",
+  sponsorUrl: "https://pratyayupi.surge.sh",
 } as const;
 
 export const HOME_TITLE = `${SITE.name} | Git backed CMS for static site generators`;
 
 export const ABOUT_TITLE = `About ${SITE.name} | A simple, Git backed headless CMS`;
 
+export const PRIVACY_TITLE = `Privacy Policy | ${SITE.name}`;
+
 export const HOME_DESCRIPTION =
   "LightCMS is a Git-backed content workspace for editing and publishing markdown. Content stays in your own repository and ships with any static site generator that reads frontmatter.";
 
 export const ABOUT_DESCRIPTION =
   "Learn how LightCMS works: a focused, fast CMS that stores every post as markdown in your own GitHub repository, with an access model Git already provides.";
+
+export const PRIVACY_DESCRIPTION =
+  "How LightCMS collects, uses, and protects your account, authentication, and GitHub repository access data.";
 
 export const DEFAULT_OG_IMAGE = "/og-image.png";
 
@@ -41,6 +49,7 @@ type RouteDefaults = { title: string; description: string };
 const ROUTE_DEFAULTS: Record<string, RouteDefaults> = {
   "/": { title: HOME_TITLE, description: HOME_DESCRIPTION },
   "/about": { title: ABOUT_TITLE, description: ABOUT_DESCRIPTION },
+  "/privacy": { title: PRIVACY_TITLE, description: PRIVACY_DESCRIPTION },
 };
 
 const FALLBACK: RouteDefaults = { title: SITE.name, description: HOME_DESCRIPTION };

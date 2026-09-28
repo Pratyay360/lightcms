@@ -1,3 +1,24 @@
+<script lang="ts">
+  import { GitBranch, Heart, Mail, MessageCircle, ShieldCheck } from "@lucide/svelte";
+  import { Button } from "$lib/components/ui/button";
+  import { SITE } from "$lib/seo";
+
+  type FooterAction = {
+    href: string;
+    label: string;
+    icon: typeof GitBranch;
+    external: boolean;
+  };
+
+  const footerActions: FooterAction[] = [
+    { href: SITE.repository, label: "Contribute on GitHub", icon: GitBranch, external: true },
+    { href: SITE.sponsorUrl, label: "Support financially", icon: Heart, external: true },
+    { href: SITE.contactFormUrl, label: "Contact form", icon: MessageCircle, external: true },
+    { href: `mailto:${SITE.contactEmail}`, label: "Email me", icon: Mail, external: false },
+    { href: "/privacy", label: "Privacy policy", icon: ShieldCheck, external: false },
+  ];
+</script>
+
 <section class="mx-auto max-w-3xl px-4 py-8 sm:py-12" aria-labelledby="about-title">
   <p class="eyebrow font-semibold text-primary">About LightCMS</p>
 
@@ -14,8 +35,10 @@
     </header>
 
     <p>
-      LightCMS is focused on simplicity, speed, and a great editing experience. It is created for anyone who wants to manage their content efficiently without unnecessary complexity.
-      No matter the SSG no matter the tech stack ... if it supports frontmatter lightcms supports that.
+      LightCMS is focused on simplicity, speed, and a great editing experience. It is created for
+      anyone who wants to manage their content efficiently without unnecessary complexity. No
+      matter the SSG, no matter the tech stack — if it supports frontmatter, LightCMS supports
+      that.
     </p>
 
     <p>
@@ -24,23 +47,33 @@
       content.
     </p>
 
-    <footer>
-      <a
-        href="https://github.com/Pratyay360/lightcms"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        Contribute on GitHub
-      </a>
-      <a
-        href="https://pratyayupi.surge.sh"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        Support financially
-      </a>
+    <footer class="space-y-4 border-t border-border pt-6">
+      <nav class="flex flex-wrap gap-3" aria-label="About page links">
+        {#each footerActions as action (action.label)}
+          <Button
+            href={action.href}
+            variant="outline"
+            class="gap-2"
+            target={action.external ? "_blank" : undefined}
+            rel={action.external ? "noopener noreferrer" : undefined}
+          >
+            <action.icon size={15} />
+            {action.label}
+          </Button>
+        {/each}
+      </nav>
+
+      <p class="text-xs text-muted-foreground">
+        Source code:
+        <a
+          href={SITE.repository}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="underline hover:text-foreground"
+        >
+          {SITE.repository.replace("https://", "")}
+        </a>
+      </p>
     </footer>
   </article>
 </section>
