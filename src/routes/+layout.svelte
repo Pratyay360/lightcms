@@ -116,14 +116,18 @@ let { children, data } = $props();
       {@render children()}
     </main>
   </div>
-
   <footer class="border-t border-border/50 py-8 text-center text-xs text-muted-foreground bg-muted/20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-1.5 font-bold text-foreground">
-        <Sparkles size={14} class="text-primary" />
-        <span>LightCMS</span>
-      </div>
-      <Carbonbadge />
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-1.5 font-bold text-foreground">
+      <Sparkles size={14} class="text-primary" />
+      <span>LightCMS</span>
     </div>
-      </footer>
+
+    <Button asChild>
+      <a href="https://forms.zoho.in/pratyay749zoho1/form/ContactUs">Contact Us</a>
+    </Button>
+
+    <Carbonbadge />
+  </div>
+</footer>
 </div>

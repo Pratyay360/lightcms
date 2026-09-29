@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Loader2Icon, Mic, MicAudioLines, MicOff } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
-	import { type ButtonSize, type ButtonVariant, buttonVariants } from '$lib/components/ui/button/index.js';
+	import { type ButtonSize, type ButtonVariant, buttonVariants } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils.js';
 	import Tooltip from '../shadcn/components/Tooltip.svelte';
-	import { createSpeechRecognition } from './speech-recognition.svelte.js';
+	import { createSpeechRecognition } from './speech-recognition.svelte';
 
 	interface Props {
 		onTranscript: (text: string) => void;

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vite-plus/test";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import {
   getSupportedAudioMimeType,
   isSpeechRecognitionSupported,
@@ -23,67 +23,48 @@ describe("speech-recognition utilities", () => {
   });
 
   describe("isSpeechRecognitionSupported", () => {
-    const originalWindow = globalThis.window;
-    const originalNavigator = globalThis.navigator;
-    const originalMediaRecorder = globalThis.MediaRecorder;
-
     afterEach(() => {
-      globalThis.window = originalWindow;
-      globalThis.navigator = originalNavigator;
-      globalThis.MediaRecorder = originalMediaRecorder;
+      vi.unstubAllGlobals();
     });
 
     it("returns false when window is undefined", () => {
-      // @ts-expect-error testing environment
-      delete globalThis.window;
+      vi.stubGlobal("window", undefined);
       expect(isSpeechRecognitionSupported()).toBe(false);
     });
 
     it("returns true when getUserMedia and MediaRecorder are available", () => {
-      // @ts-expect-error mocking
-      globalThis.window = {};
-      // @ts-expect-error mocking
-      globalThis.navigator = {
-        mediaDevices: {
-          getUserMedia: () => Promise.resolve(),
-        },
-      };
-      // @ts-expect-error mocking
-      globalThis.MediaRecorder = class {};
-
+      vi.stubGlobal("window", {});
+      vi.stubGlobal("navigator", {
+        mediaDevices: { getUserMedia: () => Promise.resolve() },
+      });
+      vi.stubGlobal("MediaRecorder", class {});
       expect(isSpeechRecognitionSupported()).toBe(true);
     });
 
     it("returns false when MediaRecorder is missing", () => {
-      globalThis.window = {};
-      globalThis.navigator = {
-        mediaDevices: {
-          getUserMedia: () => Promise.resolve(),
-        },
-      };
-      // @ts-expect-error mocking
-      delete globalThis.MediaRecorder;
-
+      vi.stubGlobal("window", {});
+      vi.stubGlobal("navigator", {
+        mediaDevices: { getUserMedia: () => Promise.resolve() },
+      });
+      vi.stubGlobal("MediaRecorder", undefined);
       expect(isSpeechRecognitionSupported()).toBe(false);
     });
   });
 
   describe("getSupportedAudioMimeType", () => {
-    const originalMediaRecorder = globalThis.MediaRecorder;
-
     afterEach(() => {
-      globalThis.MediaRecorder = originalMediaRecorder;
+      vi.unstubAllGlobals();
     });
 
     it("returns empty string when MediaRecorder is undefined", () => {
-      delete globalThis.MediaRecorder;
+      vi.stubGlobal("MediaRecorder", undefined);
       expect(getSupportedAudioMimeType()).toBe("");
     });
 
     it("returns the first supported mime type", () => {
-      globalThis.MediaRecorder = {
+      vi.stubGlobal("MediaRecorder", {
         isTypeSupported: (type: string) => type.includes("webm"),
-      };
+      });
       expect(getSupportedAudioMimeType()).toBe("audio/webm;codecs=opus");
     });
   });
