@@ -1,6 +1,5 @@
 import { createLightCmsClient } from "$lib/orpc-client";
 import {
-  type GroqTranscriptionResult,
   getSupportedAudioMimeType,
   isSpeechRecognitionSupported,
   normalizeLanguageCode,
@@ -83,28 +82,13 @@ export function createSpeechRecognition(
       }
 
       const client = createLightCmsClient();
-      const response = await client.speech.transcribe({
+      const result = await client.speech.transcribe({
         audio: base64Audio,
         contentType: mimeType,
         language: normalizeLanguageCode(options.lang),
       });
 
-      let transcribedText = "";
-      if (
-        response &&
-        typeof (response as AsyncIterable<GroqTranscriptionResult>)[Symbol.asyncIterator] ===
-          "function"
-      ) {
-        for await (const chunk of response as AsyncIterable<GroqTranscriptionResult>) {
-          if (chunk.text) {
-            transcribedText += chunk.text;
-          }
-        }
-      } else if (response && typeof response === "object" && "text" in response) {
-        transcribedText = String(response.text ?? "");
-      }
-
-      const cleanText = transcribedText.trim();
+      const cleanText = result.text.trim();
       if (cleanText.length > 0) {
         options.onTranscript(cleanText, true);
       }

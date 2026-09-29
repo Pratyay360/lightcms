@@ -1,14 +1,9 @@
-<script lang="ts" module>
-	let tocItems = $state<TableOfContentData>([]);
-	export const setTocItems = (items: TableOfContentData) => {
-		tocItems = items;
-	};
-</script>
-
 <script lang="ts">
-	import type { TableOfContentData } from '@tiptap/extension-table-of-contents';
+	import { getTocItems } from './toc.state.svelte.js';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { cn } from '$lib/utils.js';
+
+	const tocItems = $derived(getTocItems());
 </script>
 
 <Tooltip.Provider>

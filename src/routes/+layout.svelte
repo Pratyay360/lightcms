@@ -17,6 +17,7 @@ import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
 import MetaTags from "$lib/components/custom/MetaTags.svelte";
 import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
 import { Avatar } from "$lib/components/ui/avatar";
+import { Button } from "$lib/components/ui/button";
 import { Toaster } from "$lib/components/ui/sonner";
 import { DEFAULT_THEME_ID, MODE_STORAGE_KEY, THEME_STORAGE_KEY } from "$lib/themes.js";
 
@@ -123,9 +124,7 @@ let { children, data } = $props();
       <span>LightCMS</span>
     </div>
 
-    <Button asChild>
-      <a href="https://forms.zoho.in/pratyay749zoho1/form/ContactUs">Contact Us</a>
-    </Button>
+    <Button href="https://forms.zoho.in/pratyay749zoho1/form/ContactUs">Contact Us</Button>
 
     <Carbonbadge />
   </div>

@@ -14,6 +14,22 @@ export default defineConfig({
   server: {
     allowedHosts: true,
   },
+  ssr: {
+    // The `auth` CLI dev dependency pins an older exact `@better-auth/core`, which bun hoists to
+    // the project root, while `better-auth` resolves its own nested copy. Externalizing these
+    // packages makes the built server resolve the hoisted, mismatched copy at runtime, so they
+    // are bundled together to keep a single consistent version.
+    noExternal: [
+      "vite-plus",
+      "better-auth",
+      "@better-auth/core",
+      "@better-auth/drizzle-adapter",
+      "@better-auth/infra",
+      "@better-auth/passkey",
+      "@better-auth/telemetry",
+      "@better-auth/utils",
+    ],
+  },
 
   plugins: lazyPlugins(async () => [
     {
