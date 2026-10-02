@@ -55,8 +55,6 @@
   let hasUnsavedChanges = $state(false);
   let lastSavedAt = $state<string | null>(null);
 
-
-  // Initialize frontmatter entries from file
   onMount(() => {
     const entries: Array<{ key: string; value: string }> = [];
     if (file.frontMatter && typeof file.frontMatter === "object") {
