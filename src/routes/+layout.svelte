@@ -124,7 +124,7 @@ let { children, data } = $props();
       <span>LightCMS</span>
     </div>
 
-    <Button href="https://forms.zoho.in/pratyay749zoho1/form/ContactUs">Contact Us</Button>
+    <Button href="https://forms.zohopublic.in/pratyay749zoho1/form/ContactUs/formperma/5j61FHkJ4zdM1IuXffeqp920jgk3jU1X_netKdSS-9E">Contact Us</Button>
 
     <Carbonbadge />
   </div>
