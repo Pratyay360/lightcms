@@ -15,10 +15,6 @@ export default defineConfig({
     allowedHosts: true,
   },
   ssr: {
-    // The `auth` CLI dev dependency pins an older exact `@better-auth/core`, which bun hoists to
-    // the project root, while `better-auth` resolves its own nested copy. Externalizing these
-    // packages makes the built server resolve the hoisted, mismatched copy at runtime, so they
-    // are bundled together to keep a single consistent version.
     noExternal: [
       "vite-plus",
       "better-auth",
@@ -35,15 +31,6 @@ export default defineConfig({
     {
       name: "superforms-skip-dead-default",
       enforce: "pre",
-      async resolveId(source: string, importer: string | undefined) {
-        if (source === "sveltekit-superforms") {
-          const resolved = await this.resolve("sveltekit-superforms/client", importer, {
-            skipSelf: true,
-          });
-          return resolved?.id ?? null;
-        }
-        return null;
-      },
     },
     tailwindcss(),
     sveltekit({

@@ -5,7 +5,7 @@ export const SITE = {
   repository: "https://github.com/Pratyay360/lightcms",
   contactEmail: "pratyaymustafi@outlook.com",
   contactFormUrl:
-    "https://forms.zohopublic.in/pratyay749zoho1/form/ContactUs/formperma/5j61FHkJ4zdM1IuXffeqp920jgk3jU1X_netKdSS-9E",
+    "https://tally.so/r/Gx8Nyk",
   sponsorUrl: "https://pratyayupi.surge.sh",
 } as const;
 
