@@ -14,6 +14,23 @@ export default defineConfig({
   server: {
     allowedHosts: true,
   },
+  resolve: {
+    dedupe: [
+      "prosemirror-model",
+      "prosemirror-state",
+      "prosemirror-view",
+      "prosemirror-transform",
+      "prosemirror-commands",
+      "prosemirror-keymap",
+      "prosemirror-history",
+      "prosemirror-inputrules",
+      "prosemirror-schema-list",
+      "prosemirror-gapcursor",
+      "prosemirror-dropcursor",
+      "prosemirror-tables",
+      "prosemirror-changeset",
+    ],
+  },
   ssr: {
     noExternal: [
       "vite-plus",
