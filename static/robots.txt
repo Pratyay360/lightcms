@@ -1,4 +1,2 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://lightcms.me/sitemap.xml
