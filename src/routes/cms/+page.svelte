@@ -6,19 +6,23 @@ import {
 	FolderOpen,
 	FolderPlus,
 	GitBranch,
+	GitFork,
 	Layers,
 	Settings,
 	Sparkles
 } from "@lucide/svelte";
-import { goto } from "$app/navigation";
-import { CreateFolderDialog } from "$lib/components/custom";
+import { toast } from "svelte-sonner";
+import { goto, invalidateAll } from "$app/navigation";
+import { CreateBranchDialog, CreateFolderDialog } from "$lib/components/custom";
 import { Button } from "$lib/components/ui/button";
 import type { PageData } from "./$types";
 
 let { data, form }: { data: PageData; form?: { error?: string } | null } = $props();
 
 let _selectingRepository = $state(false);
+let _selectingBranch = $state(false);
 let _createFolderOpen = $state(false);
+let _createBranchOpen = $state(false);
 
 const _collections = $derived(data.collections);
 const repositories = $derived(data.repositories);
@@ -29,6 +33,9 @@ const _repositoryCount = $derived(repositories.length);
 const _installationCount = $derived(_installations.length);
 const _query = $derived(data.query ?? "");
 const _createCollectionAction = $derived(`?/createCollection${_query ? `&${_query}` : ""}`);
+const _branches = $derived(data.branches ?? []);
+const _defaultBranch = $derived(data.defaultBranch ?? "");
+const _activeBranch = $derived(data.selection?.branch ?? _defaultBranch);
 
 function _selectRepository(event: Event) {
 	const select = event.currentTarget as HTMLSelectElement;
@@ -49,6 +56,36 @@ function _selectRepository(event: Event) {
 	if (repository?.defaultBranch) query.set("branch", repository.defaultBranch);
 	_selectingRepository = true;
 	void goto(`/cms?${query}`);
+}
+
+function _selectBranch(event: Event) {
+	if (!data.selection) return;
+	const select = event.currentTarget as HTMLSelectElement;
+	if (!select.value) return;
+	const targetBranch = select.value;
+	if (targetBranch === data.selection.branch) return;
+	const query = new URLSearchParams({
+		installation: String(data.selection.installationId),
+		repository: data.selection.repository,
+		branch: targetBranch,
+	});
+	_selectingBranch = true;
+	void goto(`/cms?${query}`, { invalidateAll: true });
+}
+
+async function _onBranchCreated(branchName: string) {
+	toast.success(`Created branch "${branchName}"`);
+	await invalidateAll();
+	if (data.selection) {
+		const query = new URLSearchParams({
+			installation: String(data.selection.installationId),
+			repository: data.selection.repository,
+			branch: branchName,
+		});
+		_selectingBranch = true;
+		await goto(`/cms?${query}`, { invalidateAll: true });
+	}
+	_selectingBranch = false;
 }
 </script>
 
@@ -131,11 +168,45 @@ function _selectRepository(event: Event) {
       </a>
     </div>
     {#if data.selection}
-      <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs font-semibold text-muted-foreground border-t pt-4 border-border/50">
-        <div class="flex items-center gap-1">
-          <GitBranch size={14} class="text-primary-500" />
-          <span>Branch:</span>
-          <span class="font-mono text-foreground bg-muted px-1.5 py-0.5 rounded border">{data.selection.branch ?? "default branch"}</span>
+      <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-xs font-semibold text-muted-foreground border-t pt-4 border-border/50">
+        <div class="flex flex-wrap items-center gap-2 min-w-0">
+          <div class="flex items-center gap-1.5 shrink-0">
+            <GitBranch size={14} class="text-primary-500" />
+            <span>Branch:</span>
+          </div>
+          <div class="relative flex-1 min-w-[12rem] max-w-sm">
+            <select
+              class="select w-full font-mono text-xs font-semibold bg-background border border-border rounded-lg pl-2 pr-7 py-1.5 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all appearance-none"
+              onchange={_selectBranch}
+              disabled={_selectingBranch || _branches.length === 0}
+              aria-busy={_selectingBranch}
+              value={_activeBranch}
+            >
+              {#if _branches.length === 0}
+                <option value={_activeBranch}>{_activeBranch || "default branch"}</option>
+              {:else}
+                {#each _branches as branch (branch.name)}
+                  <option value={branch.name}>
+                    {branch.name}{branch.isDefault ? " (default)" : ""}
+                  </option>
+                {/each}
+              {/if}
+            </select>
+            <GitBranch
+              size={11}
+              class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            class="h-7 gap-1 rounded-lg text-[11px] font-semibold"
+            onclick={() => (_createBranchOpen = true)}
+            disabled={!data.selection.installationId}
+          >
+            <GitFork size={12} /> New branch
+          </Button>
         </div>
         <a
           href={`/cms/tree?${_query}`}
@@ -243,3 +314,15 @@ function _selectRepository(event: Event) {
   action={_createCollectionAction}
   error={form?.error}
 />
+
+{#if data.selection}
+  <CreateBranchDialog
+    bind:open={_createBranchOpen}
+    installationId={data.selection.installationId}
+    repository={data.selection.repository}
+    branches={_branches}
+    activeBranch={_activeBranch}
+    defaultBranch={_defaultBranch}
+    onCreated={_onBranchCreated}
+  />
+{/if}

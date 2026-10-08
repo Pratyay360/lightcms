@@ -1,5 +1,8 @@
 // Types
 
+export type { CreateBranchOptions, RepositoryBranch } from "./branches.js";
+// Branch operations
+export { createBranch, listBranches } from "./branches.js";
 // Errors
 export { GitHubApiError, isGitHubStatus, RepositoryFileExistsError } from "./errors.js";
 // Helpers

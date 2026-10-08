@@ -3,10 +3,10 @@ import "./layout.css";
 import {
 	Blocks,
 	BookOpen,
+	FileBadge2Icon,
 	Info,
 	LogIn,
 	Sparkles,
-  FileBadge2Icon,
 } from "@lucide/svelte";
 import { injectAnalytics } from '@vercel/analytics/sveltekit';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
@@ -26,6 +26,12 @@ if (!dev) {
 	injectSpeedInsights();
 }
 let { children, data } = $props();
+
+const session = $derived(data.session);
+const user = $derived(data.user);
+const userInitial = $derived(
+  (user?.name ?? user?.email ?? "U").charAt(0).toUpperCase(),
+);
 </script>
 
 <ModeWatcher defaultTheme={DEFAULT_THEME_ID} modeStorageKey={MODE_STORAGE_KEY} themeStorageKey={THEME_STORAGE_KEY} />
@@ -91,18 +97,16 @@ let { children, data } = $props();
         <span class="mx-1 h-5 w-px bg-border/60" aria-hidden="true"></span>
 
         <a class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-xl shadow-xs hover:opacity-90 active:scale-[0.98] transition-all duration-200" href="/auth">
-          {#if data.session}
+          {#if session}
             <Avatar.Root class="size-5 shrink-0 border border-primary-foreground/20 rounded-full overflow-hidden">
               <Avatar.Fallback class="text-xs font-black bg-primary-foreground text-primary flex items-center justify-center size-full"
-                >{(data.user?.name ?? data.user?.email ?? "U").charAt(
-                  0,
-                ).toUpperCase()}</Avatar.Fallback
+                >{userInitial}</Avatar.Fallback
               >
             </Avatar.Root>
           {:else}
             <LogIn size={15} />
           {/if}
-          <span>{data.session ? "Account" : "Sign in"}</span>
+          <span>{session ? "Account" : "Sign in"}</span>
         </a>
 
         <ToggleMode />

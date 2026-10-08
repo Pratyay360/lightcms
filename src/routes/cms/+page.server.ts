@@ -1,8 +1,12 @@
 import { fail, redirect } from "@sveltejs/kit";
-import { createFolderAtPath, listDirectory } from "$lib/server/cms";
+import { createFolderAtPath, listDirectory, resolveRepository } from "$lib/server/cms";
 import { getCmsQuery, getCmsSelection, tryGetCmsSelection } from "$lib/server/cms-context";
 import { assertCollectionName, getCollection, type LightCmsCollection } from "$lib/server/config";
-import { isGitHubStatus, listRepositories } from "$lib/server/github";
+import {
+  isGitHubStatus,
+  listBranches as listRepoBranches,
+  listRepositories,
+} from "$lib/server/github";
 import {
   getCmsContext,
   listGitHubInstallations,
@@ -58,6 +62,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   const query = selection ? getCmsQuery(selection) : "";
 
   const collectionsList: LightCmsCollection[] = [];
+  const branches: Array<{
+    name: string;
+    protected: boolean;
+    isDefault: boolean;
+  }> = [];
+  let defaultBranch = "";
   if (selection) {
     try {
       const activeContext = await getCmsContext(
@@ -84,6 +94,28 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     } catch {
       // Ignore errors when the repository root cannot be listed yet
     }
+
+    try {
+      const branchContext = await getCmsContext(
+        userId,
+        selection.installationId,
+        selection.repository,
+      );
+      const repo = resolveRepository(branchContext);
+      const repoBranches = await listRepoBranches(branchContext.client, repo);
+      for (const branch of repoBranches) {
+        branches.push({
+          name: branch.name,
+          protected: branch.protected,
+          isDefault: branch.isDefault,
+        });
+        if (branch.isDefault) {
+          defaultBranch = branch.name;
+        }
+      }
+    } catch (cause) {
+      console.warn(`Failed to list branches for ${selection.repository}:`, cause);
+    }
   }
 
   return {
@@ -92,6 +124,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     repositoryWarnings,
     selection,
     query,
+    branches,
+    defaultBranch,
     collections: collectionsList.map((collection) => ({
       name: collection.name,
       label: collection.label ?? collection.name,

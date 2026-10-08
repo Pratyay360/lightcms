@@ -16,11 +16,16 @@ import {
   listRepoTree,
   moveCollectionEntry,
   moveRepoFile,
+  resolveRepository,
   saveRepoFile,
   updateCollectionEntry,
 } from "$lib/server/cms";
 
 import { getCollection } from "$lib/server/config";
+import {
+  createBranch as createRepoBranch,
+  listBranches as listRepoBranches,
+} from "$lib/server/github";
 import { getCmsContext } from "$lib/server/session";
 import { authedProcedure } from "./context";
 
@@ -382,6 +387,78 @@ const moveEntry = authedProcedure.input(moveEntryInput).handler(async ({ input, 
   );
 });
 
+/**
+ * List the branches on a repository accessible to the user's installation.
+ */
+const listRepoBranchesProcedure = authedProcedure
+  .input(
+    z.object({
+      installationId: z.number().int().positive(),
+      repository: z.string().trim().min(1),
+    }),
+  )
+  .handler(async ({ input, context }) => {
+    const ctx = await getCmsContext(context.session.userId, input.installationId, input.repository);
+    const repo = resolveRepository(ctx);
+    try {
+      const branches = await listRepoBranches(ctx.client, repo);
+      return { branches };
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : "Could not list branches.";
+      const status =
+        typeof cause === "object" && cause !== null && "status" in cause
+          ? ((cause as { status?: number }).status ?? 500)
+          : 500;
+      const code = status === 404 ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR";
+      throw new ORPCError(code, { message });
+    }
+  });
+
+/**
+ * Create a new branch on a repository from an existing ref.
+ */
+const createRepoBranchProcedure = authedProcedure
+  .input(
+    z.object({
+      installationId: z.number().int().positive(),
+      repository: z.string().trim().min(1),
+      name: z
+        .string()
+        .trim()
+        .min(1, "Branch name is required.")
+        .max(255, "Branch name must be 255 characters or fewer.")
+        .regex(
+          /^(?!.*\.\.)(?!.*\/\/)(?!.*@\{)(?!.*\.\/)(?!.*\/$)(?!^\/)(?!-)(?!\.)[A-Za-z0-9._/-]+$/,
+          "Branch name contains invalid characters.",
+        ),
+      from: z
+        .string()
+        .trim()
+        .min(1, "Source ref is required (e.g. main, a tag, or a commit SHA).")
+        .max(255, "Source ref must be 255 characters or fewer."),
+    }),
+  )
+  .handler(async ({ input, context }) => {
+    const ctx = await getCmsContext(context.session.userId, input.installationId, input.repository);
+    const repo = resolveRepository(ctx);
+    try {
+      const result = await createRepoBranch(ctx.client, repo, {
+        name: input.name,
+        from: input.from,
+      });
+      return { branch: result };
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : "Could not create branch.";
+      const status =
+        typeof cause === "object" && cause !== null && "status" in cause
+          ? ((cause as { status?: number }).status ?? 500)
+          : 500;
+      const code =
+        status === 422 ? "BAD_REQUEST" : status === 404 ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR";
+      throw new ORPCError(code, { message });
+    }
+  });
+
 export const cmsRouter = {
   getEntry,
   createEntry,
@@ -398,4 +475,6 @@ export const cmsRouter = {
   saveFile,
   removeFile,
   moveFile,
+  listBranches: listRepoBranchesProcedure,
+  createBranch: createRepoBranchProcedure,
 };
