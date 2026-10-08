@@ -4,8 +4,7 @@ export const SITE = {
   locale: "en_US",
   repository: "https://github.com/Pratyay360/lightcms",
   contactEmail: "pratyaymustafi@outlook.com",
-  contactFormUrl:
-    "https://tally.so/r/Gx8Nyk",
+  contactFormUrl: "https://app.youform.com/forms/smwrhikc",
   sponsorUrl: "https://pratyayupi.surge.sh",
 } as const;
 

@@ -124,7 +124,7 @@ let { children, data } = $props();
       <span>LightCMS</span>
     </div>
 
-    <Button href="https://tally.so/r/Gx8Nyk">Contact Us</Button>
+    <Button href="https://app.youform.com/forms/smwrhikc">Contact Us</Button>
 
     <Carbonbadge />
   </div>
