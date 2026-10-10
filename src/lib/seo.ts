@@ -52,12 +52,11 @@ const ROUTE_DEFAULTS: Record<string, RouteDefaults> = {
   "/privacy": { title: PRIVACY_TITLE, description: PRIVACY_DESCRIPTION },
 };
 
-const FALLBACK: RouteDefaults = { title: SITE.name, description: HOME_DESCRIPTION };
+const FALLBACK: RouteDefaults = {
+  title: SITE.name,
+  description: HOME_DESCRIPTION,
+};
 
-/**
- * Paths that sit behind authentication, hold no indexable content, or redirect
- * elsewhere. They must never consume crawl budget or appear in the sitemap.
- */
 export const NOINDEX_PREFIXES: readonly string[] = ["/auth", "/signout", "/cms"];
 
 function normalizePathname(pathname: string): string {
