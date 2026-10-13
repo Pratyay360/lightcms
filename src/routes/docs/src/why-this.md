@@ -1,58 +1,61 @@
 ---
 title: why light cms??
-serial: 1
+description: why yet another cms
+date: '2026-09-18T00:41:00Z'
+draft: false
+weight: 0
 tags:
   - cms
-description: why yet another cms
+  - why
+  - lightcms
+  - why lightcms
+isCJKLanguage: false
+headless: false
 ---
+#### **So, before introducing yet another CMS…**
 
-So before introducing yet another cms ..
-Been trying several cms solutions
-and all of them felt kindoff missing something for writing and managing blogs/content.
+I’ve tried quite a few CMS solutions over the years, and somehow, most of them felt a little pale. They worked, but they often missed something—especially when it came to the actual experience of writing and managing content for a blog.
 
-only easy stuff i have had used is [frontmatter](https://frontmatter.codes) but visual studio code for writting blogs is too much for a simple thing.
+The closest thing I found to a genuinely pleasant workflow was Front Matter. It makes working with content much easier, but the core problem remains: opening VS Code is a lot of overhead for something as simple as writing a blog post.
 
-Some road blockers for me were quality of wysiwyg editor. or the overall
-experience like. handling images content and organizing files. contents +
-(reaction + comment + newsletters) all using github repository.
+And that seemed backwards. Writing should be the easy part.
 
-the main goal is to enable everyone to write and manage content
-all in one place. and with ultimate ease and delight.
+1. If you have learned something over the years, share that.
+2. If you built something, write about it.
+3. If you solved a problem that took you three days to figure out, document it because someone else might discover your post months or years later while trying to solve the exact same problem.
 
-Believing in the idea that every one needs their own place [in internet](https://dsokolovskiy.com/blog/all/why-you-should-run-a-blog/)
-[1](https://goinswriter.com/why-blog/)
-[2](https://asbpe.org/blog/2009/05/04/seven-reasons-why-you-should-start-your-own-blog/)
+I strongly believe that everyone should have their own little place on the internet. There are plenty of good arguments for owning your own publishing space, such as [https://dsokolovskiy.com/blog/all/why-you-should-run-a-blog/](https://dsokolovskiy.com/blog/all/why-you-should-run-a-blog/) [https://asbpe.org/blog/2009/05/04/seven-reasons-why-you-should-start-your-own-blog/](https://asbpe.org/blog/2009/05/04/seven-reasons-why-you-should-start-your-own-blog/)    [https://goinswriter.com/why-blog/](https://goinswriter.com/why-blog/). 
 
-TLDR;
-Everyone has a voice and share yours.
-If you have learnt something share the experience
- maybe one day some one will discover you through your blog.
+But getting started shouldn't require one being a web developer.
 
-And to start you can use some static sites.
-But no one wants to write html pages for each post..
-so here comes the role of [static site generator(ssg)](https://jamstack.org/generators/)
+A static site is the simplest way to publish content, but managing it isn’t simple.
 
-where pages are generated automatically with content change through ci no manual
-deployment. In the meantime we all should be caring about Globe too like for
-heavy webapps the carbon emission is enormous . you can use
-[Website Carbon](https://www.websitecarbon.com/) measures emissions, while
-[Ecograder](https://ecograder.com/) evaluates performance. Use both tools for
-perspective. Then reduce your footprint.
-to analyze your carbon footprint. You can go through
-[this](https://2021.stateofthebrowser.com/speakers/tom-greenwood/)
+You write your content, a static site generator builds the pages, and CI/CD takes care of deploying them whenever the content changes. No manual uploads, no server to maintain just to publish a blog post. There are already plenty of excellent static site generators out there Jekyll, Hugo, Astro, Eleventy, and [many more](https://jamstack.org/generators/).
 
-There are multiple static site generators like [jekyll](https://jekyllrb.com/),
- [hugo](gohugo.io), [astro-starlight](https://starlight.astro.build/getting-started), 
- [11ty](https://www.11ty.dev),
-  [docusaurus](https://docusaurus.io/), [vitepress](https://vitepress.dev/), [mkdocs](https://www.mkdocs.org/)
-[mdBook](https://rust-lang.github.io/mdBook/),
-[docsy](https://www.docsy.dev/)
-[makko](https://makko.starlightnet.work/) etc. 
-But the main problem still remains and that's to manage and create content
-in a simplest way possible so that any one can get started even the least techy one.
+Yet, you shouldn't need to understand Git, Markdown, front matter schemas, repositories, or deployment pipelines just to publish a paragraph about your experience.
 
-You can explore more on [jamstack](https://jamstack.org/generators/)
+**A CMS that stays out of your way**
 
-Future goals like [goatcounter](https://goatcounter.com/) analytics
-dashboard, and a dashboard for reading comments which are made on [giscus](https://giscus.app). all integrated in one dashboard.
-Also ~~newsletter like system but fully powered by github.~~ [done](https://github.com/pratyay360/newsy)
+The goal is to make it possible for anyone to write and manage content in one place, with as little friction as possible.
+
+The content still lives in Github.  
+The site can still be generated automatically through CI.  
+But the person writing shouldn't have to care about any of that. One should open the editor, write, and publish. That's it.
+
+The editor should make you feel the urge to write, rather than turning writing into a sophisticated technical task.
+
+Keeping the benefits of a Gitbacked content workflow while hiding the complexity from the person who simply wants to hit publish.
+
+The goal isn't to build just another CMS; it's to create a pleasant publishing experience built around tools that already works well.
+
+There are excellent tools for supporting your static site like,  comments, analytics, [newsletters.](https://github.com/pratyay360/newsy)
+
+Also, The web shouldn't be unnecessarily heavy. Most sites don’t actually need server side rendering or megabytes of JavaScript. Static sites are particularly attractive here because they provide a fast, lightweight experience without requiring a massive client side application. Also, we should care about the environmental cost of the web, too. [(Tools like Website Carbon can help estimate the emissions associated with your website).](https://www.websitecarbon.com/)
+
+**TL;DR**
+
+Writing a blog post should never be a sophisticated task, One should feel delighted to write their own experience.
+
+The Goal Of Lightcms is to make you only focus on writing.   
+
+> Everyone has a voice. Share yours.

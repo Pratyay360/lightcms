@@ -1,13 +1,14 @@
 ---
-name: newsletter
-serial: 3
-date: 2026-07-26T17:50:34.820Z
+title: newsletter
+description: how to configure newsletter for my blog.
+date: '1111-11-11T11:11:00Z'
+draft: false
+weight: 0
 tags:
   - newsletter
-draft: false
-description: how to configure newsletter for my blog.
+isCJKLanguage: false
+headless: false
 ---
-
 # Newsletter
 
 To configure a newsletter for your blog, the traditional way was to:
@@ -28,7 +29,7 @@ One can say the newsy way is to use github as a platform to manage your
 newsletter. For more information, see
 [newsy](https://github.com/pratyay360/newsy)
 
-BTW, newsy observes the repo for newly created files of type .md .mdx and
+By the way, newsy observes the repo for newly created files of type .md .mdx and  
 .html and then it will send the content to the subscribers.
 
 kindly, check [newsy repo](https://github.com/pratyay360/newsy)

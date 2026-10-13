@@ -1,17 +1,18 @@
 ---
 title: how to configure light cms
-serial: 1
-date: 2026-07-26T17:50:34.820Z
+description: how to cofigure this..
+date: '2026-09-18T01:42:00Z'
+draft: false
+weight: 0
 tags:
   - light
   - cms
   - lightcms
-draft: false
-description: how to cofigure this..
+isCJKLanguage: false
+headless: false
 ---
-
-First setup a github repo with your prefered ssg and when that's configured as per 
-your taste install the lightcms bot to
+First setup a github repo with your prefered ssg
+and when that's configured as per your taste install the lightcms bot to
 the repo and that's it everything is done.
 You are now managing your content with lightcms.
 write your craft and publish your content.
