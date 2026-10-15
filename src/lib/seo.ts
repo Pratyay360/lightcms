@@ -2,10 +2,11 @@ export const SITE = {
   name: "LightCMS",
   origin: "https://lightcms.me",
   locale: "en_US",
-  repository: "https://github.com/Pratyay360/lightcms",
-  contactEmail: "pratyaymustafi@outlook.com",
+  repository: "https://github.com/light-cms/lightcms",
+  contactEmail: "lightcms@zohomail.in",
   contactFormUrl: "https://app.youform.com/forms/smwrhikc",
   sponsorUrl: "https://pratyayupi.surge.sh",
+  blogUrl: "https://light-cms.github.io",
 } as const;
 
 export const HOME_TITLE = `${SITE.name} | Git backed CMS for static site generators`;

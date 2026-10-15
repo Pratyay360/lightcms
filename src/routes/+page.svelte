@@ -20,6 +20,14 @@ import {
       <span>Easy to use</span>
     </div>
 
+    <div class="space-y-4">
+      <h1 class="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+        Fall back in love with writing again.
+      </h1>
+      <p class="text-base leading-relaxed text-muted-foreground sm:text-lg">
+        Giving everyone a voice to speak. A lightweight, Git-backed content workspace for editing and publishing Markdown with zero friction.
+      </p>
+    </div>
 
     <div class="flex flex-wrap gap-4">
       <a class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-xs transition-transform hover:scale-[1.02] active:scale-[0.98] gap-2.5" href="/cms">
