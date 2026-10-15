@@ -1,5 +1,6 @@
 <script lang="ts">
 import { ArrowLeft, ArrowRight } from "@lucide/svelte";
+import { DocsBlogBanner } from "$lib/components/custom";
 import { Button } from "$lib/components/ui/button";
 import { Separator } from "$lib/components/ui/separator";
 
@@ -20,13 +21,6 @@ let {
 	};
 } = $props();
 </script>
-
-<svelte:head>
-	<title>{data.title} | LightCMS</title>
-	{#if data.description}
-		<meta name="description" content={data.description} />
-	{/if}
-</svelte:head>
 
 <div class="mx-auto max-w-3xl space-y-6 py-6 sm:py-10">
 	<nav aria-label="Back to documentation">
@@ -60,6 +54,8 @@ let {
 			{@html data.content}
 		</div>
 	</article>
+
+	<DocsBlogBanner />
 
 	<nav
 		aria-label="More guides"
@@ -102,11 +98,11 @@ let {
 		overflow-wrap: break-word;
 	}
 
-	.docs-article :global(> *:first-child) {
+	.docs-article > :global(*:first-child) {
 		margin-top: 0;
 	}
 
-	.docs-article :global(> *:last-child) {
+	.docs-article > :global(*:last-child) {
 		margin-bottom: 0;
 	}
 

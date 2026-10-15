@@ -1,16 +1,18 @@
 import { SITE } from "$lib/seo";
+import { loadDocEntries } from "$lib/server/docs";
 import type { RequestHandler } from "./$types";
 
 type SitemapEntry = {
   path: string;
+  lastmod?: string;
   changefreq: "monthly" | "weekly";
   priority: string;
 };
 
-const ENTRIES: readonly SitemapEntry[] = [
+const STATIC_ENTRIES: readonly SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/about", changefreq: "monthly", priority: "0.6" },
-  { path: "/docs", changefreq: "weekly", priority: "0.7" },
+  { path: "/docs", changefreq: "weekly", priority: "0.9" },
   { path: "/privacy", changefreq: "monthly", priority: "0.3" },
 ];
 
@@ -23,12 +25,27 @@ function escapeXml(value: string): string {
     .replaceAll("'", "&apos;");
 }
 
-export const GET: RequestHandler = () => {
-  const urls = ENTRIES.map((entry) => {
+export const GET: RequestHandler = async () => {
+  const docEntries = await loadDocEntries();
+
+  const docSitemapEntries: SitemapEntry[] = docEntries.map((entry) => ({
+    path: `/docs/${entry.slug}`,
+    ...(entry.date === null ? {} : { lastmod: entry.date }),
+    changefreq: "monthly",
+    priority: "0.7",
+  }));
+
+  const entries = [...STATIC_ENTRIES, ...docSitemapEntries];
+
+  const urls = entries.map((entry) => {
     const location = escapeXml(new URL(entry.path, SITE.origin).href);
+    const lastmod =
+      entry.lastmod === undefined
+        ? ""
+        : `\n    <lastmod>${escapeXml(entry.lastmod)}</lastmod>`;
 
     return `  <url>
-    <loc>${location}</loc>
+    <loc>${location}</loc>${lastmod}
     <changefreq>${entry.changefreq}</changefreq>
     <priority>${entry.priority}</priority>
   </url>`;

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { ArrowRight, BookOpen, FileText } from "@lucide/svelte";
+import { DocsBlogBanner } from "$lib/components/custom";
 import { Badge } from "$lib/components/ui/badge";
 import {
 	Card,
@@ -25,10 +26,6 @@ const title = $derived(data.title ?? "Documentation");
 const posts = $derived(data.posts ?? []);
 const guideLabel = $derived(posts.length === 1 ? "guide" : "guides");
 </script>
-
-<svelte:head>
-	<title>{title} | LightCMS</title>
-</svelte:head>
 
 <section class="space-y-10 py-6 sm:py-10">
 	<header class="max-w-2xl space-y-4">
@@ -98,4 +95,6 @@ const guideLabel = $derived(posts.length === 1 ? "guide" : "guides");
 			<p class="text-sm font-semibold text-foreground">No guides yet</p>
 		</div>
 	{/if}
+
+	<DocsBlogBanner />
 </section>
