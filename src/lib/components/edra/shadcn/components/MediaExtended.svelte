@@ -107,6 +107,7 @@
 
 			<MediaToolbar
 				align={node.attrs.align}
+				href={node.attrs.href}
 				bind:opened={openedMore}
 				resizing={resize.resizing}
 				onAlign={(align) => updateAttributes({ align })}
@@ -114,6 +115,7 @@
 				onDuplicate={() => duplicateContent(editor, node)}
 				onFullscreen={() => updateAttributes({ width: '100%' })}
 				onDelete={deleteNode}
+				onLink={(href) => updateAttributes({ href })}
 			/>
 		{/if}
 	</div>

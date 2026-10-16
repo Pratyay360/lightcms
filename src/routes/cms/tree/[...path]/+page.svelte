@@ -1,19 +1,16 @@
 <script lang="ts">
-  import {
-    ArrowLeft,
-    ChevronRight,
-
-    File,
-    FileCode,
-    FileText,
-    Folder,
-    FolderInput,
-    FolderPlus,
-    GitBranch,
-    Home,
-    Plus,
-    Trash2,
-  } from "@lucide/svelte";
+  import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+  import ChevronRight from "@lucide/svelte/icons/chevron-right";
+  import File from "@lucide/svelte/icons/file";
+  import FileCode from "@lucide/svelte/icons/file-code";
+  import FileText from "@lucide/svelte/icons/file-text";
+  import Folder from "@lucide/svelte/icons/folder";
+  import FolderInput from "@lucide/svelte/icons/folder-input";
+  import FolderPlus from "@lucide/svelte/icons/folder-plus";
+  import GitBranch from "@lucide/svelte/icons/git-branch";
+  import Home from "@lucide/svelte/icons/home";
+  import Plus from "@lucide/svelte/icons/plus";
+  import Trash2 from "@lucide/svelte/icons/trash-2";
   import { Button } from "$lib/components/ui/button";
   import {
     Dialog,

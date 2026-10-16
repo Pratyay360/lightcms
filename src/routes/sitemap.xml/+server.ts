@@ -37,19 +37,19 @@ export const GET: RequestHandler = async () => {
 
   const entries = [...STATIC_ENTRIES, ...docSitemapEntries];
 
-  const urls = entries.map((entry) => {
-    const location = escapeXml(new URL(entry.path, SITE.origin).href);
-    const lastmod =
-      entry.lastmod === undefined
-        ? ""
-        : `\n    <lastmod>${escapeXml(entry.lastmod)}</lastmod>`;
+  const urls = entries
+    .map((entry) => {
+      const location = escapeXml(new URL(entry.path, SITE.origin).href);
+      const lastmod =
+        entry.lastmod === undefined ? "" : `\n    <lastmod>${escapeXml(entry.lastmod)}</lastmod>`;
 
-    return `  <url>
+      return `  <url>
     <loc>${location}</loc>${lastmod}
     <changefreq>${entry.changefreq}</changefreq>
     <priority>${entry.priority}</priority>
   </url>`;
-  }).join("\n");
+    })
+    .join("\n");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

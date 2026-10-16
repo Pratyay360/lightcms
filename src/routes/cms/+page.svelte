@@ -1,16 +1,14 @@
 <script lang="ts">
-import {
-	ArrowUpRight,
-	CircleAlert,
-	FileText,
-	FolderOpen,
-	FolderPlus,
-	GitBranch,
-	GitFork,
-	Layers,
-	Settings,
-	Sparkles
-} from "@lucide/svelte";
+import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
+import CircleAlert from "@lucide/svelte/icons/circle-alert";
+import FileText from "@lucide/svelte/icons/file-text";
+import FolderOpen from "@lucide/svelte/icons/folder-open";
+import FolderPlus from "@lucide/svelte/icons/folder-plus";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import GitFork from "@lucide/svelte/icons/git-fork";
+import Layers from "@lucide/svelte/icons/layers";
+import Settings from "@lucide/svelte/icons/settings";
+import Sparkles from "@lucide/svelte/icons/sparkles";
 import { toast } from "svelte-sonner";
 import { goto, invalidateAll } from "$app/navigation";
 import { CreateBranchDialog, CreateFolderDialog } from "$lib/components/custom";

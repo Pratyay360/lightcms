@@ -63,6 +63,9 @@ export const mediaStrings = {
   duplicate: "Duplicate",
   fullscreen: "Full Screen",
   delete: "Delete",
+  link: "Link",
+  removeLink: "Remove Link",
+  openLink: "Open Link",
 };
 
 export const tableStrings = {

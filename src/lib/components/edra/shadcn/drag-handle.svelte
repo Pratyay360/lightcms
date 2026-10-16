@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { autoPlacement } from '@floating-ui/dom';
-	import { Sparkles } from '@lucide/svelte';
+	import Sparkles from "@lucide/svelte/icons/sparkles";
 	import Duplicate from '@lucide/svelte/icons/copy';
 	import GripVertical from '@lucide/svelte/icons/grip-vertical';
 	import Plus from '@lucide/svelte/icons/plus';

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ArrowLeft } from "@lucide/svelte";
+import ArrowLeft from "@lucide/svelte/icons/arrow-left";
 import { goto } from "$app/navigation";
 import { authClient, signOut } from "$lib/auth-client";
 

@@ -1,13 +1,11 @@
-import {
-  ArrowDownWideNarrow,
-  Brain,
-  CheckCheck,
-  Feather,
-  PenLine,
-  RefreshCcwDot,
-  Sparkles,
-  TextWrap,
-} from "@lucide/svelte";
+import ArrowDownWideNarrow from "@lucide/svelte/icons/arrow-down-wide-narrow";
+import Brain from "@lucide/svelte/icons/brain";
+import CheckCheck from "@lucide/svelte/icons/check-check";
+import Feather from "@lucide/svelte/icons/feather";
+import PenLine from "@lucide/svelte/icons/pen-line";
+import RefreshCcwDot from "@lucide/svelte/icons/refresh-ccw-dot";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import TextWrap from "@lucide/svelte/icons/text-wrap";
 
 export type AiActionId =
   | "improve"

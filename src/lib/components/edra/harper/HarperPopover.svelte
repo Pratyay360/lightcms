@@ -1,6 +1,7 @@
 <script lang="ts">
   import { autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
-  import { Sparkles, X } from "@lucide/svelte";
+  import Sparkles from "@lucide/svelte/icons/sparkles";
+  import X from "@lucide/svelte/icons/x";
   import { onMount, untrack } from "svelte";
   import { getEditor } from "../tiptap/components/editorContext.js";
   import { decodeHarperPayload } from "../tiptap/extensions/harper/index.ts";

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { FolderPlus, Sparkles } from "@lucide/svelte";
+	import FolderPlus from "@lucide/svelte/icons/folder-plus";
+	import Sparkles from "@lucide/svelte/icons/sparkles";
 	import { enhance } from "$app/forms";
 	import { Button } from "$lib/components/ui/button";
 	import {

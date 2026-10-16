@@ -1,5 +1,7 @@
 <script lang="ts">
-import { ArrowRight, BookOpen, FileText } from "@lucide/svelte";
+import ArrowRight from "@lucide/svelte/icons/arrow-right";
+import BookOpen from "@lucide/svelte/icons/book-open";
+import FileText from "@lucide/svelte/icons/file-text";
 import { DocsBlogBanner } from "$lib/components/custom";
 import { Badge } from "$lib/components/ui/badge";
 import {

@@ -12,10 +12,6 @@ const base = os.$context<RpcContext>();
  */
 export const publicProcedure = base;
 
-/**
- * Protected procedure — throws UNAUTHORIZED if session is missing.
- * Downstream procedures receive `session` as a non-null value.
- */
 export const authedProcedure = base.use(({ context, next }) => {
   if (!context.session) {
     throw new ORPCError("UNAUTHORIZED", {

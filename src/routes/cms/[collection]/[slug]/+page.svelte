@@ -1,17 +1,15 @@
 <script lang="ts">
-  import {
-    ArrowLeft,
-    Clock3,
-    CloudCheck,
-    FileCode,
-    FolderInput,
-    FolderOpen,
-    Maximize,
-    Minimize,
-    Save,
-    Trash,
-    Type,
-  } from "@lucide/svelte";
+  import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+  import Clock3 from "@lucide/svelte/icons/clock-3";
+  import CloudCheck from "@lucide/svelte/icons/cloud-check";
+  import FileCode from "@lucide/svelte/icons/file-code";
+  import FolderInput from "@lucide/svelte/icons/folder-input";
+  import FolderOpen from "@lucide/svelte/icons/folder-open";
+  import Maximize from "@lucide/svelte/icons/maximize";
+  import Minimize from "@lucide/svelte/icons/minimize";
+  import Save from "@lucide/svelte/icons/save";
+  import Trash from "@lucide/svelte/icons/trash";
+  import Type from "@lucide/svelte/icons/type";
 
   import { onMount, untrack } from "svelte";
   import { superForm } from "sveltekit-superforms";

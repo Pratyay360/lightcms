@@ -1,11 +1,9 @@
 <script lang="ts">
-  import {
-    FingerprintPattern,
-    GitBranch,
-    LogOut,
-    Mail,
-    ShieldCheck,
-  } from "@lucide/svelte";
+  import FingerprintPattern from "@lucide/svelte/icons/fingerprint-pattern";
+  import GitBranch from "@lucide/svelte/icons/git-branch";
+  import LogOut from "@lucide/svelte/icons/log-out";
+  import Mail from "@lucide/svelte/icons/mail";
+  import ShieldCheck from "@lucide/svelte/icons/shield-check";
   import { untrack } from "svelte";
   import { superForm } from "sveltekit-superforms";
   import { goto } from "$app/navigation";

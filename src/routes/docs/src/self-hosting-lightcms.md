@@ -33,8 +33,7 @@ Before you begin, ensure you have the [mise](https://mise.jdx.dev) installed and
 - **Image Storage (Optional)**: Any [Chevereto](https://chevereto.com)-compatible image upload endpoint (e.g., [Freeimage.host](https://freeimage.host), [ImgBB](https://imgbb.com), or a self-hosted Chevereto instance).
 
 - **SMTP Provider**: Required if you intend to send magic links (e.g., [Resend](https://resend.com), [Zoho Mail](https://www.zoho.com/mail), or Amazon SES).
-
-- **AI Services** An OpenAI compatible API key for content generation and a [Groq](https://groq.com) API key for speech to text audio transcription.
+- **AI Services**: An OpenAI compatible API key for content generation and a [Wit.ai](https://wit.ai) token for speech-to-text audio transcription.
 
 ---
 
@@ -50,7 +49,7 @@ cd lightcms
 Install the dependencies using Bun or Mise:
 
 ```bash
-mise trust 
+mise trust
 mise deps
 mise run install
 ```
@@ -146,10 +145,9 @@ OPEN_AI_ENDPOINT="https://api.openai.com/v1"
 OPEN_AI_APIKEY="sk-your-openai-key"
 OPEN_AI_MODEL="gpt-4o-mini"
 
-# Groq API Key for Whisper speech-to-text transcription
-GROQ_API_KEY="gsk_your-groq-key"
-
-WIT_AI_API="wit ai api key"
+# Speech-to-text audio transcription: users can use Groq Whisper (via AI SDK) or Wit.ai
+GROQ_API_KEY="gsk_your_groq_api_key"
+WIT_AI_TOKEN="your-wit-ai-server-token"
 
 ```
 
@@ -169,7 +167,8 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 
 The AI Copilot uses standard OpenAI-compatible completions, which allows you to use any provider offering an OpenAI API format:
 
-- **[Groq](https://groq.com)**: Ultra-fast Llama models and Whisper voice transcription (`GROQ_API_KEY`).
+- **[Groq](https://groq.com)**: Ultra-fast Whisper speech-to-text audio transcription powered by Vercel AI SDK (`GROQ_API_KEY`).
+- **[Wit.ai](https://wit.ai)**: Speech-to-text dictation audio transcription (`WIT_AI_TOKEN`).
 - **[OpenRouter](https://openrouter.ai)**: Access Claude, GPT, Mistral, and open-source models with a single unified key (`OPEN_AI_ENDPOINT="https://openrouter.ai/api/v1"`).
 - **[NVIDIA NIM](https://build.nvidia.com)**: High-performance inference endpoints for open models.
 - **[OpenAI](https://platform.openai.com)**: Official OpenAI endpoint and GPT models.
@@ -203,7 +202,8 @@ bun run db:push
 
 ## 5. Configure Image Uploads (CDN)
 
-LightCMS supports any [Chevereto](https://chevereto.com)-compatible image upload API. When you paste or upload images in the editor, they are uploaded directly to your CDN.
+LightCMS supports any [Chevereto](https://chevereto.com)-compatible image upload API. When you paste or upload images
+in the editor, they are uploaded directly to your CDN.
 
 Free and hosted options include:
 
@@ -249,7 +249,8 @@ GitHub cannot send webhooks to `localhost` directly. To receive GitHub webhook e
 
 When deploying to production, choose the SvelteKit adapter suitable for your target infrastructure:
 
-- **Vercel**: Pre-configured with `@sveltejs/adapter-vercel`. Connect your Git repository to Vercel, set your environment variables in the project settings, and deploy.
+- **Vercel**: Pre configured with `@sveltejs/adapter-vercel`. Connect your Git repository to Vercel,
+- set your environment variables in the project settings, and deploy.
 - **Cloudflare Pages**: Use `@sveltejs/adapter-cloudflare` for global edge hosting.
 - **Node.js / Docker**: Use `@sveltejs/adapter-node` to generate a standalone Node server that can be packaged into a Docker container or run directly behind Nginx/Caddy.
 

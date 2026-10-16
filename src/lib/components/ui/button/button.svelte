@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { buttonVariants, type ButtonProps } from "./button.js";
 	import { cn } from "$lib/utils.js";
+	import { type ButtonProps, buttonVariants } from "./button.js";
 
 	let {
 		class: className,
