@@ -1,13 +1,11 @@
 <script lang="ts">
 import "./layout.css";
-import {
-	Blocks,
-	BookOpen,
-	FileBadge2Icon,
-	Info,
-	LogIn,
-	Sparkles,
-} from "@lucide/svelte";
+import Blocks from "@lucide/svelte/icons/blocks";
+import BookOpen from "@lucide/svelte/icons/book-open";
+import FileBadge2Icon from "@lucide/svelte/icons/file-badge-2";
+import Info from "@lucide/svelte/icons/info";
+import LogIn from "@lucide/svelte/icons/log-in";
+import Sparkles from "@lucide/svelte/icons/sparkles";
 import { injectAnalytics } from '@vercel/analytics/sveltekit';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 import { ModeWatcher } from "mode-watcher";

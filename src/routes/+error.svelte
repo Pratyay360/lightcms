@@ -1,5 +1,6 @@
 <script lang="ts">
-import { ArrowLeft, CircleAlert } from "@lucide/svelte";
+import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+import CircleAlert from "@lucide/svelte/icons/circle-alert";
 import { page } from "$app/state";
 import { SITE } from "$lib/seo";
 

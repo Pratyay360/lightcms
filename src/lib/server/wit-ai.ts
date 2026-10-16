@@ -175,16 +175,17 @@ export async function transcribeAudioWithWitAi(
     );
   }
 
-  let buffer: Buffer;
-  if (Buffer.isBuffer(audioData)) {
-    buffer = audioData;
-  } else if (audioData instanceof Uint8Array) {
-    buffer = Buffer.from(audioData.buffer, audioData.byteOffset, audioData.byteLength);
+  let audioPayload: Uint8Array;
+  if (audioData instanceof Uint8Array) {
+    audioPayload = audioData;
+  } else if (audioData instanceof ArrayBuffer) {
+    audioPayload = new Uint8Array(audioData);
   } else {
-    buffer = Buffer.from(audioData);
+    // Back-compat shim; atob-based callers always pass Uint8Array/ArrayBuffer.
+    audioPayload = new Uint8Array(audioData as ArrayBuffer);
   }
 
-  if (buffer.length === 0) {
+  if (audioPayload.byteLength === 0) {
     return { text: "", isFinal: true };
   }
   const requestedContentType = options?.contentType?.split(";")[0]?.trim().toLowerCase();
@@ -197,7 +198,7 @@ export async function transcribeAudioWithWitAi(
       Authorization: `Bearer ${token}`,
       "Content-Type": uploadContentType,
     },
-    body: new Uint8Array(buffer),
+    body: audioPayload,
   });
 
   if (!response.ok) {

@@ -32,6 +32,16 @@ function normalizeOptionalString(value?: string): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function normalizeSpeechEndpoint(value?: string): string | undefined {
+  const trimmed = normalizeOptionalString(value);
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const url = trimmed.replace(/\/+$/, "");
+  return url.replace(/\/audio\/transcriptions$/i, "").replace(/\/transcriptions$/i, "");
+}
+
 /**
  * Resolves a vendor-neutral OpenAI-compatible speech config.
  *
@@ -54,8 +64,8 @@ export function resolveSpeechConfig(options?: TranscribeAiSdkOptions): ResolvedS
   }
 
   const baseURL =
-    normalizeOptionalString(options?.endpoint) ??
-    normalizeOptionalString(process.env.SPEECH_ENDPOINT);
+    normalizeSpeechEndpoint(options?.endpoint) ??
+    normalizeSpeechEndpoint(process.env.SPEECH_ENDPOINT);
 
   return {
     apiKey,

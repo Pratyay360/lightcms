@@ -1,14 +1,12 @@
 <script lang="ts">
-import {
-	ArrowRight,
-	Bookmark,
-	Check,
-	FileText,
-	GitBranch,
-	Pencil,
-	ShieldCheck,
-	Sparkles
-} from "@lucide/svelte";
+import ArrowRight from "@lucide/svelte/icons/arrow-right";
+import Bookmark from "@lucide/svelte/icons/bookmark";
+import Check from "@lucide/svelte/icons/check";
+import FileText from "@lucide/svelte/icons/file-text";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import Pencil from "@lucide/svelte/icons/pencil";
+import ShieldCheck from "@lucide/svelte/icons/shield-check";
+import Sparkles from "@lucide/svelte/icons/sparkles";
 </script>
 
 <section

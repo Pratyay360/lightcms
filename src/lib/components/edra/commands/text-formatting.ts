@@ -1,4 +1,4 @@
-import { FileCode } from "@lucide/svelte";
+import FileCode from "@lucide/svelte/icons/file-code";
 import Bold from "@lucide/svelte/icons/bold";
 import Code from "@lucide/svelte/icons/code";
 import Italic from "@lucide/svelte/icons/italic";

@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { GitFork, LoaderCircle, Plus } from "@lucide/svelte";
+	import GitFork from "@lucide/svelte/icons/git-fork";
+	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
+	import Plus from "@lucide/svelte/icons/plus";
 	import { untrack } from "svelte";
 	import { Button } from "$lib/components/ui/button";
 	import {

@@ -59,7 +59,11 @@ const transcribeSpeech = os
       });
     }
 
-    const audioBuffer = Buffer.from(audio, "base64");
+    const binary = atob(audio);
+    const audioBuffer = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      audioBuffer[i] = binary.charCodeAt(i);
+    }
     if (audioBuffer.length === 0) {
       throw new ORPCError("BAD_REQUEST", {
         message: "Audio data is empty.",

@@ -1,5 +1,6 @@
 <script lang="ts">
-import { ExternalLink, Newspaper } from "@lucide/svelte";
+import ExternalLink from "@lucide/svelte/icons/external-link";
+import Newspaper from "@lucide/svelte/icons/newspaper";
 import { Button } from "$lib/components/ui/button";
 import { SITE } from "$lib/seo";
 import { cn } from "$lib/utils";

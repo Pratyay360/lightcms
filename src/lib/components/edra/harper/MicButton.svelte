@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { Loader2Icon, Mic, MicAudioLines, MicOff } from '@lucide/svelte';
+	import Loader2Icon from "@lucide/svelte/icons/loader-2";
+	import Mic from "@lucide/svelte/icons/mic";
+	import MicAudioLines from "@lucide/svelte/icons/mic-audio-lines";
+	import MicOff from "@lucide/svelte/icons/mic-off";
 	import { toast } from 'svelte-sonner';
 	import { type ButtonSize, type ButtonVariant, buttonVariants } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils.js';

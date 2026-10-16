@@ -1,20 +1,18 @@
 <script lang="ts">
-	import {
-		ArrowLeft,
-		ChevronRight,
-		File,
-		FileText,
-		Folder,
-		FolderInput,
-		FolderOpen,
-		FolderPlus,
-		Home,
-    LoaderCircle,
-		Plus,
-		Sparkles,
-		Trash,
-		TriangleAlert
-	} from "@lucide/svelte";
+	import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+	import ChevronRight from "@lucide/svelte/icons/chevron-right";
+	import File from "@lucide/svelte/icons/file";
+	import FileText from "@lucide/svelte/icons/file-text";
+	import Folder from "@lucide/svelte/icons/folder";
+	import FolderInput from "@lucide/svelte/icons/folder-input";
+	import FolderOpen from "@lucide/svelte/icons/folder-open";
+	import FolderPlus from "@lucide/svelte/icons/folder-plus";
+	import Home from "@lucide/svelte/icons/home";
+	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
+	import Plus from "@lucide/svelte/icons/plus";
+	import Sparkles from "@lucide/svelte/icons/sparkles";
+	import Trash from "@lucide/svelte/icons/trash";
+	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
 	import { toast } from "svelte-sonner";
 	import { enhance } from "$app/forms";
 	import { goto, invalidateAll } from "$app/navigation";

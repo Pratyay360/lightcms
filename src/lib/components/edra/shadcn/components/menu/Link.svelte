@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Link } from '@lucide/svelte';
+	import Link from "@lucide/svelte/icons/link";
 	import Check from '@lucide/svelte/icons/check';
 	import Copy from '@lucide/svelte/icons/copy';
 	import Edit from '@lucide/svelte/icons/pen';

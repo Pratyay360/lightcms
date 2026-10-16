@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Send } from '@lucide/svelte';
+	import Send from "@lucide/svelte/icons/send";
 	import { Button } from '$lib/components/ui/button/index.js';
 	import MicButton from '../../../../harper/MicButton.svelte';
 

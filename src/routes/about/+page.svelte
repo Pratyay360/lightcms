@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { GitBranch, Heart, Mail, MessageCircle, ShieldCheck } from "@lucide/svelte";
+  import GitBranch from "@lucide/svelte/icons/git-branch";
+  import Heart from "@lucide/svelte/icons/heart";
+  import Mail from "@lucide/svelte/icons/mail";
+  import MessageCircle from "@lucide/svelte/icons/message-circle";
+  import ShieldCheck from "@lucide/svelte/icons/shield-check";
   import { Button } from "$lib/components/ui/button";
   import { SITE } from "$lib/seo";
 

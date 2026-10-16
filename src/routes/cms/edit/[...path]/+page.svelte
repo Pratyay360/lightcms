@@ -1,17 +1,15 @@
 <script lang="ts">
-  import {
-    ArrowLeft,
-    Check,
-    Code,
-    FolderInput,
-    GitBranch,
-    LoaderCircle,
-    Plus,
-    Save,
-    Settings2,
-    Sparkles,
-    Trash2,
-  } from "@lucide/svelte";
+  import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+  import Check from "@lucide/svelte/icons/check";
+  import Code from "@lucide/svelte/icons/code";
+  import FolderInput from "@lucide/svelte/icons/folder-input";
+  import GitBranch from "@lucide/svelte/icons/git-branch";
+  import LoaderCircle from "@lucide/svelte/icons/loader-circle";
+  import Plus from "@lucide/svelte/icons/plus";
+  import Save from "@lucide/svelte/icons/save";
+  import Settings2 from "@lucide/svelte/icons/settings-2";
+  import Sparkles from "@lucide/svelte/icons/sparkles";
+  import Trash2 from "@lucide/svelte/icons/trash-2";
   import { onMount, untrack } from "svelte";
   import { toast } from "svelte-sonner";
   import { enhance } from "$app/forms";
