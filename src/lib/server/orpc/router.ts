@@ -1,7 +1,11 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { ORPCError, os, type } from "@orpc/server";
 import { streamText } from "ai";
-import { isGroqConfigured, transcribeAudioWithGroq } from "$lib/server/groq";
+import {
+  isSpeechTranscriptionConfigured,
+  type SpeechProvider,
+  transcribeAudio,
+} from "$lib/server/transcription";
 import { cmsRouter } from "./cms-router";
 
 const generateContent = os.input(type<{ prompt: string }>()).handler(async ({ input, signal }) => {
@@ -39,10 +43,16 @@ const transcribeSpeech = os
       contentType?: string;
       language?: string;
       prompt?: string;
+      provider?: SpeechProvider;
+      endpoint?: string;
+      apiKey?: string;
+      model?: string;
+      temperature?: number;
     }>(),
   )
   .handler(async ({ input }) => {
-    const { audio, contentType, language, prompt } = input;
+    const { audio, contentType, language, prompt, provider, endpoint, apiKey, model, temperature } =
+      input;
     if (!audio) {
       throw new ORPCError("BAD_REQUEST", {
         message: "Audio data is required for transcription.",
@@ -57,14 +67,19 @@ const transcribeSpeech = os
     }
 
     try {
-      const result = await transcribeAudioWithGroq(audioBuffer, {
+      const result = await transcribeAudio(audioBuffer, {
         contentType,
         language,
         prompt,
+        provider,
+        endpoint,
+        apiKey,
+        model,
+        temperature,
       });
       return result;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Groq transcription failed";
+      const message = err instanceof Error ? err.message : "Audio transcription failed.";
       throw new ORPCError("INTERNAL_SERVER_ERROR", {
         message,
       });
@@ -78,7 +93,7 @@ export const router = {
   speech: {
     transcribe: transcribeSpeech,
     isConfigured: os.handler(async () => {
-      return { configured: isGroqConfigured() };
+      return isSpeechTranscriptionConfigured();
     }),
   },
   cms: cmsRouter,

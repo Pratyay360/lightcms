@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import { SITE, absoluteUrl, canonicalPathname, isNoindexPath, resolvePageSeo } from "$lib/seo";
 	import type { PageSeoOverride } from "$lib/seo";
+	import { absoluteUrl, canonicalPathname, isNoindexPath, resolvePageSeo, SITE } from "$lib/seo";
 
 	// `page.data` merges the active route's load output, so a page contributes SEO
 	// by returning `{ seo }` from its `load` rather than by rendering its own head.

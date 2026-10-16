@@ -6,6 +6,7 @@ export * from "./Callout.ts";
 export * from "./harper/index.js";
 export * from "./iframe/index.js";
 export * from "./image/ImageExtended.ts";
+export * from "./link/LinkExtended.ts";
 export * from "./mermaid/index.js";
 export {
   ATOM_SLIGHT_PENETRATION_PX,

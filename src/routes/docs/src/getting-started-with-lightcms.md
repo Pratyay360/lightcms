@@ -34,11 +34,13 @@ Built on [TipTap](https://tiptap.dev), the editor gives you real-time visual for
 
 ### 3. 🤖 Integrated AI Copilot
 
-Drafting and editing is faster with an integrated AI writing companion. Ask the AI assistant to outline articles, rephrase paragraphs, expand ideas, or fix grammar — powered by any OpenAI-compatible provider (OpenAI, OpenRouter, Groq, NVIDIA NIM).
+Drafting and editing is faster with an integrated AI writing companion. Ask the copilot
+to outline articles, rephrase paragraphs, expand ideas, or fix grammar —
+powered by any OpenAI-compatible provider (OpenAI, OpenRouter, Ollama, NVIDIA NIM).
 
 ### 4. 🎙️ Speech to Text
 
-Capture inspiration on the fly. Record your thoughts directly inside the editor and let Whisper or [Wit.ai](https://wit.ai/) transcribe your speech into structured text in seconds.
+Capture inspiration on the fly. Record your thoughts directly inside the editor and let [Groq Whisper](https://groq.com) (powered by Vercel AI SDK) or [Wit.ai](https://wit.ai/) transcribe your speech into structured text in seconds.
 
 ### 5. 🌗 First-Class Themes & Aesthetics
 

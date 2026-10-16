@@ -15,6 +15,7 @@ import { InlineAutocomplete } from "./tiptap/extensions/autocomplete/index.ts";
 import {
   Audio,
   ColorHighlighter,
+  LinkExtended,
   SelectAcrossAtoms,
   Table,
   TableCell,
@@ -44,16 +45,17 @@ export function getDefaultExtensions(options: DefaultExtensionsOptions = {}): Ex
       heading: {
         levels: [1, 2, 3, 4],
       },
-      link: {
-        openOnClick: false,
-        autolink: true,
-        linkOnPaste: true,
-        HTMLAttributes: {
-          target: "_blank",
-          rel: "noopener noreferrer nofollow",
-        },
-      },
+      link: false,
       codeBlock: false,
+    }),
+    LinkExtended.configure({
+      openOnClick: false,
+      autolink: true,
+      linkOnPaste: true,
+      HTMLAttributes: {
+        target: "_blank",
+        rel: "noopener noreferrer nofollow",
+      },
     }),
     Audio,
     CharacterCount,

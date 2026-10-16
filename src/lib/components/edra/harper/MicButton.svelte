@@ -4,12 +4,14 @@
 	import { type ButtonSize, type ButtonVariant, buttonVariants } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils.js';
 	import Tooltip from '../shadcn/components/Tooltip.svelte';
+	import { SPEECH_PROVIDERS, type SpeechProvider } from './speech-recognition.js';
 	import { createSpeechRecognition } from './speech-recognition.svelte';
 
 	interface Props {
 		onTranscript: (text: string) => void;
 		onInterim?: (text: string) => void;
 		lang?: string;
+		provider?: SpeechProvider;
 		class?: string;
 		size?: ButtonSize;
 		variant?: ButtonVariant;
@@ -20,15 +22,21 @@
 		onTranscript,
 		onInterim,
 		lang,
+		provider = SPEECH_PROVIDERS.openaiCompatible,
 		class: className = '',
 		size = 'icon',
 		variant = 'ghost',
 		tooltip = 'Dictate (live speech to text)'
 	}: Props = $props();
 
+	let selectedProvider = $state<SpeechProvider>(provider);
+
 	const speech = createSpeechRecognition({
 		get lang() {
 			return lang;
+		},
+		get provider() {
+			return selectedProvider;
 		},
 		onTranscript(finalChunk) {
 			onTranscript(finalChunk);
@@ -53,9 +61,18 @@
 		lang ?? (typeof navigator !== 'undefined' && navigator.language ? navigator.language : 'en-US')
 	);
 
+	const providerDisplayName = $derived.by(() => {
+		switch (selectedProvider) {
+			case SPEECH_PROVIDERS.wit:
+				return 'Wit.ai';
+			default:
+				return 'OpenAI-compatible';
+		}
+	});
+
 	const buttonAriaLabel = $derived(
 		speech.isTranscribing
-			? 'Transcribing audio with Groq...'
+			? `Transcribing audio with ${providerDisplayName}...`
 			: speech.isListening
 				? 'Stop dictation'
 				: 'Start dictation'
@@ -131,7 +148,7 @@
 				</div>
 			{:else if speech.isTranscribing}
 				<p class="mt-2 leading-relaxed text-muted-foreground">
-					Sending audio to Groq Whisper…
+					Sending audio to {providerDisplayName}…
 				</p>
 			{:else}
 				<p class="mt-2 leading-relaxed text-muted-foreground">
@@ -140,12 +157,20 @@
 			{/if}
 
 			<div class="mt-2.5 flex items-center justify-between border-t border-border/40 pt-2 text-[11px] text-muted-foreground">
-				<span class="font-medium text-muted-foreground">Groq Whisper</span>
+				<select
+					bind:value={selectedProvider}
+					onchange={() => speech.setProvider(selectedProvider)}
+					disabled={speech.isTranscribing}
+					class="cursor-pointer rounded border border-border/60 bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium text-foreground transition-colors hover:bg-muted focus:outline-hidden"
+				>
+					<option value={SPEECH_PROVIDERS.openaiCompatible}>OpenAI-compatible</option>
+					<option value={SPEECH_PROVIDERS.wit}>Wit.ai</option>
+				</select>
 				<button
 					type="button"
 					onclick={() => speech.stop()}
 					disabled={speech.isTranscribing}
-					class="rounded px-1.5 py-0.5 font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
+					class="rounded px-2 py-0.5 font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
 				>
 					Stop
 				</button>
