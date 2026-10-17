@@ -3,6 +3,7 @@ import matter from "gray-matter";
 import { deleteRepoFile, getRepoFile, moveRepoFile, saveRepoFile } from "$lib/server/cms";
 
 import { getRepoCmsContext } from "$lib/server/cms-context";
+import { captureServerEvent } from "$lib/server/posthog";
 import { normalizeContentPath } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
 
@@ -79,6 +80,7 @@ export const actions: Actions = {
 
     try {
       await saveRepoFile(filePath, finalContent, commitMessage, ctx);
+      await captureServerEvent(locals.session.userId, "repository_file_saved");
       return { success: true, savedAt: new Date().toISOString() };
     } catch (cause) {
       return fail(500, {
@@ -112,6 +114,8 @@ export const actions: Actions = {
         error: cause instanceof Error ? cause.message : "Failed to delete file.",
       });
     }
+
+    await captureServerEvent(locals.session.userId, "repository_file_deleted");
 
     const lastSlashIndex = filePath.lastIndexOf("/");
     const parentPath = lastSlashIndex === -1 ? "" : filePath.slice(0, lastSlashIndex);

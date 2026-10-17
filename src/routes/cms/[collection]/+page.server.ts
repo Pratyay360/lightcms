@@ -8,6 +8,7 @@ import {
 } from "$lib/server/cms";
 
 import { getConfiguredCollection } from "$lib/server/cms-context";
+import { captureServerEvent } from "$lib/server/posthog";
 import { joinPath, normalizeContentPath, normalizeFolder } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
 
@@ -69,6 +70,8 @@ export const actions: Actions = {
       throw new Error(errorMessage, { cause: error });
     }
 
+    await captureServerEvent(locals.session.userId, "collection_initialized");
+
     throw redirect(303, `/cms/${encodeURIComponent(collection.name)}?${query}`);
   },
 
@@ -89,6 +92,8 @@ export const actions: Actions = {
     }
     const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
     await createCollectionFolder(collection, folder, name, ctx);
+    await captureServerEvent(locals.session.userId, "collection_folder_created");
+
     const folderQuery = new URLSearchParams(query);
     if (folder) folderQuery.set("folder", folder);
     throw redirect(303, `/cms/${encodeURIComponent(collection.name)}?${folderQuery}`);
@@ -131,6 +136,8 @@ export const actions: Actions = {
         folderError: cause instanceof Error ? cause.message : "Could not delete the folder.",
       });
     }
+
+    await captureServerEvent(locals.session.userId, "collection_folder_deleted");
 
     const folderQuery = new URLSearchParams(query);
     if (folderToDelete) folderQuery.set("folder", folderToDelete);

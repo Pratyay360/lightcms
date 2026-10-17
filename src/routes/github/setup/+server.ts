@@ -4,6 +4,7 @@ import { db } from "$lib/server/db";
 import { githubInstallation } from "$lib/server/db/auth.schema";
 import { getGitHubApp } from "$lib/server/github-app";
 import { verifyGitHubInstallState } from "$lib/server/github-install-state";
+import { captureServerEvent } from "$lib/server/posthog";
 import { canUserAdministerInstallation, getAccountLogin } from "$lib/server/github-user-access";
 import type { RequestHandler } from "./$types";
 
@@ -65,6 +66,8 @@ export const GET: RequestHandler = async ({ cookies, locals, url }) => {
       "GitHub authentication failed (Bad credentials). Please verify GITHUB_APP_ID, GITHUB_PRIVATE_KEY, or re-login with GitHub.",
     );
   }
+
+  await captureServerEvent(locals.session.userId, "github_installation_completed");
 
   throw redirect(303, "/cms");
 };

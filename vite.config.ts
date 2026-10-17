@@ -52,6 +52,9 @@ export default defineConfig({
     tailwindcss(),
     sveltekit({
       adapter: adapter(),
+      paths: {
+        relative: false,
+      },
       experimental: {
         remoteFunctions: true,
         forkPreloads: true,

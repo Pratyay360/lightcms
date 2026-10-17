@@ -1,5 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { transcribe } from "ai";
+import { flushAiObservability } from "$lib/server/ai-observability";
 
 export interface TranscribeAiSdkOptions {
   endpoint?: string;
@@ -116,19 +117,28 @@ export async function transcribeWithAiSdk(
 
   const audioPayload = audio instanceof ArrayBuffer ? new Uint8Array(audio) : audio;
 
-  const result = await transcribe({
-    model: openai.transcription(config.model),
-    audio: audioPayload,
-    providerOptions: {
-      openai: providerOptions,
-    },
-  });
+  try {
+    const result = await transcribe({
+      model: openai.transcription(config.model),
+      audio: audioPayload,
+      providerOptions: {
+        openai: providerOptions,
+      },
+      telemetry: {
+        functionId: "cms_speech_transcription",
+        recordInputs: true,
+        recordOutputs: true,
+      },
+    });
 
-  return {
-    text: result.text.trim(),
-    model: config.model,
-    isFinal: true,
-    language: result.language,
-    durationInSeconds: result.durationInSeconds,
-  };
+    return {
+      text: result.text.trim(),
+      model: config.model,
+      isFinal: true,
+      language: result.language,
+      durationInSeconds: result.durationInSeconds,
+    };
+  } finally {
+    await flushAiObservability();
+  }
 }

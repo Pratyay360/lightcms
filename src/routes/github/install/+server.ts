@@ -1,6 +1,7 @@
 import { redirect } from "@sveltejs/kit";
 import { getGitHubApp } from "$lib/server/github-app";
 import { createGitHubInstallState } from "$lib/server/github-install-state";
+import { captureServerEvent } from "$lib/server/posthog";
 import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async ({ cookies, locals }) => {
@@ -19,6 +20,7 @@ export const GET: RequestHandler = async ({ cookies, locals }) => {
   });
 
   const installUrl = await getGitHubApp().getInstallationUrl({ state });
+  await captureServerEvent(locals.session.userId, "github_installation_started");
 
   throw redirect(302, installUrl);
 };

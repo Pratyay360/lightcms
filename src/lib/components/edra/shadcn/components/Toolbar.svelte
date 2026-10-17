@@ -33,7 +33,7 @@
 </script>
 
 <div class={cn('flex h-full w-fit items-center gap-2', className)}>
-	<MicButton onTranscript={insertTranscript} />
+	<MicButton onTranscript={insertTranscript} shortcut />
 	{#if isAiEnabled()}
 		<Tooltip tooltip="Use AI">
 			<Button

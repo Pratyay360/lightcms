@@ -182,16 +182,9 @@ export function createSpeechRecognition(
     }
   }
 
-  function getProviderLabel(): string {
-    if (currentProvider === SPEECH_PROVIDERS.wit) {
-      return "Wit.ai";
-    }
-    return "OpenAI-compatible (AI SDK)";
-  }
-
   async function processAndSendAudio(wavBuffer: ArrayBuffer): Promise<void> {
     try {
-      interimTranscript = `Transcribing with ${getProviderLabel()}...`;
+      interimTranscript = "Transcribing…";
       options.onInterim?.(interimTranscript);
 
       const directToken = options.token?.trim();

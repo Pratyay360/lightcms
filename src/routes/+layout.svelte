@@ -9,6 +9,7 @@ import Sparkles from "@lucide/svelte/icons/sparkles";
 import { injectAnalytics } from '@vercel/analytics/sveltekit';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 import { ModeWatcher } from "mode-watcher";
+import { onMount } from "svelte";
 import { dev } from "$app/environment";
 import { page } from "$app/state";
 import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
@@ -25,11 +26,45 @@ if (!dev) {
 }
 let { children, data } = $props();
 
+
 const session = $derived(data.session);
 const user = $derived(data.user);
 const userInitial = $derived(
   (user?.name ?? user?.email ?? "U").charAt(0).toUpperCase(),
 );
+
+let posthogClient: typeof import("posthog-js").default | undefined;
+let identifiedUserId: string | undefined;
+
+function identifyCurrentUser() {
+  if (!user) {
+    identifiedUserId = undefined;
+    return;
+  }
+  if (!posthogClient || user.id === identifiedUserId) return;
+
+  if (identifiedUserId) {
+    posthogClient.reset();
+  }
+
+  posthogClient.identify(user.id, {
+    email: user.email,
+    name: user.name,
+  });
+  identifiedUserId = user.id;
+}
+
+onMount(async () => {
+  const { isPostHogInitialized } = await import("../hooks.client");
+  if (!isPostHogInitialized()) return;
+
+  posthogClient = (await import("posthog-js")).default;
+  identifyCurrentUser();
+});
+
+$effect(() => {
+  identifyCurrentUser();
+});
 </script>
 
 <ModeWatcher defaultTheme={DEFAULT_THEME_ID} modeStorageKey={MODE_STORAGE_KEY} themeStorageKey={THEME_STORAGE_KEY} />

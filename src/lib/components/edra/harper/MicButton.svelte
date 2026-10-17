@@ -3,10 +3,14 @@
 	import Mic from "@lucide/svelte/icons/mic";
 	import MicAudioLines from "@lucide/svelte/icons/mic-audio-lines";
 	import MicOff from "@lucide/svelte/icons/mic-off";
+	import { Portal } from 'bits-ui';
 	import { toast } from 'svelte-sonner';
 	import { type ButtonSize, type ButtonVariant, buttonVariants } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils.js';
 	import Tooltip from '../shadcn/components/Tooltip.svelte';
+	import { createDraggableWidget } from './draggable-widget.svelte.js';
+	import { DICTATION_SHORTCUT_LABEL, isDictationShortcut, isEditableTarget } from './dictation-shortcut.js';
+	import MicWidgetPanel from './MicWidgetPanel.svelte';
 	import { SPEECH_PROVIDERS, type SpeechProvider } from './speech-recognition.js';
 	import { createSpeechRecognition } from './speech-recognition.svelte';
 
@@ -19,6 +23,12 @@
 		size?: ButtonSize;
 		variant?: ButtonVariant;
 		tooltip?: string;
+		/**
+		 * Listens for the editor-scoped dictation shortcut. Only one mounted
+		 * instance should enable this, otherwise a single keypress would toggle
+		 * two simultaneous recording sessions.
+		 */
+		shortcut?: boolean;
 	}
 
 	let {
@@ -29,7 +39,8 @@
 		class: className = '',
 		size = 'icon',
 		variant = 'ghost',
-		tooltip = 'Dictate (live speech to text)'
+		tooltip = 'Dictate (live speech to text)',
+		shortcut = false
 	}: Props = $props();
 
 	let selectedProvider = $state<SpeechProvider>(provider);
@@ -54,10 +65,31 @@
 		},
 	});
 
+	let anchorEl = $state<HTMLButtonElement | null>(null);
+	let panelEl = $state<HTMLDivElement | null>(null);
+
+	const widget = createDraggableWidget({ getElement: () => panelEl });
+
 	$effect(() => {
 		return () => {
+			widget.reset();
 			speech.destroy();
 		};
+	});
+
+	const isWidgetOpen = $derived(speech.isListening || speech.isTranscribing);
+
+	$effect(() => {
+		if (!isWidgetOpen || !anchorEl || !panelEl) {
+			return;
+		}
+		void widget.place(anchorEl);
+	});
+
+	$effect(() => {
+		if (!isWidgetOpen) {
+			widget.reset();
+		}
 	});
 
 	const activeLang = $derived(
@@ -91,11 +123,33 @@
 		}
 		speech.toggle();
 	};
+
+	const handleProviderChange = (nextProvider: SpeechProvider) => {
+		selectedProvider = nextProvider;
+		speech.setProvider(nextProvider);
+	};
+
+	const handleStop = () => {
+		void speech.stop();
+	};
+
+	const handleShortcutKeydown = (event: KeyboardEvent) => {
+		if (!shortcut || !isDictationShortcut(event) || !isEditableTarget(event.target)) {
+			return;
+		}
+		event.preventDefault();
+		handleClick();
+	};
 </script>
 
-<div class="relative inline-flex items-center">
-	{#if speech.isListening || speech.isTranscribing}
+<svelte:document onkeydown={handleShortcutKeydown} />
+
+<svelte:window onresize={() => widget.clampIntoView()} />
+
+<div class="inline-flex items-center">
+	{#if isWidgetOpen}
 		<button
+			bind:this={anchorEl}
 			type="button"
 			onclick={handleClick}
 			disabled={speech.isTranscribing}
@@ -122,65 +176,11 @@
 				</span>
 			{/if}
 		</button>
-
-		<section
-			class="absolute top-full left-0 z-50 mt-2 w-64 rounded-lg border border-border bg-popover/95 p-3 text-xs text-popover-foreground shadow-lg backdrop-blur-sm transition-all"
-			aria-live="polite"
-		>
-			<div class="flex items-center justify-between gap-2 border-b border-border/50 pb-2">
-				<div class="flex items-center gap-1.5 font-medium">
-					{#if speech.isTranscribing}
-						<Loader2Icon class="size-3.5 animate-spin text-primary" />
-						<span>Transcribing…</span>
-					{:else}
-						<span class="relative flex size-2">
-							<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-							<span class="relative inline-flex size-2 rounded-full bg-red-500"></span>
-						</span>
-						<span>{speech.isSpeaking ? 'Speaking…' : 'Listening…'}</span>
-					{/if}
-				</div>
-				<span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono uppercase text-muted-foreground">
-					{activeLang}
-				</span>
-			</div>
-
-			{#if speech.interimTranscript.length > 0}
-				<div class="mt-2 max-h-24 overflow-y-auto rounded-md border border-border/40 bg-muted/60 p-2 font-mono text-xs italic text-foreground">
-					&ldquo;{speech.interimTranscript}&rdquo;
-				</div>
-			{:else if speech.isTranscribing}
-				<p class="mt-2 leading-relaxed text-muted-foreground">
-					Sending audio to {providerDisplayName}…
-				</p>
-			{:else}
-				<p class="mt-2 leading-relaxed text-muted-foreground">
-					Speak into your microphone…
-				</p>
-			{/if}
-
-			<div class="mt-2.5 flex items-center justify-between border-t border-border/40 pt-2 text-[11px] text-muted-foreground">
-				<select
-					bind:value={selectedProvider}
-					onchange={() => speech.setProvider(selectedProvider)}
-					disabled={speech.isTranscribing}
-					class="cursor-pointer rounded border border-border/60 bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium text-foreground transition-colors hover:bg-muted focus:outline-hidden"
-				>
-					<option value={SPEECH_PROVIDERS.openaiCompatible}>OpenAI-compatible</option>
-					<option value={SPEECH_PROVIDERS.wit}>Wit.ai</option>
-				</select>
-				<button
-					type="button"
-					onclick={() => speech.stop()}
-					disabled={speech.isTranscribing}
-					class="rounded px-2 py-0.5 font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
-				>
-					Stop
-				</button>
-			</div>
-		</section>
 	{:else}
-		<Tooltip tooltip={speech.isSupported ? tooltip : 'Speech recognition not supported in this browser'}>
+		<Tooltip
+			tooltip={speech.isSupported ? tooltip : 'Speech recognition not supported in this browser'}
+			shortCut={shortcut ? DICTATION_SHORTCUT_LABEL : ''}
+		>
 			<button
 				type="button"
 				onclick={handleClick}
@@ -199,3 +199,17 @@
 		</Tooltip>
 	{/if}
 </div>
+
+{#if isWidgetOpen}
+	<Portal>
+		<MicWidgetPanel
+			bind:element={panelEl}
+			{speech}
+			{widget}
+			{activeLang}
+			{selectedProvider}
+			onProviderChange={handleProviderChange}
+			onStop={handleStop}
+		/>
+	</Portal>
+{/if}

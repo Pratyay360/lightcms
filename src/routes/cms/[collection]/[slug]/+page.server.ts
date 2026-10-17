@@ -13,6 +13,7 @@ import {
 } from "$lib/server/cms";
 
 import { getConfiguredCollection } from "$lib/server/cms-context";
+import { captureServerEvent } from "$lib/server/posthog";
 import { isGitHubStatus } from "$lib/server/github";
 import { joinPath, normalizeFolder } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
@@ -121,6 +122,7 @@ export const actions: Actions = {
       } catch (cause) {
         throw new Error(cause instanceof Error ? cause.message : String(cause));
       }
+      await captureServerEvent(locals.session.userId, "collection_entry_created");
       throw redirect(303, collectionUrl);
     }
 
@@ -133,6 +135,8 @@ export const actions: Actions = {
         cause instanceof Error ? cause.message : "Could not update the entry.",
       );
     }
+
+    await captureServerEvent(locals.session.userId, "collection_entry_updated");
 
     // If the slug changed, redirect to the new URL
     if (_slug !== params.slug) {
@@ -168,6 +172,8 @@ export const actions: Actions = {
         cause instanceof Error ? cause.message : "Could not delete the entry.",
       );
     }
+
+    await captureServerEvent(locals.session.userId, "collection_entry_deleted");
 
     const collectionUrl = `/cms/${encodeURIComponent(collection.name)}?${appendFolder(query, folder)}`;
     throw redirect(303, collectionUrl);
