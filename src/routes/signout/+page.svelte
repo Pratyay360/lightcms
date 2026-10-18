@@ -25,6 +25,10 @@ $effect(() => {
 			if (cancelled) return;
 
 			if (!session.data) {
+				const { isPostHogInitialized } = await import("../../hooks.client");
+				if (isPostHogInitialized()) {
+					(await import("posthog-js")).default.reset();
+				}
 				_isSigningOut = false;
 				await goto("/", { invalidateAll: true, replaceState: true });
 			} else {

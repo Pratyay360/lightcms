@@ -1,40 +1,76 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { ORPCError, os, type } from "@orpc/server";
 import { streamText } from "ai";
+import { emitPostHogLog, flushAiObservability } from "$lib/server/ai-observability";
 import {
   isSpeechTranscriptionConfigured,
   type SpeechProvider,
   transcribeAudio,
 } from "$lib/server/transcription";
 import { cmsRouter } from "./cms-router";
+import { publicProcedure } from "./context";
 
-const generateContent = os.input(type<{ prompt: string }>()).handler(async ({ input, signal }) => {
-  const prompt = input.prompt?.trim();
-  if (!prompt) {
-    throw new ORPCError("BAD_REQUEST", {
-      message: "Enter a prompt before generating content.",
+const generateContent = publicProcedure
+  .input(type<{ prompt: string }>())
+  .handler(async ({ input, signal, context }) => {
+    const prompt = input.prompt?.trim();
+    if (!prompt) {
+      throw new ORPCError("BAD_REQUEST", {
+        message: "Enter a prompt before generating content.",
+      });
+    }
+
+    const apiKey = process.env.OPEN_AI_APIKEY!;
+    const baseURL = process.env.OPEN_AI_ENDPOINT!;
+    const modelName = process.env.OPEN_AI_MODEL!;
+
+    const openai = createOpenAI({
+      apiKey,
+      ...(baseURL ? { baseURL } : {}),
     });
-  }
 
-  const apiKey = process.env.OPEN_AI_APIKEY!;
-  const baseURL = process.env.OPEN_AI_ENDPOINT!;
-  const modelName = process.env.OPEN_AI_MODEL!;
+    const result = streamText({
+      model: openai(modelName),
+      prompt,
+      abortSignal: signal,
+      runtimeContext: context.session
+        ? {
+            distinctId: context.session.userId,
+            sessionId: context.session.id,
+            traceName: "cms_editor_content_generation",
+          }
+        : undefined,
+      telemetry: {
+        functionId: "cms_editor_content_generation",
+        includeRuntimeContext: {
+          distinctId: true,
+          sessionId: true,
+          traceName: true,
+        },
+        recordInputs: true,
+        recordOutputs: true,
+      },
+    });
 
-  const openai = createOpenAI({
-    apiKey,
-    ...(baseURL ? { baseURL } : {}),
+    return (async function* () {
+      let completed = false;
+      emitPostHogLog("CMS AI content generation started", {
+        log_event: "cms_ai_content_generation",
+        outcome: "started",
+      });
+
+      try {
+        for await (const chunk of result.textStream) yield chunk;
+        completed = true;
+      } finally {
+        emitPostHogLog("CMS AI content generation finished", {
+          log_event: "cms_ai_content_generation",
+          outcome: completed ? "completed" : "interrupted",
+        });
+        await flushAiObservability();
+      }
+    })();
   });
-
-  const result = streamText({
-    model: openai(modelName),
-    prompt,
-    abortSignal: signal,
-  });
-
-  return (async function* () {
-    for await (const chunk of result.textStream) yield chunk;
-  })();
-});
 
 const transcribeSpeech = os
   .input(

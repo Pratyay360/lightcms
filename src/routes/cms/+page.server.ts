@@ -1,6 +1,7 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { createFolderAtPath, listDirectory, resolveRepository } from "$lib/server/cms";
 import { getCmsQuery, getCmsSelection, tryGetCmsSelection } from "$lib/server/cms-context";
+import { captureServerEvent } from "$lib/server/posthog";
 import { assertCollectionName, getCollection, type LightCmsCollection } from "$lib/server/config";
 import {
   isGitHubStatus,
@@ -177,6 +178,8 @@ export const actions: Actions = {
         error: cause instanceof Error ? cause.message : "Could not create collection folder.",
       });
     }
+
+    await captureServerEvent(locals.session.userId, "collection_created");
 
     const query = getCmsQuery(selection);
     throw redirect(303, `/cms/${encodeURIComponent(cleanName)}?${query}`);
