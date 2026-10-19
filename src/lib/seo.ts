@@ -5,7 +5,7 @@ export const SITE = {
   repository: "https://github.com/light-cms/lightcms",
   contactEmail: "lightcms@zohomail.in",
   contactFormUrl: "https://app.youform.com/forms/smwrhikc",
-  sponsorUrl: "https://pratyayupi.surge.sh",
+  sponsorUrl: "https://upi.pratyay.online",
   blogUrl: "https://light-cms.github.io",
 } as const;
 
