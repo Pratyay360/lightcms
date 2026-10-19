@@ -10,13 +10,15 @@ tags:
   - lightcms
 keywords:
   - why lightcms
-  - gitbacked cms
+  - git-backed cms
   - static sites
   - carbon footprint
 preview: /og-image.png
 ---
 
-I’ve tried dozens of CMS solutions over the years, and somehow, most of them felt a little pale. They worked, but they frequently missed the mark when it came to the actual human experience of writing and managing a personal publication.
+I’ve tried dozens of CMS solutions over the years, and somehow, most of them felt a little flat. They worked, but they frequently
+missed the mark when it came to the actual human experience of writing and managing
+a personal publication.
 
 The closest thing I found to a pleasant developer workflow was Front Matter in VS Code. It makes managing content files much easier, but the fundamental barrier remains: opening an entire code editor, pulling remote Git branches, resolving formatting conflicts, and debugging local tools is a mountain of friction just to publish a three-paragraph reflection.
 
@@ -50,15 +52,18 @@ There is no shortage of extraordinary static site generators: [Astro](https://as
 
 **The paradox is that while running a static site is simple, managing it is not.**
 
-You shouldn't need to understand Git rebase flags, Markdown terminal linters, front matter YAML schema validators, or GitHub token scopes just to publish your thoughts. Asking a non techy person or a tired developer to navigate VS Code at midnight is simply too much for content writing.
+You shouldn't need to understand Git rebase flags, Markdown terminal linters, front matter YAML schema validators,
+or GitHub token scopes just to publish your thoughts. Asking a non-technical person or a tired developer to navigate a code editor at
+midnight is simply too much for content writing.
 
 ---
 
 ## A Greener Web Is a Static Web
 
-The environmental case for static publishing is not a footnote — it is structural. Dynamic sites burn electricity on every single request; static sites do the work once and serve the result from cache, close to the reader, at a tiny fraction of the energy. No always-on database, no per-view computation, no bloated runtime shipped to the visitor's battery.
+The environmental case for static publishing is not a footnote — it is structural. Dynamic sites burn electricity on every single request; static sites do the work once and serve the result from cache, close to the reader, at a tiny fraction of the energy. No always-on database, no per-view computation, no bloated runtime shipped to the visitor's browser.
 
-Durable content is sustainable content, too: plain Markdown files in your own repository remain readable and rebuildable for decades, while platforms shut down and WordPress installs rot. Every blog that moves from database-driven hosting to a static architecture is a permanent, measurable reduction in its carbon footprint.
+Durable content is sustainable content, too: plain Markdown files in your own repository remain readable and rebuildable for decades, while platforms shut down and WordPress installs rot.
+Every blog that moves from database-driven hosting to a static architecture is a permanent, measurable reduction in its carbon footprint.
 
 Read more in [Building a Greener Web](/docs/building-a-greener-web).
 
@@ -80,4 +85,4 @@ You get all the auditability, rollback safety, and ownership of a Git-backed rep
 
 The core mission is simple: **give everyone a voice to speak**. Writing a blog post should never feel like a high-stakes engineering task. You should feel genuine delight when putting your ideas into words.
 
-> "Everyone has a voice to speak. Share yours."
+> "Everyone has an idea to share and a voice to speak. Share yours."

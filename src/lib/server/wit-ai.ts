@@ -181,7 +181,6 @@ export async function transcribeAudioWithWitAi(
   } else if (audioData instanceof ArrayBuffer) {
     audioPayload = new Uint8Array(audioData);
   } else {
-    // Back-compat shim; atob-based callers always pass Uint8Array/ArrayBuffer.
     audioPayload = new Uint8Array(audioData as ArrayBuffer);
   }
 

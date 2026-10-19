@@ -3,21 +3,21 @@
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/stars/pratyay360/lightcms.svg?variant=secondary" /><img alt="GitHub Stars" src="https://shieldcn.dev/github/stars/pratyay360/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/forks/pratyay360/lightcms.svg?variant=secondary" /><img alt="GitHub Forks" src="https://shieldcn.dev/github/forks/pratyay360/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/watchers/pratyay360/lightcms.svg?variant=secondary" /><img alt="Watchers" src="https://shieldcn.dev/github/watchers/pratyay360/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/branches/pratyay360/lightcms.svg?variant=ghost" /><img alt="Branches" src="https://shieldcn.dev/github/branches/pratyay360/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/contributors/pratyay360/lightcms.svg?theme=emerald" /><img alt="Contributors" src="https://shieldcn.dev/github/contributors/pratyay360/lightcms.svg?theme=emerald&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/last-commit/pratyay360/lightcms.svg?variant=secondary" /><img alt="Last commit" src="https://shieldcn.dev/github/last-commit/pratyay360/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/commits/pratyay360/lightcms.svg?variant=secondary" /><img alt="Commits" src="https://shieldcn.dev/github/commits/pratyay360/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/open-issues/pratyay360/lightcms.svg?variant=secondary" /><img alt="Open issues" src="https://shieldcn.dev/github/open-issues/pratyay360/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/closed-issues/pratyay360/lightcms.svg?variant=ghost" /><img alt="Closed issues" src="https://shieldcn.dev/github/closed-issues/pratyay360/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/open-prs/pratyay360/lightcms.svg?variant=secondary" /><img alt="Open PRs" src="https://shieldcn.dev/github/open-prs/pratyay360/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/closed-prs/pratyay360/lightcms.svg?variant=ghost" /><img alt="Closed PRs" src="https://shieldcn.dev/github/closed-prs/pratyay360/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/merged-prs/pratyay360/lightcms.svg?variant=ghost" /><img alt="Merged PRs" src="https://shieldcn.dev/github/merged-prs/pratyay360/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/release/pratyay360/lightcms.svg" /><img alt="Release" src="https://shieldcn.dev/github/release/pratyay360/lightcms.svg?mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/ci/pratyay360/lightcms.svg?variant=secondary" /><img alt="CI" src="https://shieldcn.dev/github/ci/pratyay360/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/license/pratyay360/lightcms.svg?variant=ghost" /><img alt="License" src="https://shieldcn.dev/github/license/pratyay360/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/stars/light-cms/lightcms.svg?variant=secondary" /><img alt="GitHub Stars" src="https://shieldcn.dev/github/stars/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/forks/light-cms/lightcms.svg?variant=secondary" /><img alt="GitHub Forks" src="https://shieldcn.dev/github/forks/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/watchers/light-cms/lightcms.svg?variant=secondary" /><img alt="Watchers" src="https://shieldcn.dev/github/watchers/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/branches/light-cms/lightcms.svg?variant=ghost" /><img alt="Branches" src="https://shieldcn.dev/github/branches/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/contributors/light-cms/lightcms.svg?theme=emerald" /><img alt="Contributors" src="https://shieldcn.dev/github/contributors/light-cms/lightcms.svg?theme=emerald&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/last-commit/light-cms/lightcms.svg?variant=secondary" /><img alt="Last commit" src="https://shieldcn.dev/github/last-commit/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/commits/light-cms/lightcms.svg?variant=secondary" /><img alt="Commits" src="https://shieldcn.dev/github/commits/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/open-issues/light-cms/lightcms.svg?variant=secondary" /><img alt="Open issues" src="https://shieldcn.dev/github/open-issues/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/closed-issues/light-cms/lightcms.svg?variant=ghost" /><img alt="Closed issues" src="https://shieldcn.dev/github/closed-issues/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/open-prs/light-cms/lightcms.svg?variant=secondary" /><img alt="Open PRs" src="https://shieldcn.dev/github/open-prs/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/closed-prs/light-cms/lightcms.svg?variant=ghost" /><img alt="Closed PRs" src="https://shieldcn.dev/github/closed-prs/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/merged-prs/light-cms/lightcms.svg?variant=ghost" /><img alt="Merged PRs" src="https://shieldcn.dev/github/merged-prs/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/release/light-cms/lightcms.svg" /><img alt="Release" src="https://shieldcn.dev/github/release/light-cms/lightcms.svg?mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/ci/light-cms/lightcms.svg?variant=secondary" /><img alt="CI" src="https://shieldcn.dev/github/ci/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/license/light-cms/lightcms.svg?variant=ghost" /><img alt="License" src="https://shieldcn.dev/github/license/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
   <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Private-package-red.svg?variant=secondary" /><img alt="Private package" src="https://shieldcn.dev/badge/Private-package-red.svg?variant=secondary&amp;mode=light" /></picture>
   <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Package_mgr-Bun-000000.svg?variant=branded&amp;logo=bun" /><img alt="Package mgr · Bun" src="https://shieldcn.dev/badge/Package_mgr-Bun-000000.svg?variant=branded&amp;mode=light&amp;logo=bun" /></picture>
   <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Language-TypeScript-3178C6.svg?variant=branded&amp;logo=typescript" /><img alt="Language · TypeScript" src="https://shieldcn.dev/badge/Language-TypeScript-3178C6.svg?variant=branded&amp;mode=light&amp;logo=typescript" /></picture>
@@ -39,7 +39,7 @@
 
 <p align="center">
   <img alt="badge" src="https://shieldcn.dev/npm/react.svg" />
-  <img alt="badge" src="https://shieldcn.dev/github/pratyay360/lightcms/stars.svg" />
+  <img alt="badge" src="https://shieldcn.dev/github/light-cms/lightcms/stars.svg" />
 </p>
 
 ## Overview
@@ -67,7 +67,7 @@ seamless editing, AI-assisted writing, and ultimate flexibility.
 <img alt="image" src="https://github.com/user-attachments/assets/30e87768-8ee1-4ea4-b60b-fd843cca4e47" width="1864" />
 
 <p align="center">
-  <img alt="chart" src="https://shieldcn.dev/chart/github/stars/pratyay360/lightcms.svg" />
+  <img alt="chart" src="https://shieldcn.dev/chart/github/stars/light-cms/lightcms.svg" />
 </p>
 
-[![pratyay360/lightcms contributors](https://shieldcn.dev/contributors/pratyay360/lightcms.svg?preset=gradient&theme=emerald&size=80&bots=true&mode=dark&font=jetbrains-mono&watermark=true)](https://github.com/pratyay360/lightcms/graphs/contributors)
+[![light-cms/lightcms contributors](https://shieldcn.dev/contributors/light-cms/lightcms.svg?preset=gradient&theme=emerald&size=80&bots=true&mode=dark&font=jetbrains-mono&watermark=true)](https://github.com/light-cms/lightcms/graphs/contributors)

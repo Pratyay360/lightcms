@@ -85,14 +85,14 @@ src/
 PostHog is initialized in the SvelteKit client hooks `init` function, which runs once when the app starts:
 
 ```typescript
-import posthog from 'posthog-js';
+import posthog from "posthog-js";
 
 export async function init() {
   posthog.init(PUBLIC_POSTHOG_PROJECT_TOKEN, {
-    api_host: '/ingest',
-    ui_host: 'https://us.posthog.com',
-    defaults: '2026-01-30',
-    capture_exceptions: true
+    api_host: "/ingest",
+    ui_host: "https://us.posthog.com",
+    defaults: "2026-01-30",
+    capture_exceptions: true,
   });
 }
 ```
@@ -102,7 +102,7 @@ export async function init() {
 A singleton pattern ensures one PostHog client instance for server-side tracking:
 
 ```typescript
-import { PostHog } from 'posthog-node';
+import { PostHog } from "posthog-node";
 
 let posthogClient: PostHog | null = null;
 
@@ -111,7 +111,7 @@ export function getPostHogClient() {
     posthogClient = new PostHog(PUBLIC_POSTHOG_PROJECT_TOKEN, {
       host: PUBLIC_POSTHOG_HOST,
       flushAt: 1,
-      flushInterval: 0
+      flushInterval: 0,
     });
   }
   return posthogClient;
@@ -124,11 +124,11 @@ The server hooks handle proxies requests through `/ingest` to avoid ad blockers:
 
 ```typescript
 export const handle: Handle = async ({ event, resolve }) => {
-  if (event.url.pathname.startsWith('/ingest')) {
-    const pathname = event.url.pathname.replace('/ingest', '');
-    const host = pathname.startsWith('/static')
-      ? 'https://us-assets.i.posthog.com'
-      : 'https://us.i.posthog.com';
+  if (event.url.pathname.startsWith("/ingest")) {
+    const pathname = event.url.pathname.replace("/ingest", "");
+    const host = pathname.startsWith("/static")
+      ? "https://us-assets.i.posthog.com"
+      : "https://us.i.posthog.com";
     // Proxy to PostHog...
   }
   return resolve(event);
@@ -140,14 +140,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 When a user logs in, they are identified in PostHog:
 
 ```typescript
-import posthog from 'posthog-js';
+import posthog from "posthog-js";
 
 // On login
 posthog.identify(userId, { username });
-posthog.capture('user_logged_in', { username });
+posthog.capture("user_logged_in", { username });
 
 // On logout
-posthog.capture('user_logged_out');
+posthog.capture("user_logged_out");
 posthog.reset();
 ```
 
@@ -158,7 +158,7 @@ Errors are automatically captured via the `handleError` hook:
 ```typescript
 export const handleError: HandleClientError = async ({ error }) => {
   posthog.captureException(error);
-  return { message: 'An error occurred' };
+  return { message: "An error occurred" };
 };
 ```
 
@@ -180,9 +180,9 @@ For session replay to work correctly, add this to `svelte.config.js`:
 export default {
   kit: {
     paths: {
-      relative: false
-    }
-  }
+      relative: false,
+    },
+  },
 };
 ```
 
@@ -228,17 +228,16 @@ min-release-age=7
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
-	namespace App {
-		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
-		// interface PageState {}
-		// interface Platform {}
-	}
+  namespace App {
+    // interface Error {}
+    // interface Locals {}
+    // interface PageData {}
+    // interface PageState {}
+    // interface Platform {}
+  }
 }
 
 export {};
-
 ```
 
 ---
@@ -248,16 +247,15 @@ export {};
 ```html
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		%sveltekit.head%
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
 </html>
-
 ```
 
 ---
@@ -265,30 +263,29 @@ export {};
 ## src/hooks.client.ts
 
 ```ts
-import posthog from 'posthog-js';
-import { PUBLIC_POSTHOG_PROJECT_TOKEN } from '$env/static/public';
-import type { HandleClientError } from '@sveltejs/kit';
+import posthog from "posthog-js";
+import { PUBLIC_POSTHOG_PROJECT_TOKEN } from "$env/static/public";
+import type { HandleClientError } from "@sveltejs/kit";
 
 // Initialize PostHog when the app starts in the browser
 export async function init() {
-	posthog.init(PUBLIC_POSTHOG_PROJECT_TOKEN, {
-		api_host: '/ingest',
-		ui_host: 'https://us.posthog.com',
-  defaults: '2026-01-30',
-		capture_exceptions: true
-	});
+  posthog.init(PUBLIC_POSTHOG_PROJECT_TOKEN, {
+    api_host: "/ingest",
+    ui_host: "https://us.posthog.com",
+    defaults: "2026-01-30",
+    capture_exceptions: true,
+  });
 }
 
 // Capture client-side errors with PostHog
 export const handleError: HandleClientError = async ({ error, status, message }) => {
-	posthog.captureException(error);
+  posthog.captureException(error);
 
-	return {
-		message,
-		status
-	};
+  return {
+    message,
+    status,
+  };
 };
-
 ```
 
 ---
@@ -296,70 +293,70 @@ export const handleError: HandleClientError = async ({ error, status, message })
 ## src/hooks.server.ts
 
 ```ts
-import type { Handle, HandleServerError } from '@sveltejs/kit';
-import { getPostHogClient } from '$lib/server/posthog';
+import type { Handle, HandleServerError } from "@sveltejs/kit";
+import { getPostHogClient } from "$lib/server/posthog";
 
 // Handle requests - includes reverse proxy for PostHog
 export const handle: Handle = async ({ event, resolve }) => {
-	const { pathname } = event.url;
+  const { pathname } = event.url;
 
-	// Reverse proxy for PostHog - route /ingest requests to PostHog servers
-	if (pathname.startsWith('/ingest')) {
-		const useAssetHost = pathname.startsWith('/ingest/static/') || pathname.startsWith('/ingest/array/')
-		const hostname = useAssetHost ? 'us-assets.i.posthog.com' : 'us.i.posthog.com';
+  // Reverse proxy for PostHog - route /ingest requests to PostHog servers
+  if (pathname.startsWith("/ingest")) {
+    const useAssetHost =
+      pathname.startsWith("/ingest/static/") || pathname.startsWith("/ingest/array/");
+    const hostname = useAssetHost ? "us-assets.i.posthog.com" : "us.i.posthog.com";
 
-		const url = new URL(event.request.url);
-		url.protocol = 'https:';
-		url.hostname = hostname;
-		url.port = '443';
-		url.pathname = pathname.replace(/^\/ingest/, '');
+    const url = new URL(event.request.url);
+    url.protocol = "https:";
+    url.hostname = hostname;
+    url.port = "443";
+    url.pathname = pathname.replace(/^\/ingest/, "");
 
-		const headers = new Headers(event.request.headers);
-		headers.set('host', hostname);
-		headers.set('accept-encoding', '');
+    const headers = new Headers(event.request.headers);
+    headers.set("host", hostname);
+    headers.set("accept-encoding", "");
 
-		const clientIp = event.request.headers.get('x-forwarded-for') || event.getClientAddress();
-		if (clientIp) {
-			headers.set('x-forwarded-for', clientIp);
-		}
+    const clientIp = event.request.headers.get("x-forwarded-for") || event.getClientAddress();
+    if (clientIp) {
+      headers.set("x-forwarded-for", clientIp);
+    }
 
-		const response = await fetch(url.toString(), {
-			method: event.request.method,
-			headers,
-			body: event.request.body,
-			// @ts-expect-error - duplex is required for streaming request bodies
-			duplex: 'half'
-		});
+    const response = await fetch(url.toString(), {
+      method: event.request.method,
+      headers,
+      body: event.request.body,
+      // @ts-expect-error - duplex is required for streaming request bodies
+      duplex: "half",
+    });
 
-		return response;
-	}
+    return response;
+  }
 
-	return resolve(event);
+  return resolve(event);
 };
 
 // Capture server-side errors with PostHog
 export const handleError: HandleServerError = async ({ error, status, message }) => {
-	const posthog = getPostHogClient();
+  const posthog = getPostHogClient();
 
-	posthog.capture({
-		distinctId: 'server',
-		event: 'server_error',
-		properties: {
-			error: error instanceof Error ? error.message : String(error),
-			status,
-			message
-		}
-	});
+  posthog.capture({
+    distinctId: "server",
+    event: "server_error",
+    properties: {
+      error: error instanceof Error ? error.message : String(error),
+      status,
+      message,
+    },
+  });
 
-	// handleError runs per request; flush so the enqueued event sends before it returns
-	await posthog.flush();
+  // handleError runs per request; flush so the enqueued event sends before it returns
+  await posthog.flush();
 
-	return {
-		message,
-		status
-	};
+  return {
+    message,
+    status,
+  };
 };
-
 ```
 
 ---
@@ -367,86 +364,85 @@ export const handleError: HandleServerError = async ({ error, status, message })
 ## src/lib/auth.svelte.ts
 
 ```ts
-import { getContext, setContext } from 'svelte';
-import posthog from 'posthog-js';
-import { browser } from '$app/environment';
+import { getContext, setContext } from "svelte";
+import posthog from "posthog-js";
+import { browser } from "$app/environment";
 
 export interface User {
-	username: string;
-	burritoConsiderations: number;
+  username: string;
+  burritoConsiderations: number;
 }
 
-const AUTH_KEY = Symbol('auth');
+const AUTH_KEY = Symbol("auth");
 
 // Class-based auth state using Svelte 5 $state in class fields
 // This is the recommended pattern for encapsulating reactive state + behavior
 export class AuthState {
-	user = $state<User | null>(null);
+  user = $state<User | null>(null);
 
-	constructor() {
-		// Restore user from localStorage on creation (browser only)
-		if (browser) {
-			const storedUsername = localStorage.getItem('currentUser');
-			if (storedUsername) {
-				this.user = { username: storedUsername, burritoConsiderations: 0 };
-			}
-		}
-	}
+  constructor() {
+    // Restore user from localStorage on creation (browser only)
+    if (browser) {
+      const storedUsername = localStorage.getItem("currentUser");
+      if (storedUsername) {
+        this.user = { username: storedUsername, burritoConsiderations: 0 };
+      }
+    }
+  }
 
-	login = async (username: string, password: string): Promise<boolean> => {
-		try {
-			const response = await fetch('/api/auth/login', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username, password })
-			});
+  login = async (username: string, password: string): Promise<boolean> => {
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-			if (response.ok) {
-				const { user: userData } = await response.json();
-				this.user = userData as User;
+      if (response.ok) {
+        const { user: userData } = await response.json();
+        this.user = userData as User;
 
-				if (browser) {
-					localStorage.setItem('currentUser', username);
-					posthog.identify(username, { username });
-					posthog.capture('user_logged_in', { username });
-				}
+        if (browser) {
+          localStorage.setItem("currentUser", username);
+          posthog.identify(username, { username });
+          posthog.capture("user_logged_in", { username });
+        }
 
-				return true;
-			}
-			return false;
-		} catch (error) {
-			console.error('Login error:', error);
-			return false;
-		}
-	};
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
+    }
+  };
 
-	logout = (): void => {
-		if (browser) {
-			posthog.capture('user_logged_out');
-			posthog.reset();
-			localStorage.removeItem('currentUser');
-		}
-		this.user = null;
-	};
+  logout = (): void => {
+    if (browser) {
+      posthog.capture("user_logged_out");
+      posthog.reset();
+      localStorage.removeItem("currentUser");
+    }
+    this.user = null;
+  };
 
-	incrementBurritoConsiderations = (): void => {
-		if (this.user) {
-			this.user = {
-				...this.user,
-				burritoConsiderations: this.user.burritoConsiderations + 1
-			};
-		}
-	};
+  incrementBurritoConsiderations = (): void => {
+    if (this.user) {
+      this.user = {
+        ...this.user,
+        burritoConsiderations: this.user.burritoConsiderations + 1,
+      };
+    }
+  };
 }
 
 export function setAuthContext(auth: AuthState) {
-	setContext(AUTH_KEY, auth);
+  setContext(AUTH_KEY, auth);
 }
 
 export function getAuthContext(): AuthState {
-	return getContext<AuthState>(AUTH_KEY);
+  return getContext<AuthState>(AUTH_KEY);
 }
-
 ```
 
 ---
@@ -486,7 +482,6 @@ export function getAuthContext(): AuthState {
 
 ```ts
 // place files you want to import through the `$lib` alias in this folder.
-
 ```
 
 ---
@@ -494,28 +489,27 @@ export function getAuthContext(): AuthState {
 ## src/lib/server/posthog.ts
 
 ```ts
-import { PostHog } from 'posthog-node';
-import { PUBLIC_POSTHOG_PROJECT_TOKEN, PUBLIC_POSTHOG_HOST } from '$env/static/public';
+import { PostHog } from "posthog-node";
+import { PUBLIC_POSTHOG_PROJECT_TOKEN, PUBLIC_POSTHOG_HOST } from "$env/static/public";
 
 let posthogClient: PostHog | null = null;
 
 export function getPostHogClient() {
-	if (!posthogClient) {
-		posthogClient = new PostHog(PUBLIC_POSTHOG_PROJECT_TOKEN, {
-			host: PUBLIC_POSTHOG_HOST,
-			flushAt: 1,
-			flushInterval: 0
-		});
-	}
-	return posthogClient;
+  if (!posthogClient) {
+    posthogClient = new PostHog(PUBLIC_POSTHOG_PROJECT_TOKEN, {
+      host: PUBLIC_POSTHOG_HOST,
+      flushAt: 1,
+      flushInterval: 0,
+    });
+  }
+  return posthogClient;
 }
 
 export async function shutdownPostHog() {
-	if (posthogClient) {
-		await posthogClient.shutdown();
-	}
+  if (posthogClient) {
+    await posthogClient.shutdown();
+  }
 }
-
 ```
 
 ---
@@ -623,54 +617,53 @@ export async function shutdownPostHog() {
 ## src/routes/api/auth/login/+server.ts
 
 ```ts
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { getPostHogClient } from '$lib/server/posthog';
+import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
+import { getPostHogClient } from "$lib/server/posthog";
 
 const users = new Map<string, { username: string; burritoConsiderations: number }>();
 
 export const POST: RequestHandler = async ({ request }) => {
-	const { username, password } = await request.json();
+  const { username, password } = await request.json();
 
-	if (!username || !password) {
-		return json({ error: 'Username and password required' }, { status: 400 });
-	}
+  if (!username || !password) {
+    return json({ error: "Username and password required" }, { status: 400 });
+  }
 
-	let user = users.get(username);
-	const isNewUser = !user;
+  let user = users.get(username);
+  const isNewUser = !user;
 
-	if (!user) {
-		user = { username, burritoConsiderations: 0 };
-		users.set(username, user);
-	}
+  if (!user) {
+    user = { username, burritoConsiderations: 0 };
+    users.set(username, user);
+  }
 
-	// Capture server-side login event with user context
-	const posthog = getPostHogClient();
-	posthog.withContext(
-		{
-			distinctId: username,
-			personProperties: {
-				username,
-				createdAt: isNewUser ? new Date().toISOString() : undefined
-			}
-		},
-		() => {
-			posthog.capture({
-				event: 'server_login',
-				properties: {
-					isNewUser,
-					source: 'api'
-				}
-			});
-		}
-	);
+  // Capture server-side login event with user context
+  const posthog = getPostHogClient();
+  posthog.withContext(
+    {
+      distinctId: username,
+      personProperties: {
+        username,
+        createdAt: isNewUser ? new Date().toISOString() : undefined,
+      },
+    },
+    () => {
+      posthog.capture({
+        event: "server_login",
+        properties: {
+          isNewUser,
+          source: "api",
+        },
+      });
+    },
+  );
 
-	// Flush events to ensure they're sent
-	await posthog.flush();
+  // Flush events to ensure they're sent
+  await posthog.flush();
 
-	return json({ success: true, user });
+  return json({ success: true, user });
 };
-
 ```
 
 ---
@@ -811,29 +804,28 @@ Disallow:
 ## svelte.config.js
 
 ```js
-import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import adapter from "@sveltejs/adapter-auto";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	// Consult https://svelte.dev/docs/kit/integrations
-	// for more information about preprocessors
-	preprocess: vitePreprocess(),
+  // Consult https://svelte.dev/docs/kit/integrations
+  // for more information about preprocessors
+  preprocess: vitePreprocess(),
 
-	kit: {
-		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-		adapter: adapter(),
-		// Required for PostHog session replay to work correctly with SSR
-		paths: {
-			relative: false
-		}
-	}
+  kit: {
+    // adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
+    // If your environment is not supported, or you settled on a specific environment, switch out the adapter.
+    // See https://svelte.dev/docs/kit/adapters for more information about adapters.
+    adapter: adapter(),
+    // Required for PostHog session replay to work correctly with SSR
+    paths: {
+      relative: false,
+    },
+  },
 };
 
 export default config;
-
 ```
 
 ---
@@ -841,14 +833,12 @@ export default config;
 ## vite.config.ts
 
 ```ts
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { sveltekit } from "@sveltejs/kit/vite";
+import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [sveltekit()]
+  plugins: [sveltekit()],
 });
-
 ```
 
 ---
-
