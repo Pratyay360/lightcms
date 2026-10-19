@@ -1,7 +1,6 @@
 ---
 title: "Static Sites and CO2: Building a Greener Web"
-description: Why static sites emit less carbon than dynamic ones, how CDN caching cuts energy use, how to measure your website's footprint, and what a greener web looks like.
-serial: 16
+description: Why static sites emit less carbon than dynamic ones, how CDN caching and object storage cuts both energy and carbon footprint, how to measure your website's carbon footprint, and what a greener web looks like.
 date: 2026-10-14T13:30:00Z
 draft: false
 tags:
@@ -9,6 +8,7 @@ tags:
   - static-sites
   - green-web
   - co2
+  - ssg
 keywords:
   - static sites
   - green web
@@ -17,13 +17,16 @@ keywords:
 preview: /og-image.png
 ---
 
-Every page view costs energy. Somewhere, a server wakes, a cache misses, a database query runs, and electricity — increasingly measured in grams of CO2 — is spent delivering a paragraph of text. Commonly cited estimates put the web at roughly 2–4% of global electricity emissions, comparable to the aviation industry. The architecture of your site determines where on that spectrum you land, and **static sites sit at the clean end**.
+Every page view costs energy. Somewhere, a server wakes, a cache misses, a database query runs, and electricity increasingly measured in grams of CO2
+is spent delivering a paragraph of text. Commonly cited estimates put the web at roughly 2–4% of global electricity emissions,
+comparable to the aviation industry. The architecture of your site determines where on that spectrum you land,
+and **static sites sit at the clean end**.
 
 ---
 
 ## Why Static Sites Emit Less Carbon
 
-A dynamic site does work on every request: execute code, query a database, assemble HTML. That work happens on servers that must stay powered around the clock, even when nobody is visiting.
+A dynamic site works on every event : execute code, query a database, assemble HTML. That work happens on servers that must stay powered around the clock, even when nobody is visiting.
 
 A static site does the work once, at build time. The finished HTML is copied to CDN edge nodes worldwide and served from cache:
 
@@ -82,6 +85,6 @@ Yes. Data-center energy is the dominant factor in a site's footprint; hosting on
 
 Among the greenest options available: cached files served from an edge network, no always-on database, and content that remains readable and rebuildable for decades.
 
-### What is sustainable web design?
+### What is sustainable web?
 
 A practice of minimizing the energy cost of the web: lean pages, efficient code, renewable hosting, durable content, and measured impact — of which static architecture is the foundation.

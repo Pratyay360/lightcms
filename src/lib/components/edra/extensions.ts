@@ -64,8 +64,6 @@ export function getDefaultExtensions(options: DefaultExtensionsOptions = {}): Ex
     }),
     Placeholder.configure({
       emptyEditorClass: "is-empty",
-      // Use a placeholder:
-      // Use different placeholders depending on the node type:
       placeholder: ({ node }) => {
         if (node.type.name === "heading") {
           return strings.editor.headingPlaceholder;

@@ -1,5 +1,4 @@
 import { dev } from "$app/environment";
-import { env } from "$env/dynamic/public";
 import type { HandleClientError } from "@sveltejs/kit";
 import posthog from "posthog-js";
 
@@ -10,8 +9,8 @@ export function isPostHogInitialized() {
 }
 
 export function init() {
-  const key = env.PUBLIC_POSTHOG_KEY?.trim();
-  const host = env.PUBLIC_POSTHOG_HOST?.trim();
+  const key = process.env.PUBLIC_POSTHOG_KEY!;
+  const host = process.env.PUBLIC_POSTHOG_HOST!;
 
   if (!key) {
     if (dev) {

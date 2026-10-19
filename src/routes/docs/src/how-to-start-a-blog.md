@@ -1,12 +1,13 @@
 ---
-title: "How to Start a Blog in 2026: The Markdown & Static Site Guide"
-description: A step-by-step guide to starting a fast, cheap, durable blog with Markdown, a static site generator, and a Git-backed CMS — no hosting bills, no lock-in.
+title: "How to Start a Blog in 2026: The Markdown & frontmatter schema"
+description: A step by step guide to starting a fast, cheap, durable blog with Markdown, a static site generator, and a Git backed CMS — no hosting bills, no lock in.
 serial: 12
 date: 2026-10-14T12:50:00Z
 draft: false
 tags:
   - blogging
-  - static-sites
+  - static
+  - sites
   - markdown
   - getting-started
 keywords:
@@ -22,13 +23,26 @@ Starting a blog in 2026 is dramatically easier — and cheaper — than it used 
 
 ## Step 1: Create Your Repository from a Template
 
-Browse our preconfigured starter templates on [GitHub](https://github.com/light-cms) and click **Use this template** to create a repository under your own account.
+Pick a starter from the [light-cms](https://github.com/light-cms) GitHub organization and click **Use this template** to create a repository under your own account. Each one is a small, working blog with sample content, so you can preview it before changing anything.
 
-These starters come pre-configured with:
+| Template                                                      | Generator                                   | Live demo                                        | Preview locally              |
+| :------------------------------------------------------------ | :------------------------------------------ | :----------------------------------------------- | :--------------------------- |
+| [`astro_blog`](https://github.com/light-cms/astro_blog)       | [Astro](https://astro.build) with Starlight | [Demo](https://blogs.lightcms.me/astro_blog/)    | `npm install && npm run dev` |
+| [`eleventy_blog`](https://github.com/light-cms/eleventy_blog) | [Eleventy](https://www.11ty.dev)            | [Demo](https://blogs.lightcms.me/eleventy_blog/) | `npm install && npm run dev` |
+| [`hugo_blog`](https://github.com/light-cms/hugo_blog)         | [Hugo](https://gohugo.io)                   | [Demo](https://light-cms.github.io/hugo_blog/)   | `hugo server`                |
+| [`jekyll_blog`](https://github.com/light-cms/jekyll_blog)     | [Jekyll](https://jekyllrb.com)              | [Demo](https://blogs.lightcms.me/jekyll_blog/)   | `bundle exec jekyll serve`   |
+| [`zola_blog`](https://github.com/light-cms/zola_blog)         | [Zola](https://www.getzola.org)             | [Demo](https://light-cms.github.io/zola_blog/)   | `zola serve`                 |
+| [`zine_blog`](https://github.com/light-cms/zine_blog)         | [Zine](https://zine-ssg.io)                 | [Demo](https://blogs.lightcms.me/zine_blog/)     | `zine`                       |
 
-- A modern static site generator (such as Astro).
-- Semantic Markdown and front matter configurations out of the box.
-- CI/CD deployment scripts ready for zero-cost hosting.
+These starters include:
+
+- A GitHub Actions workflow in `.github/workflows`.
+- Sample content to replace with your own.
+- A [mise](https://mise.jdx.dev) configuration (`mise.toml`) for the toolchain, in every template except `jekyll_blog`, which uses a `Gemfile` and Docker Compose instead.
+
+> **Zine uses its own content format.** `zine_blog` content is written in SuperMD (`.smd` files) with Ziggy front matter, not plain Markdown, unlike the other starters.
+
+There is also [`blogtemplate`](https://github.com/light-cms/blogtemplate), a Hugo theme with a `frontmatter.json` for the [Front Matter](https://frontmatter.codes) editor, and [`mdbook`](https://github.com/light-cms/mdbook), a starter for documentation books rather than blogs.
 
 ## Step 2: Customize with Your AI Coding Agent
 

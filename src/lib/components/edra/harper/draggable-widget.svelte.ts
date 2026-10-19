@@ -3,7 +3,6 @@ import { computePosition, flip, offset, shift } from "@floating-ui/dom";
 const DEFAULT_VIEWPORT_PADDING = 8;
 const ANCHOR_OFFSET = 8;
 
-/** Surfaces that must keep their own click behaviour instead of starting a drag. */
 const INTERACTIVE_SELECTOR =
   'button, a[href], input, select, textarea, label, [role="button"], [data-no-drag]';
 

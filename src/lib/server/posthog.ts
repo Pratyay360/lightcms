@@ -6,8 +6,8 @@ let posthogClient: PostHog | undefined;
 function getPostHogClient() {
   if (posthogClient) return posthogClient;
 
-  const key = env.PUBLIC_POSTHOG_KEY?.trim();
-  const host = env.PUBLIC_POSTHOG_HOST?.trim();
+  const key = process.env.PUBLIC_POSTHOG_KEY!;
+  const host = process.env.PUBLIC_POSTHOG_HOST!;
 
   if (!key) {
     if (process.env.NODE_ENV !== "production") {

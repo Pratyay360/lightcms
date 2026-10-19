@@ -1,6 +1,6 @@
 ---
 title: Newsletter & Email Automation
-description: How to configure automated newsletters for your blog using Newsy and Git-driven publishing without expensive third-party platforms.
+description: How to configure automated newsletters for your blog using Newsy and Git driven publishing without expensive third-party platforms.
 serial: 5
 date: 2026-09-18T01:50:00Z
 draft: false
@@ -18,9 +18,11 @@ keywords:
 preview: /og-image.png
 ---
 
-Connecting with your readers directly via email is one of the most effective ways to build a dedicated audience. However, the traditional process of managing a newsletter has become needlessly cumbersome, bloated, and expensive.
+Connecting with your readers directly via email is one of the most effective ways to
+build a dedicated audience. However, the traditional process of managing a newsletter has become
+needlessly cumbersome, bloated, and expensive.
 
-LightCMS embraces a modern, developer-friendly alternative: **Git-driven newsletters** powered by [Newsy](https://github.com/light-cms/newsy) and standard SMTP.
+LightCMS embraces a modern, developer friendly alternative: **Git-driven newsletters** powered by [Newsy](https://github.com/light-cms/newsy) and github.
 
 ---
 

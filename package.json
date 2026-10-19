@@ -7,6 +7,8 @@
     "dev": "vp dev",
     "build": "vp build",
     "preview": "vp preview",
+    "check": "vp check",
+    "test": "vp test run",
     "bot:start": "bunx probot run ./src/lib/bot/index.ts",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
@@ -15,7 +17,8 @@
     "auth:schema": "bunx auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes",
     "lint": "vp lint .",
     "format": "vp fmt . --write",
-    "lint:fix": "vp lint . --fix"
+    "lint:fix": "vp lint . --fix",
+    "turbo": "turbo"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.95",
@@ -152,7 +155,7 @@
     "tailwind-merge": "^3.7.0",
     "tailwind-variants": "^3.3.1",
     "tailwindcss": "^4.3.3",
-    "turbo": "^2.11.8",
+    "turbo": "^2.11.9",
     "tw-animate-css": "^1.4.0",
     "typescript": "~6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.3.3",

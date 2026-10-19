@@ -57,18 +57,18 @@ Then, if you haven't created a root [layout](https://kit.svelte.dev/docs/routing
 routes/+layout.js
 
 ```javascript
-import posthog from 'posthog-js'
-import { browser } from '$app/environment';
+import posthog from "posthog-js";
+import { browser } from "$app/environment";
 
 export const load = async () => {
   if (browser) {
-    posthog.init('<ph_project_token>', {
-      api_host: 'https://us.i.posthog.com',
-      defaults: '2026-05-30',
-    })
+    posthog.init("<ph_project_token>", {
+      api_host: "https://us.i.posthog.com",
+      defaults: "2026-05-30",
+    });
   }
 
-  return
+  return;
 };
 ```
 
@@ -87,11 +87,11 @@ If your app calls your own backend, `tracing_headers` adds `X-POSTHOG-DISTINCT-I
 JavaScript
 
 ```javascript
-posthog.init('<ph_project_token>', {
-  api_host: 'https://us.i.posthog.com',
+posthog.init("<ph_project_token>", {
+  api_host: "https://us.i.posthog.com",
   // Optional: send PostHog session/user context to your backend
-  tracing_headers: ['api.example.com'],
-})
+  tracing_headers: ["api.example.com"],
+});
 ```
 
 This works in local development too, but match on the hostname alone: use `'localhost'`, not `'localhost:3000'`. Ports are never part of a hostname, so a value with one in it never matches anything. `localhost` and `127.0.0.1` are also different hostnames — use whichever your app actually calls.
@@ -161,17 +161,17 @@ Then, initialize the PostHog Node client where you'd like to use it on the serve
 routes/+page.server.js
 
 ```javascript
-import { PostHog } from 'posthog-node';
+import { PostHog } from "posthog-node";
 
 export async function load() {
-  const posthog = new PostHog('<ph_project_token>', { host: 'https://us.i.posthog.com' });
+  const posthog = new PostHog("<ph_project_token>", { host: "https://us.i.posthog.com" });
 
   posthog.capture({
-    distinctId: 'distinct_id_of_the_user',
-    event: 'event_name',
-  })
+    distinctId: "distinct_id_of_the_user",
+    event: "event_name",
+  });
 
-  await posthog.shutdown()
+  await posthog.shutdown();
 }
 ```
 
@@ -208,23 +208,17 @@ To use server-side feature flags, import PostHog into your SvelteKit `load` func
 routes/+page.server.js
 
 ```javascript
-import { PostHog } from 'posthog-node';
+import { PostHog } from "posthog-node";
 
-const client = new PostHog(
-  '<ph_project_token>',
-  { host: 'https://us.i.posthog.com' }
-);
+const client = new PostHog("<ph_project_token>", { host: "https://us.i.posthog.com" });
 
 export async function load() {
-  const distinctId = 'distinct_id_of_the_user';
+  const distinctId = "distinct_id_of_the_user";
 
-  const megaFeature = await client.isFeatureEnabled(
-    'mega-feature',
-    distinctId
-  );
+  const megaFeature = await client.isFeatureEnabled("mega-feature", distinctId);
 
   return {
-    megaFeature
+    megaFeature,
   };
 }
 ```
@@ -253,9 +247,9 @@ For any technical questions for how to integrate specific PostHog features into 
 
 Alternatively, the following tutorials can help you get started:
 
--   [How to set up Svelte analytics, feature flags, and more](/tutorials/svelte-analytics.md)
--   [How to set up A/B tests in Svelte](/tutorials/svelte-ab-tests.md)
--   [How to set up surveys in Svelte](/tutorials/svelte-surveys.md)
+- [How to set up Svelte analytics, feature flags, and more](/tutorials/svelte-analytics.md)
+- [How to set up A/B tests in Svelte](/tutorials/svelte-ab-tests.md)
+- [How to set up surveys in Svelte](/tutorials/svelte-surveys.md)
 
 ### Still have questions?
 

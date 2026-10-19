@@ -8,8 +8,8 @@ import { NodeSDK } from "@opentelemetry/sdk-node";
 import { PostHogSpanProcessor } from "@posthog/ai/otel";
 import { registerTelemetry } from "ai";
 
-const key = env.PUBLIC_POSTHOG_KEY?.trim();
-const host = env.PUBLIC_POSTHOG_HOST?.trim();
+const key = process.env.PUBLIC_POSTHOG_KEY!;
+const host = process.env.PUBLIC_POSTHOG_HOST!;
 
 let posthogSpanProcessor: PostHogSpanProcessor | undefined;
 let posthogLogProcessor: BatchLogRecordProcessor | undefined;
