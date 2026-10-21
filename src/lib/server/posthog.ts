@@ -1,4 +1,4 @@
-import { env } from "$env/dynamic/public";
+// import { env } from "$env/dynamic/public";
 import { PostHog } from "posthog-node";
 
 let posthogClient: PostHog | undefined;

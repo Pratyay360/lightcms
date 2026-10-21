@@ -40,38 +40,24 @@ These starters include:
 - Sample content to replace with your own.
 - A [mise](https://mise.jdx.dev) configuration (`mise.toml`) for the toolchain, in every template except `jekyll_blog`, which uses a `Gemfile` and Docker Compose instead.
 
-> **Zine uses its own content format.** `zine_blog` content is written in SuperMD (`.smd` files) with Ziggy front matter, not plain Markdown, unlike the other starters.
-
-There is also [`blogtemplate`](https://github.com/light-cms/blogtemplate), a Hugo theme with a `frontmatter.json` for the [Front Matter](https://frontmatter.codes) editor, and [`mdbook`](https://github.com/light-cms/mdbook), a starter for documentation books rather than blogs.
-
 ## Step 2: Customize with Your AI Coding Agent
 
 You don't need to learn a CSS framework or manually edit config files. Open the repository in your favorite AI coding environment (Cursor, Claude Code, Copilot, Antigravity, etc.) and instruct your agent to tailor the site:
 
-> _"Update the theme to use a warm editorial font, configure a dark/light mode toggle, and style the navigation for my personal blog."_
+> _"Update the theme to use a warm editorial font, configure a dark/light mode with custom colors, and style the navigation for your personal blog."_
 
 The agent handles the component styling, theme tokens, and layout adjustments for you.
 
-## Step 3: Deploy for Free
-
-Push your repository to GitHub and connect it to your preferred static host:
-
-- **[Cloudflare Pages](https://pages.cloudflare.com)** — fast edge delivery with unlimited free bandwidth.
-- **[Vercel](https://vercel.com)** — seamless dashboard and instant preview deployments.
-- **[GitHub Pages](https://pages.github.com)** — built directly into GitHub with zero extra accounts.
-
-Every push rebuilds and republishes your blog in just a few seconds.
-
-## Step 4: Write & Publish in LightCMS
+## Step 3: Write & Publish in LightCMS
 
 Once your repository is configured, you never need a terminal to publish:
 
 1. Log into **[LightCMS](/docs/getting-started-with-lightcms)** with your GitHub account.
 2. Select your blog repository.
-3. Write and format articles in the visual editor with drag-and-drop media, front matter controls, and AI drafting assistance.
-4. Hit **Publish**. LightCMS commits the post as clean Markdown, and your CI/CD pipeline deploys it immediately.
+3. Write and format articles in the awesome editor, and AI copilot.
+4. Hit **Publish**. LightCMS commits the post as clean Markdown, and your build deploy pipeline deploys it immediately.
 
-## Step 5: Grow Your Audience
+## Step 4: Grow Your Audience
 
 - Publish consistently — search rewards steady, problem-focused writing.
 - Enjoy built-in Core Web Vitals and fast page loads guaranteed by the static architecture.
@@ -86,19 +72,17 @@ Once your repository is configured, you never need a terminal to publish:
 | Static site generator                    | Free (open source)        |
 | Hosting (Cloudflare Pages, GitHub Pages) | Free tier                 |
 | Git-backed CMS (LightCMS, self-hosted)   | Free (Apache 2.0)         |
-| Custom domain                            | ~$10–15 / year (optional) |
 
 You can run a serious publication for the price of a domain name.
-
-There is a fourth column nobody lists: energy. A static blog served from cached edge nodes emits a fraction of the CO2 of a database-driven site — publishing on a shoestring and publishing sustainably turn out to be the same decision. More in [Building a Greener Web](/docs/building-a-greener-web).
+There is a fourth column nobody lists: energy. A static blog served from cdn emits a fraction of the CO2 of a server rendered site.
 
 ---
 
 ## Frequently Asked Questions
 
-### Why writing?
+### Why Writing?
 
-The main goal is to give everyone a voice to speak. Everyone has unique experiences, insights, and stories to share with the world. When you document how you solved a tricky bug or share what you have learned, you save someone across the world hours of frustration. You also preserve your own knowledge for the future—all while building on an independent web you truly control.
+The main goal is to give everyone a voice to speak. Everyone has unique experiences, insights, and stories to share with the world. When you document how you solved a tricky bug or share what you have learned, you save someone across the world hours of frustration. You also preserve your own knowledge for the future you, all while building on an independent web you truly control.
 
 ### Is starting a blog still worth it in 2026?
 
@@ -106,12 +90,8 @@ Yes — a blog you own is durable in a way social profiles are not. Static blogs
 
 ### Do I need to know how to code?
 
-No. The generator is set up once (many one click starters exist); after that, publishing happens through a visual CMS editor. You may need to configure the template but still you can ask a LLM agent to do that for you.
+No. The generator is set up once (many one click starters exist); after that, publishing happens through LightCMS . You may need to configure the template but you can ask a LLM agent to do that for you.
 
 ### Can I start a blog for free?
 
-Yes. Generator, hosting, and a git based CMS all are free. Only a custom domain costs money if you want to have one.
-
-### WordPress or static for a new blog?
-
-Static, unless you specifically need plugins and membership features. You get better speed, security, and zero maintenance and [LightCMS](/docs/getting-started-with-lightcms) provides the friendly editing layer WordPress users expect.
+Yes. Generator, hosting, and a git based CMS all are free.

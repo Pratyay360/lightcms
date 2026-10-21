@@ -1,6 +1,6 @@
 ---
 title: Getting Started with LightCMS
-description: Learn how to use LightCMS and integrate it with your static site generator.
+description: Learn how to use LightCMS and integrate it with your existing static site generator.
 serial: 1
 date: 2026-09-01T16:44:00Z
 draft: false
@@ -37,11 +37,11 @@ Your content belongs to you and on your own git repository. Every draft, post, a
 No proprietary database exports, no vendor lock in, and full version history
 with Git branches, commits, and pull requests.
 
-### 2. ✍️ WYSIWYG & Markdown Synergy
+### 2. ✍️ Awesome Editor and Front Matter support
 
-Built on [TipTap](https://tiptap.dev), the editor gives you real-time visual
+Built on top of [TipTap](https://tiptap.dev), the editor gives you a nice visual
 formatting while automatically generating clean, semantic Markdown and YAML front matter.
-Enjoy rich typography, math equations (KaTeX), syntax-highlighted code blocks,
+Enjoy rich typography, math equations (KaTeX), syntax highlighted code blocks,
 tables, task lists, and drag-and-drop media.
 
 ### 3. 🤖 Integrated AI Copilot
@@ -53,11 +53,10 @@ powered by any OpenAI-compatible provider (OpenAI, OpenRouter, Ollama, NVIDIA NI
 ### 4. 🎙️ Speech to Text
 
 Capture inspiration on the fly. Record your thoughts directly inside the editor
-and let [openai Whisper](https://groq.com) (powered by Vercel AI SDK)
-or [Wit.ai](https://wit.ai/)
-transcribe your speech into structured text in seconds.
+and let [OpenAI Whisper](https://openai.com/index/whisper/) and [Wit.ai](https://wit.ai/)
+transcribe your speech into text and write at the speed of thought.
 
-### 5. 🌗 First-Class Themes & Aesthetics
+### 5. 🌗 First Class Themes and Appearance
 
 Carefully curated light and dark modes with all major custom theme support catering to your needs and taste.
 
@@ -77,9 +76,9 @@ preserving options to ease the process:
 2. **Select Repository**: Pick the GitHub repository containing your static blog or website (Astro, Hugo, SvelteKit, Jekyll, Next.js, etc.).
 3. **Write & Format**: Create new articles or edit existing posts with real time visual feedback, asset uploads, and front matter management.
 4. **Publish**: LightCMS automatically creates a commit or pull request to your chosen branch.
-5. **Automated Deployment**: Your existing CI/CD pipeline (e.g. GitHub Actions) builds and deploys your static site to your favorite host.
+5. **Automated Deployment**: Your existing build pipeline cloudflare pages, netlify, or vercel integrates with LightCMS to automatically deploy your site. But for custom deployment needs, 
 
-### Dont't worry we have a lot of preconfigured sample repositories with
+### Dont't worry we have a lot of preconfigured sample repositories with ci pipelines to deploy on github pagess
 
 Model repositories for all major static site generators
 

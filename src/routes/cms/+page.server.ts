@@ -13,10 +13,29 @@ import {
   listGitHubInstallations,
   removeStaleInstallation,
 } from "$lib/server/session";
+import { fetchTemplates, type TemplatesResult } from "$lib/templates";
 import type { Actions, PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+const TEMPLATE_OWNER = "light-cms";
+
+async function loadTemplates(fetchFn: typeof fetch): Promise<TemplatesResult> {
+  try {
+    const templates = await fetchTemplates(TEMPLATE_OWNER, { fetch: fetchFn, org: true });
+    return { templates, error: null };
+  } catch (cause) {
+    console.warn("Failed to load repository templates:", cause);
+    return {
+      templates: [],
+      error: "Could not load templates from GitHub. Please try again later.",
+    };
+  }
+}
+
+export const load: PageServerLoad = async ({ locals, url, fetch }) => {
   if (!locals.session) throw redirect(302, "/auth");
+
+  // Not awaited: streamed to the client so a slow GitHub call never blocks the console.
+  const templates = loadTemplates(fetch);
 
   const { userId } = locals.session;
   const installations = await listGitHubInstallations(userId);
@@ -120,6 +139,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   }
 
   return {
+    templates,
     repositories,
     installations,
     repositoryWarnings,

@@ -7,11 +7,12 @@ import FolderPlus from "@lucide/svelte/icons/folder-plus";
 import GitBranch from "@lucide/svelte/icons/git-branch";
 import GitFork from "@lucide/svelte/icons/git-fork";
 import Layers from "@lucide/svelte/icons/layers";
+import LayoutTemplate from "@lucide/svelte/icons/layout-template";
 import Settings from "@lucide/svelte/icons/settings";
 import Sparkles from "@lucide/svelte/icons/sparkles";
 import { toast } from "svelte-sonner";
 import { goto, invalidateAll } from "$app/navigation";
-import { CreateBranchDialog, CreateFolderDialog } from "$lib/components/custom";
+import { CreateBranchDialog, CreateFolderDialog, TemplateDrawer } from "$lib/components/custom";
 import { Button } from "$lib/components/ui/button";
 import type { PageData } from "./$types";
 
@@ -21,6 +22,7 @@ let _selectingRepository = $state(false);
 let _selectingBranch = $state(false);
 let _createFolderOpen = $state(false);
 let _createBranchOpen = $state(false);
+let _templatesOpen = $state(false);
 
 const _collections = $derived(data.collections);
 const repositories = $derived(data.repositories);
@@ -101,6 +103,18 @@ async function _onBranchCreated(branchName: string) {
         <span>Workspace</span>
       </div>
       <h1 class="text-3xl font-black tracking-tight text-foreground sm:text-4xl">Publishing Console</h1>
+      <button
+        type="button"
+        class="group inline-flex items-center gap-2 rounded-full border border-dashed border-primary-500/40 bg-primary-500/5 px-3.5 py-2 text-xs font-semibold text-foreground transition-all hover:border-primary-500 hover:bg-primary-500/10"
+        onclick={() => (_templatesOpen = true)}
+      >
+        <LayoutTemplate size={14} class="text-primary-500" />
+        <span>Get one from template</span>
+        <ArrowUpRight
+          size={14}
+          class="text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+        />
+      </button>
     </div>
     <div class="flex items-center gap-3">
       {#if data.selection}
@@ -303,6 +317,8 @@ async function _onBranchCreated(branchName: string) {
     </div>
   {/if}
 </div>
+
+<TemplateDrawer bind:open={_templatesOpen} templates={data.templates} />
 
 <CreateFolderDialog
   bind:open={_createFolderOpen}

@@ -74,8 +74,8 @@ Read more in [Building a Greener Web](/docs/building-a-greener-web).
 The goal of LightCMS is to make writing and publishing effortless without sacrificing the benefits of modern developer tooling:
 
 - **Content Lives in Git**: Your articles remain pure Markdown in your own GitHub repository.
-- **Automated CI/CD**: Your existing build pipelines (GitHub Actions, Vercel, Cloudflare Pages) continue to build and deploy your site automatically.
-- **Frictionless Writing**: The author opens a distraction-free, beautiful visual editor in their browser, writes, formats, and hits publish.
+- **Automated CI/CD**: Your existing build pipelines or to build and deploy your site automatically via github actions.
+- **Frictionless Writing**: The author opens the editor in their browser, writes, and hits publish and the content gets publishedagent.
 
 You get all the auditability, rollback safety, and ownership of a Git-backed repository, while the author gets a distraction-free environment that actually makes them want to write.
 

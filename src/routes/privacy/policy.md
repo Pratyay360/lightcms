@@ -234,4 +234,4 @@ You are advised to review this Privacy Policy periodically for any changes. Chan
 If You have any questions about this Privacy Policy, You can contact Us:
 
 - By email: [lightcms@zohomail.in](mailto:lightcms@zohomail.in)
-- By visiting this page on Our Website: [https://app.youform.com/forms/smwrhikc](https://app.youform.com/forms/smwrhikc)
+- By visiting this Form: [https://app.youform.com/forms/smwrhikc](https://app.youform.com/forms/smwrhikc)

@@ -253,7 +253,7 @@
         >
           {$authSubmitting
             ? "Sending secure link..."
-            : "Email me a sign-in link"}
+            : "Emailing a sign-in link"}
         </Button>
       </form>
     {/if}

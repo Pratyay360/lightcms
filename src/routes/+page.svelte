@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { LeafyGreen } from "@lucide/svelte";
 import ArrowRight from "@lucide/svelte/icons/arrow-right";
 import Bookmark from "@lucide/svelte/icons/bookmark";
 import Check from "@lucide/svelte/icons/check";
@@ -23,7 +24,7 @@ import Sparkles from "@lucide/svelte/icons/sparkles";
         Fall back in love with writing again.
       </h1>
       <p class="text-base leading-relaxed text-muted-foreground sm:text-lg">
-        Giving everyone a voice to speak. A lightweight, Git-backed content workspace for editing and publishing Markdown with zero friction.
+        Giving everyone a voice to speak. A lightweight, Git backed content workspace for sharing and publishing experiences with zero friction.
       </p>
     </div>
 
@@ -42,26 +43,35 @@ import Sparkles from "@lucide/svelte/icons/sparkles";
         <Bookmark size={20} class="text-primary" />
         <h3 class="text-sm font-bold text-foreground">Read the docs</h3>
         <p class="text-xs leading-relaxed text-muted-foreground">
-          Learn how to customize collections and fields.
+          Learn how to start using lightCMS.
         </p>
         <a href="/docs" class="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
           Read docs <ArrowRight size={12} />
         </a>
       </div>
-
+      <div class="space-y-3 p-4 rounded-xl border border-border bg-card text-card-foreground shadow-xs">
+        <LeafyGreen size={20} class="text-primary" />
+        <h3 class="text-sm font-bold text-foreground">Go Green</h3>
+        <p class="text-xs leading-relaxed text-muted-foreground">
+          Learn how static site generators can help us building a sustainable more environmentally friendly web and reduce carbon footprint.
+        </p>
+        <a href="/docs" class="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+          Read docs <ArrowRight size={12} />
+        </a>
+      </div>
       <div class="space-y-3 p-4 rounded-xl border border-border bg-card text-card-foreground shadow-xs">
         <Pencil size={20} class="text-primary" />
-        <h3 class="text-sm font-bold text-foreground">Simple  editing</h3>
+        <h3 class="text-sm font-bold text-foreground">Awesome editor</h3>
         <p class="text-xs leading-relaxed text-muted-foreground">
-          Edit markdown with simple notion like editor.
+          Edit posts with simple and intuitive editor which will make your inner writer to write again.
         </p>
       </div>
 
       <div class="space-y-3 p-4 rounded-xl border border-border bg-card text-card-foreground shadow-xs">
         <ShieldCheck size={20} class="text-primary" />
-        <h3 class="text-sm font-bold text-foreground">Secure access</h3>
+        <h3 class="text-sm font-bold text-foreground">Secure access and collaboration</h3>
         <p class="text-xs leading-relaxed text-muted-foreground">
-          Leverage GitHub's platform for managing content for your static site to access control.
+          Leverage GitHub's platform and git's version control capabilities for managing content of your static site.
         </p>
       </div>
     </div>

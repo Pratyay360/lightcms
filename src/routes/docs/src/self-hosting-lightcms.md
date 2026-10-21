@@ -18,13 +18,12 @@ keywords:
 preview: /og-image.png
 ---
 
-Want LightCMS fully under your control? LightCMS is a [SvelteKit](https://svelte.dev) application, backed by a PostgreSQL
-database and a GitHub App. Your content never leaves your own GitHub repositories.
+Want LightCMS fully under your control? LightCMS is a [SvelteKit](https://svelte.dev) application so it can be deployed anywhere, backed by a postgre database and a GitHub App(octokit). Your content never leaves your own GitHub repositories.
 
 This guide walks you through everything you need to run your own instance: creating the GitHub App, provisioning
 PostgreSQL, configuring environment variables, and deploying.
 
-## How the pieces fit together
+## How the Pieces Fit Together
 
 | Component             | Purpose                                                                       | Required                     |
 | --------------------- | ----------------------------------------------------------------------------- | ---------------------------- |
@@ -38,50 +37,43 @@ PostgreSQL, configuring environment variables, and deploying.
 
 ## Prerequisites
 
-- **[mise](https://mise.jdx.dev)**: installs and pins the toolchain defined in `mise.toml` (Node.js 24, Bun, and
-  [Vite+](https://viteplus.dev)'s `vp`).
+- **[mise](https://mise.jdx.dev)**: installs and managing tasks dependencies. I will be assuming you have it installed.
 - **PostgreSQL**: a database that accepts TLS connections. Cloud providers such as [Neon](https://neon.tech),
-  [Supabase](https://supabase.com) or [Nile](https://thenile.dev) work well. See
-  [awesome-free-postgres](https://github.com/alexeyfv/awesome-free-postgres) for more free options.
+  [Supabase](https://supabase.com) or [Nile](https://thenile.dev) works well. See
+  [awesome-free-postgres](https://github.com/alexeyfv/awesome-free-postgres) for free options.
 - **GitHub account**: needed to register the GitHub App.
-- **SMTP provider** (for magic links): for example [Resend](https://resend.com), [Zoho Mail](https://www.zoho.com/mail)
-  or Amazon SES.
+- **SMTP provider** (for magic links): If you have a domain then [Resend](https://resend.com) will be having an awesome experience,
+  if not then [Zoho Mail](https://www.zoho.com/mail) remember to create a app password.
 
 > **TLS is mandatory.** The application connects to PostgreSQL with `ssl: "require"`. A local PostgreSQL instance
 > without TLS enabled will be rejected, so use a hosted database or configure TLS on your own server.
 
-## 1. Clone the repository and install dependencies
+## 1. Fork the repository and install dependencies
+
+Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/Pratyay360/lightcms.git
 cd lightcms
+mise trust
+mise deps
+mise run install
 ```
 
 Install the toolchain and the project dependencies:
 
 ```bash
 mise trust
-mise install
+mise deps
 mise run install
 ```
 
-`mise run install` runs `bun install`.
-
 ## 2. Create the GitHub App
 
-LightCMS uses a GitHub App for two things: signing users in with GitHub (OAuth), and acting on your repositories through
-installations. You can create it with the built-in Probot setup wizard, or by hand.
+LightCMS uses a GitHub App for two things: signing users in with GitHub (OAuth), and acting on your behalf
+through installations. You can create it with the built in Probot setup wizard, or by hand.
 
 ### Option A: Probot setup wizard
-
-The wizard reads the manifest in `app.yml`. **Edit it first**, because it ships with values for the hosted LightCMS
-service:
-
-- `name`: GitHub App names are globally unique, so choose your own.
-- `url`: your instance's public URL.
-- `setup_url`: `https://<your-domain>/github/setup`.
-
-Then start the bot:
+start the bot with:
 
 ```bash
 mise run bot
@@ -93,9 +85,6 @@ With no credentials in `.env`, Probot starts a setup server at `http://localhost
 2. Choose your personal account or an organization.
 3. Confirm. Probot creates the app and writes its credentials to your `.env` file.
 
-> **Rename the generated variables.** Probot writes `APP_ID`, `PRIVATE_KEY` and `WEBHOOK_SECRET`. LightCMS reads
-> `GITHUB_APP_ID`, `GITHUB_PRIVATE_KEY` and `GITHUB_WEBHOOK_SECRET`. Rename them in `.env`.
-> `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` are written with the correct names.
 
 The wizard sets the app's webhook URL to a Smee channel (or `http://localhost:3000/`), not to LightCMS's webhook
 endpoint. Update it in the GitHub App settings before going live (see [Production deployment](#6-production-deployment)).
@@ -286,8 +275,13 @@ Other database scripts:
 bun run dev
 ```
 
-LightCMS is now available at `http://localhost:5173`. Set `BETTER_AUTH_URL` to this address, and sign in with GitHub or
-a magic link.
+![imagebot](https://i.ibb.co/Jw1bjLrr/image.png)
+
+![permissions detailed](https://i.ibb.co/0p7tk88V/image.png)
+
+
+
+LightCMS is now available at `http://localhost:5173`. Set `BETTER_AUTH_URL` to this address, and sign in with GitHub for the first time.
 
 ### Testing webhooks locally
 
@@ -307,10 +301,10 @@ labels on `pull_request`, and `installation` logging.
 
 ## 6. Production deployment
 
-The project is configured with [`@sveltejs/adapter-vercel`](https://svelte.dev/docs/kit/adapter-vercel), so
-[Vercel](https://vercel.com) is the supported deployment target out of the box.
+The project is configured with sveltekit which is very vendor agnostic, so
+[Vercel](https://vercel.com) [netlify](https://www.netlify.com/) [cloudflare workers](https://www.cloudflare.com/) all are supported deployment targets out of the box.
 
-1. Import your Git repository into Vercel.
+1. Import your Git repository into deployment platform.
 2. Add every environment variable from [step 3](#3-configure-environment-variables) in **Project Settings → Environment
    Variables**. Set `BETTER_AUTH_URL` to your production URL.
 3. Deploy.
@@ -322,38 +316,65 @@ bun run build
 bun run preview
 ```
 
-### Other hosting platforms
-
-Another host needs a different SvelteKit adapter, for example `@sveltejs/adapter-node` for a standalone Node.js server
-behind Nginx or Caddy. Install the adapter and change the `adapter` import in `vite.config.ts`. The codebase reads
-configuration from `process.env` and runs the Probot webhook handler inside SvelteKit, so check that your platform
-exposes both. Only the Vercel setup is configured in this repository.
-
-### Production checklist
-
-1. `BETTER_AUTH_URL` matches your live HTTPS domain, for example `https://cms.yourdomain.com`.
-2. In the GitHub App settings:
-   - **Webhook URL** is `https://<your-domain>/api/github/webhook`.
-   - **Setup URL** is `https://<your-domain>/github/setup`.
-   - **Callback URL** is `https://<your-domain>/api/auth/callback/github`.
-3. Use the same value for `GITHUB_WEBHOOK_SECRET` and the webhook secret in the GitHub App settings. It also signs the
-   installation state, so changing it mid-flow invalidates in-progress installations.
-4. `DATABASE_URL` points at a TLS-enabled database, and migrations have been applied.
-5. SMTP credentials are valid, and `MAIL_FROM` is an address your provider allows you to send from.
-6. Secrets are stored only in your host's secret manager, never committed to Git, and rotated if exposed.
-
 ## Troubleshooting
 
-| Symptom                                                                                                    | Likely cause                                                                                                |
-| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `PUBLIC_POSTHOG_KEY variable required by PostHog…`                                                         | PostHog variables are missing in development. Set them, or run a production build.                          |
-| Database connection refused or SSL errors                                                                  | The database does not support TLS. The app always connects with `ssl: "require"`.                           |
-| `MAIL_HOST is not configured`                                                                              | SMTP variables are incomplete, so magic links cannot be sent.                                               |
-| `GitHub authentication failed (Bad credentials)`                                                           | `GITHUB_APP_ID` or `GITHUB_PRIVATE_KEY` is wrong, or the variables still have Probot's names (`APP_ID`, …). |
-| `401 Invalid webhook signature`                                                                            | `GITHUB_WEBHOOK_SECRET` does not match the secret configured in the GitHub App.                             |
-| Images appear as huge `data:` URLs in your Markdown                                                        | `CDN_URL` / `CDN_KEY` are unset or the CDN upload failed. Check the server logs.                            |
-| Dictation is unavailable                                                                                   | Neither `SPEECH_API_KEY` (with `SPEECH_MODEL`) nor `WIT_AI_TOKEN` is set.                                   |
-| make a account with [Wit.ai](https://wit.ai/) it's a free service by meta                                  |
-| and any openai compatible API for transcription.                                                           |
-| one can use [groq](https://groq.com/) or [assemblyai](https://assemblyai.com/) or                          |
-| [elevenlabs](https://elevenlabs.io/) or [deepgram](https://deepgram.com/) or [sarvam](https://sarvam.ai/). |
+Make a account with [Wit.ai](https://wit.ai/) it's a free service by meta                                  |
+And any openai compatible API for transcription.                                                           |
+One can use [groq](https://groq.com/) or [assemblyai](https://assemblyai.com/) or                          |
+[elevenlabs](https://elevenlabs.io/) or [deepgram](https://deepgram.com/) or [sarvam](https://sarvam.ai/). |
+
+## For development purpose you can use the following credentials for posthog
+
+PUBLIC_POSTHOG_KEY = "phc_AS2JXQsqEwNNreH5kra5Eefd5TijExE5eiLfwdzXLhPg"
+PUBLIC_POSTHOG_URL = "https://us.i.posthog.com"
+
+
+```env
+PUBLIC_POSTHOG_KEY=phc_AS2JXQsqEwNNreH5kra5Eefd5TijExE5eiLfwdzXLhPg
+PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
+
+https://wit.ai
+
+
+![wit.ai](https://i.ibb.co/MySskPTt/image.png)
+
+```env
+WIT_AI_TOKEN="Server access token"
+WIT_AI_CLIENT_TOKEN="Client access token"
+```
+
+
+```env
+APP_ID=
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+CDN_KEY=
+CDN_URL=
+DATABASE_URL=
+GITHUB_APP_ID=
+GITHUB_APP_NAME=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_PRIVATE_KEY=
+GITHUB_WEBHOOK_SECRET=
+MAIL_FROM= 
+MAIL_HOST=
+MAIL_PASS=
+MAIL_PORT=
+MAIL_SECURE=
+MAIL_USER=
+OPEN_AI_ENDPOINT=
+OPEN_AI_MODEL=
+ORIGIN=
+PRIVATE_KEY=
+PUBLIC_POSTHOG_HOST=
+PUBLIC_POSTHOG_KEY=
+SPEECH_API_KEY=
+SPEECH_ENDPOINT=
+SPEECH_MODEL=
+WEBHOOK_SECRET=
+WIT_AI_CLIENT_TOKEN=
+WIT_AI_TOKEN=
+```
