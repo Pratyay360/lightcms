@@ -1,24 +1,24 @@
 <script lang="ts">
-import "./layout.css";
-import Blocks from "@lucide/svelte/icons/blocks";
-import BookOpen from "@lucide/svelte/icons/book-open";
-import FileBadge2Icon from "@lucide/svelte/icons/file-badge-2";
-import Info from "@lucide/svelte/icons/info";
-import LogIn from "@lucide/svelte/icons/log-in";
-import Sparkles from "@lucide/svelte/icons/sparkles";
-import { injectAnalytics } from '@vercel/analytics/sveltekit';
-import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
-import { ModeWatcher } from "mode-watcher";
-import { onMount } from "svelte";
-import { dev } from "$app/environment";
-import { page } from "$app/state";
-import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
-import MetaTags from "$lib/components/custom/MetaTags.svelte";
-import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
-import { Avatar } from "$lib/components/ui/avatar";
-import { Button } from "$lib/components/ui/button";
-import { Toaster } from "$lib/components/ui/sonner";
-import { DEFAULT_THEME_ID, MODE_STORAGE_KEY, THEME_STORAGE_KEY } from "$lib/themes.js";
+  import Blocks from "@lucide/svelte/icons/blocks";
+  import BookOpen from "@lucide/svelte/icons/book-open";
+  import FileBadge2Icon from "@lucide/svelte/icons/file-badge-2";
+  import Info from "@lucide/svelte/icons/info";
+  import LogIn from "@lucide/svelte/icons/log-in";
+  import Sparkles from "@lucide/svelte/icons/sparkles";
+  import { injectAnalytics } from '@vercel/analytics/sveltekit';
+  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+  import { ModeWatcher } from "mode-watcher";
+  import "./layout.css";
+  import { onMount } from "svelte";
+  import { dev } from "$app/environment";
+  import { page } from "$app/state";
+  import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
+  import MetaTags from "$lib/components/custom/MetaTags.svelte";
+  import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
+  import { Avatar } from "$lib/components/ui/avatar";
+  import { Button } from "$lib/components/ui/button";
+  import { Toaster } from "$lib/components/ui/sonner";
+  import { DEFAULT_THEME_ID, MODE_STORAGE_KEY, THEME_STORAGE_KEY } from "$lib/themes.js";
 
 if (!dev) {
 	injectAnalytics({ mode: 'production' });
@@ -139,7 +139,6 @@ $effect(() => {
           {:else}
             <LogIn size={15} />
           {/if}
-          <span>{session ? "Account" : "Sign in"}</span>
         </a>
 
         <ToggleMode />

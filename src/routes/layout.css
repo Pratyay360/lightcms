@@ -17,8 +17,6 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  /* Beat Skeleton's `body { font-family: var(--typo-base--font-family) }`
-	   (catppuccin's ui-rounded stack) so the app font actually applies. */
   font-family: "Inter Variable", sans-serif;
   color: var(--foreground);
   background-color: var(--background);

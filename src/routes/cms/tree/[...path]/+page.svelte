@@ -2,7 +2,7 @@
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
   import ChevronRight from "@lucide/svelte/icons/chevron-right";
   import File from "@lucide/svelte/icons/file";
-  import FileCode from "@lucide/svelte/icons/file-code";
+
   import FileText from "@lucide/svelte/icons/file-text";
   import Folder from "@lucide/svelte/icons/folder";
   import FolderInput from "@lucide/svelte/icons/folder-input";
@@ -12,6 +12,7 @@
   import Plus from "@lucide/svelte/icons/plus";
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import { Button } from "$lib/components/ui/button";
+  import { collectionEntryUrl } from "$lib/cms-urls";
   import {
     Dialog,
     DialogClose,
@@ -106,10 +107,6 @@
     return `/cms/tree/${trimmed}?${query}`;
   }
 
-  function editFileUrl(filePath: string): string {
-    const trimmed = filePath.replace(/^\/+|\/+$/g, "");
-    return `/cms/edit/${trimmed}?${query}`;
-  }
 </script>
 
 <svelte:head>
@@ -243,6 +240,7 @@
 
         <!-- Files List -->
         {#each files as fileItem}
+          {@const editUrl = collectionEntryUrl(fileItem.path, query)}
           <section
             class="group flex items-center justify-between px-5 py-3 hover:bg-muted/40 transition-colors cursor-grab active:cursor-grabbing {draggedFilePath === fileItem.path ? 'opacity-40' : ''}"
             aria-label={`File ${fileItem.name}`}
@@ -252,14 +250,12 @@
           >
 
             <a
-              href={fileItem.isEditable ? editFileUrl(fileItem.path) : undefined}
-              class="flex items-center gap-3 min-w-0 flex-1 {fileItem.isEditable ? 'cursor-pointer' : 'cursor-default'}"
+              href={editUrl}
+              class="flex items-center gap-3 min-w-0 flex-1 {editUrl ? 'cursor-pointer' : 'cursor-default'}"
             >
               <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                 {#if fileItem.extension === "md" || fileItem.extension === "mdx" || fileItem.extension === "markdown"}
                   <FileText size={16} />
-                {:else if fileItem.isEditable}
-                  <FileCode size={16} />
                 {:else}
                   <File size={16} />
                 {/if}
@@ -279,9 +275,9 @@
             </a>
 
             <div class="flex items-center gap-1.5">
-              {#if fileItem.isEditable}
+              {#if editUrl}
                 <a
-                  href={editFileUrl(fileItem.path)}
+                  href={editUrl}
                   class="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all"
                 >
                   Edit

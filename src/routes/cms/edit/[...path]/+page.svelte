@@ -5,7 +5,6 @@
   import FolderInput from "@lucide/svelte/icons/folder-input";
   import GitBranch from "@lucide/svelte/icons/git-branch";
   import LoaderCircle from "@lucide/svelte/icons/loader-circle";
-  import Plus from "@lucide/svelte/icons/plus";
   import Save from "@lucide/svelte/icons/save";
   import Settings2 from "@lucide/svelte/icons/settings-2";
   import Sparkles from "@lucide/svelte/icons/sparkles";
@@ -13,6 +12,7 @@
   import { onMount, untrack } from "svelte";
   import { toast } from "svelte-sonner";
   import { enhance } from "$app/forms";
+  import { FrontmatterDrawer } from "$lib/components/custom";
   import { createEditor, Edra } from "$lib/components/edra/shadcn";
   import { Button } from "$lib/components/ui/button";
   import {
@@ -43,8 +43,6 @@
   let bodyContent = $state(untrack(() => data.file.body));
   let frontMatterEntries = $state<Array<{ key: string; value: string }>>([]);
   let showFrontmatter = $state(false);
-  let newFieldKey = $state("");
-  let newFieldValue = $state("");
   let deleteDialogOpen = $state(false);
   let moveDialogOpen = $state(false);
   let destinationFolder = $state(untrack(() => data.parentPath));
@@ -103,20 +101,6 @@
       editor.commands.setContent(bodyContent, { contentType: "markdown" });
     }
     editorMode = newMode;
-  }
-
-  function addFrontmatterField() {
-    const key = newFieldKey.trim();
-    if (!key) return;
-    frontMatterEntries = [...frontMatterEntries, { key, value: newFieldValue }];
-    newFieldKey = "";
-    newFieldValue = "";
-    hasUnsavedChanges = true;
-  }
-
-  function removeFrontmatterField(index: number) {
-    frontMatterEntries = frontMatterEntries.filter((_, i) => i !== index);
-    hasUnsavedChanges = true;
   }
 
   const frontMatterJson = $derived.by(() => {
@@ -287,67 +271,13 @@
     <span class="font-mono text-[11px] text-muted-foreground/60">SHA: {file.sha.slice(0, 7)}</span>
   </div>
 
-  <!-- Frontmatter Panel -->
-  {#if showFrontmatter && file.isMarkdown}
-    <div class="rounded-2xl border bg-card p-5 space-y-4 shadow-xs">
-      <div class="flex items-center justify-between border-b pb-3">
-        <h2 class="text-sm font-bold text-foreground flex items-center gap-1.5">
-          <Settings2 size={16} class="text-primary" /> Frontmatter Metadata
-        </h2>
-        <span class="text-xs text-muted-foreground">YAML metadata stored at the top of the file</span>
-      </div>
-
-      <div class="space-y-3">
-        {#each frontMatterEntries as entry, index}
-          <div class="flex items-center gap-2">
-            <Input
-              class="w-1/3 font-mono text-xs"
-              placeholder="Key"
-              bind:value={entry.key}
-              oninput={() => (hasUnsavedChanges = true)}
-            />
-            <Input
-              class="flex-1 font-mono text-xs"
-              placeholder="Value"
-              bind:value={entry.value}
-              oninput={() => (hasUnsavedChanges = true)}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              class="text-destructive h-9 px-2 hover:bg-destructive/10"
-              onclick={() => removeFrontmatterField(index)}
-            >
-              <Trash2 size={14} />
-            </Button>
-          </div>
-        {/each}
-
-        <!-- Add Field Row -->
-        <div class="flex items-center gap-2 pt-2 border-t">
-          <Input
-            class="w-1/3 font-mono text-xs"
-            placeholder="New key (e.g. title)"
-            bind:value={newFieldKey}
-          />
-          <Input
-            class="flex-1 font-mono text-xs"
-            placeholder="New value"
-            bind:value={newFieldValue}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            class="gap-1 text-xs"
-            onclick={addFrontmatterField}
-          >
-            <Plus size={14} /> Add
-          </Button>
-        </div>
-      </div>
-    </div>
+  <!-- Frontmatter Drawer -->
+  {#if file.isMarkdown}
+    <FrontmatterDrawer
+      bind:open={showFrontmatter}
+      bind:entries={frontMatterEntries}
+      onchange={() => (hasUnsavedChanges = true)}
+    />
   {/if}
 
   <!-- Main Editor Area -->
@@ -442,4 +372,3 @@
     </form>
   </DialogContent>
 </Dialog>
-

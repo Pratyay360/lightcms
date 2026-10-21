@@ -8,6 +8,7 @@ import {
   moveRepoFile,
 } from "$lib/server/cms";
 
+import { collectionEntryUrl } from "$lib/cms-urls";
 import { getRepoCmsContext } from "$lib/server/cms-context";
 import { normalizeContentPath } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
@@ -107,7 +108,8 @@ export const actions: Actions = {
       });
     }
 
-    throw redirect(303, `/cms/edit/${fullFilePath}?${query}`);
+    const treeUrl = currentPath ? `/cms/tree/${currentPath}?${query}` : `/cms/tree?${query}`;
+    throw redirect(303, collectionEntryUrl(fullFilePath, query) ?? treeUrl);
   },
 
   deleteFile: async ({ locals, request, params, url }) => {
