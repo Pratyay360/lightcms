@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { FrontmatterEntry } from "./frontmatter-drawer.types.ts";
   import ArrowDown from "@lucide/svelte/icons/arrow-down";
   import ArrowUp from "@lucide/svelte/icons/arrow-up";
   import Calendar from "@lucide/svelte/icons/calendar";
@@ -18,10 +19,6 @@
   import { Input } from "$lib/components/ui/input";
   import { Textarea } from "$lib/components/ui/textarea";
 
-  export interface FrontmatterEntry {
-    key: string;
-    value: string;
-  }
 
   interface Props {
     open?: boolean;
