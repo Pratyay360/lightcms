@@ -378,3 +378,6 @@ WEBHOOK_SECRET=
 WIT_AI_CLIENT_TOKEN=
 WIT_AI_TOKEN=
 ```
+
+
+![configuration for the bot](https://i.ibb.co/jP5tgcJH/image.png)

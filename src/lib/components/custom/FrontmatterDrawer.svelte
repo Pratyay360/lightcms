@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { FrontmatterEntry } from "./frontmatter-drawer.types.ts";
   import ArrowDown from "@lucide/svelte/icons/arrow-down";
   import ArrowUp from "@lucide/svelte/icons/arrow-up";
   import Calendar from "@lucide/svelte/icons/calendar";
@@ -18,22 +19,28 @@
   import { Input } from "$lib/components/ui/input";
   import { Textarea } from "$lib/components/ui/textarea";
 
-  export interface FrontmatterEntry {
-    key: string;
-    value: string;
-  }
 
   interface Props {
     open?: boolean;
     entries?: FrontmatterEntry[];
     onchange?: () => void;
+    /** Keys that are edited inline elsewhere, so the drawer hides them. */
+    hiddenKeys?: readonly string[];
   }
 
   let {
     open = $bindable(false),
     entries = $bindable([]),
     onchange,
+    hiddenKeys = [],
   }: Props = $props();
+
+  function isHiddenKey(key: string): boolean {
+    const normalized = key.trim().toLowerCase();
+    return hiddenKeys.some(
+      (hiddenKey) => hiddenKey.trim().toLowerCase() === normalized,
+    );
+  }
 
   let searchQuery = $state("");
   let newFieldKey = $state("");
@@ -59,22 +66,28 @@
       entries.map((entry) => entry.key.trim().toLowerCase()),
     );
     return COMMON_SUGGESTIONS.filter(
-      (suggestion) => !existingKeys.has(suggestion.toLowerCase()),
+      (suggestion) =>
+        !existingKeys.has(suggestion.toLowerCase()) &&
+        !isHiddenKey(suggestion),
     );
   });
+
+  const visibleEntries = $derived.by(() =>
+    entries
+      .map((entry, index) => ({ entry, index }))
+      .filter(({ entry }) => !isHiddenKey(entry.key)),
+  );
 
   const filteredEntries = $derived.by(() => {
     const query = searchQuery.trim().toLowerCase();
     if (query.length === 0) {
-      return entries.map((entry, index) => ({ entry, index }));
+      return visibleEntries;
     }
-    return entries
-      .map((entry, index) => ({ entry, index }))
-      .filter(({ entry }) => {
-        const keyMatches = entry.key.toLowerCase().includes(query);
-        const valueMatches = entry.value.toLowerCase().includes(query);
-        return keyMatches || valueMatches;
-      });
+    return visibleEntries.filter(({ entry }) => {
+      const keyMatches = entry.key.toLowerCase().includes(query);
+      const valueMatches = entry.value.toLowerCase().includes(query);
+      return keyMatches || valueMatches;
+    });
   });
 
   function detectValueType(
@@ -104,6 +117,19 @@
     const key = resolvedKey.trim();
     if (key.length === 0) return;
 
+    if (isHiddenKey(key)) {
+      toast.info("That field is edited inline in the editor.");
+      return;
+    }
+
+    const alreadyExists = entries.some(
+      (entry) => entry.key.trim().toLowerCase() === key.toLowerCase(),
+    );
+    if (alreadyExists) {
+      toast.error(`"${key}" already exists.`);
+      return;
+    }
+
     let initialValue = newFieldValue;
     if (keyToAdd !== undefined && newFieldValue.length === 0) {
       if (key === "draft") {
@@ -126,16 +152,24 @@
     onchange?.();
   }
 
-  function moveField(fromIndex: number, direction: "up" | "down") {
-    const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-    if (toIndex < 0 || toIndex >= entries.length) return;
+  function moveField(index: number, direction: "up" | "down") {
+    // Swap slots in the visible list so hidden (inline) keys keep their position.
+    const visibleIndexes = visibleEntries.map((item) => item.index);
+    const currentPosition = visibleIndexes.indexOf(index);
+    if (currentPosition === -1) return;
+
+    const targetPosition =
+      direction === "up" ? currentPosition - 1 : currentPosition + 1;
+    const targetIndex = visibleIndexes[targetPosition];
+    if (targetIndex === undefined) return;
 
     const updated = [...entries];
-    const target = updated[fromIndex];
-    if (target === undefined) return;
+    const current = updated[index];
+    const target = updated[targetIndex];
+    if (current === undefined || target === undefined) return;
 
-    updated.splice(fromIndex, 1);
-    updated.splice(toIndex, 0, target);
+    updated[index] = target;
+    updated[targetIndex] = current;
     entries = updated;
     onchange?.();
   }
@@ -233,14 +267,15 @@
           <div class="flex items-center gap-2">
             <Settings2 size={18} class="text-primary" />
             <DialogPrimitive.Title class="text-base font-bold text-foreground">
-              Frontmatter Schema
+              Additional Fields
             </DialogPrimitive.Title>
             <Badge variant="secondary" class="font-mono text-[10px] px-1.5 py-0.5">
-              {entries.length} {entries.length === 1 ? "field" : "fields"}
+              {visibleEntries.length}
+              {visibleEntries.length === 1 ? "field" : "fields"}
             </Badge>
           </div>
           <DialogPrimitive.Description class="text-xs text-muted-foreground">
-            YAML metadata stored at the top of the file
+            Extra YAML metadata beyond the inline fields
           </DialogPrimitive.Description>
         </div>
 
@@ -285,7 +320,7 @@
         </div>
       </header>
 
-      {#if viewMode === "fields" && entries.length >= 4}
+      {#if viewMode === "fields" && visibleEntries.length >= 4}
         <div class="border-b border-border/40 px-6 py-2.5 bg-muted/20">
           <div class="relative">
             <Search size={14} class="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -305,7 +340,7 @@
           {#if unusedSuggestions.length > 0}
             <div class="space-y-2">
               <span class="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Suggested Schema Fields
+                Suggested Additional Fields
               </span>
               <div class="flex flex-wrap gap-1.5">
                 {#each unusedSuggestions as suggestion}
@@ -329,21 +364,42 @@
                 {#if searchQuery.trim().length > 0}
                   No fields match "{searchQuery}"
                 {:else}
-                  No frontmatter fields defined yet. Add one below.
+                  No additional fields yet. Add one below.
                 {/if}
               </div>
             {:else}
-              {#each filteredEntries as { entry, index } (index)}
+              {#each filteredEntries as { entry, index }, position (index)}
                 {@const valType = detectValueType(entry.value)}
                 <div class="group rounded-xl border border-border bg-card/60 p-3.5 space-y-2.5 shadow-2xs hover:border-primary/40 transition-colors">
                   <!-- Row 1: Key, Type Pill, Actions -->
                   <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2 flex-1 min-w-0">
                       <Input
-                        bind:value={entry.key}
+                        value={entry.key}
                         placeholder="Key name"
                         class="h-8 font-mono text-xs font-semibold max-w-[200px]"
-                        oninput={onchange}
+                        oninput={(event) => {
+                          const nextKey = event.currentTarget.value;
+                          const normalizedKey = nextKey.trim().toLowerCase();
+                          const isDuplicate = entries.some(
+                            (other, otherIndex) =>
+                              otherIndex !== index &&
+                              other.key.trim().toLowerCase() === normalizedKey,
+                          );
+
+                          if (isHiddenKey(nextKey) || isDuplicate) {
+                            event.currentTarget.value = entry.key;
+                            toast.info(
+                              isHiddenKey(nextKey)
+                                ? "That field is edited inline in the editor."
+                                : `"${nextKey}" already exists.`,
+                            );
+                            return;
+                          }
+
+                          entry.key = nextKey;
+                          onchange?.();
+                        }}
                       />
                       <Badge
                         variant="outline"
@@ -359,7 +415,7 @@
                         variant="ghost"
                         size="icon-xs"
                         class="h-7 w-7 text-muted-foreground hover:text-foreground"
-                        disabled={index === 0}
+                        disabled={position === 0}
                         onclick={() => moveField(index, "up")}
                         title="Move up"
                       >
@@ -370,7 +426,7 @@
                         variant="ghost"
                         size="icon-xs"
                         class="h-7 w-7 text-muted-foreground hover:text-foreground"
-                        disabled={index === entries.length - 1}
+                        disabled={position === filteredEntries.length - 1}
                         onclick={() => moveField(index, "down")}
                         title="Move down"
                       >
@@ -460,7 +516,7 @@
             <div class="space-y-2">
               <Input
                 bind:value={newFieldKey}
-                placeholder="Field key (e.g. title, tags, date)"
+                placeholder="Field key (e.g. author, image, weight)"
                 class="font-mono text-xs bg-background"
                 onkeydown={(event) => {
                   if (event.key === "Enter" && newFieldKey.trim().length > 0) {

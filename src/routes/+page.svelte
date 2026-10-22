@@ -33,8 +33,12 @@ import Sparkles from "@lucide/svelte/icons/sparkles";
         Open workspace
         <GitBranch size={17} />
       </a>
-
     </div>
+<div class="flex flex-wrap gap-4">
+  <a class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-xs transition-transform hover:scale-[1.02] active:scale-[0.98]" href="/demo">
+    Try the demo
+  </a>
+  </div>
 
     <div
       class="grid grid-cols-1 gap-6 border-t border-border pt-8 sm:grid-cols-3"

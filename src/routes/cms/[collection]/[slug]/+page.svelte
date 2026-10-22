@@ -8,6 +8,7 @@
   import Maximize from "@lucide/svelte/icons/maximize";
   import Minimize from "@lucide/svelte/icons/minimize";
   import Save from "@lucide/svelte/icons/save";
+  import Settings2 from "@lucide/svelte/icons/settings-2";
   import Trash from "@lucide/svelte/icons/trash";
   import Type from "@lucide/svelte/icons/type";
 
@@ -16,6 +17,7 @@
   import { enhance as formEnhance } from "$app/forms";
   import { goto } from "$app/navigation";
   import SaveStatus from "$lib/components/cms/SaveStatus.svelte";
+  import { FrontmatterDrawer, TagManager, type FrontmatterEntry } from "$lib/components/custom";
   import { createEditor, Edra } from "$lib/components/edra/shadcn";
   import {
     Alert,
@@ -43,6 +45,7 @@
   import { createLightCmsClient } from "$lib/orpc-client";
   import { buildPayloadQuery } from "$lib/utils/cms-url";
   import { timeAgo } from "$lib/utils/time-ago";
+  import { uploadFile } from "$lib/utils/upload-file";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
@@ -52,10 +55,14 @@
       (f) => f.required && f.name !== "body" && f.name !== "slug" && !f.list && f.type !== "checkbox",
     );
     return {
-      async validate(data: Record<string, unknown>) {
+      async validate(formData: Record<string, unknown>) {
         const issues: { path: string[]; message: string }[] = [];
         for (const field of requiredFields) {
-          const value = data[field.name];
+          const drawerValue = findAdditionalEntryValue(field.name);
+          const value =
+            drawerValue !== undefined && drawerValue.trim().length > 0
+              ? drawerValue
+              : formData[field.name];
           const label = field.label ?? field.name;
           if (field.type === "number") {
             if (value === "" || value === undefined || value === null) {
@@ -65,7 +72,7 @@
             issues.push({ path: [field.name], message: `${label} is required.` });
           }
         }
-        return { success: issues.length === 0, data, issues };
+        return { success: issues.length === 0, data: formData, issues };
       },
     };
   }
@@ -89,8 +96,69 @@
     },
   );
 
-  import { uploadFile } from "$lib/utils/upload-file";
-  import TagManager from "./TagManager.svelte";
+  /** Frontmatter keys rendered inline; the drawer only edits the rest. */
+  const INLINE_FRONTMATTER_KEYS = [
+    "title",
+    "slug",
+    "description",
+    "date",
+    "draft",
+    "tags",
+  ] as const;
+
+  function toEntryValue(value: unknown): string {
+    if (value === undefined || value === null) return "";
+    if (typeof value === "string") return value;
+    if (typeof value === "object") return JSON.stringify(value);
+    if (
+      typeof value === "number" ||
+      typeof value === "boolean" ||
+      typeof value === "bigint"
+    ) {
+      return String(value);
+    }
+    return "";
+  }
+
+  function parseAdditionalEntries(raw: unknown): FrontmatterEntry[] {
+    const serialized = typeof raw === "string" ? raw : "";
+    try {
+      const parsed: unknown = JSON.parse(
+        serialized.trim().length > 0 ? serialized : "[]",
+      );
+      if (!Array.isArray(parsed)) return [];
+
+      const entries: FrontmatterEntry[] = [];
+      for (const item of parsed) {
+        if (typeof item !== "object" || item === null) continue;
+        const { key, value } = item as { key?: unknown; value?: unknown };
+        if (typeof key !== "string") continue;
+        entries.push({ key, value: toEntryValue(value) });
+      }
+      return entries;
+    } catch {
+      return [];
+    }
+  }
+
+  let additionalEntries = $state<FrontmatterEntry[]>(
+    untrack(() =>
+      parseAdditionalEntries(
+        ($form as Record<string, unknown>).additionalFrontMatter,
+      ),
+    ),
+  );
+  let additionalFieldsOpen = $state(false);
+
+  function findAdditionalEntryValue(key: string): string | undefined {
+    return additionalEntries.find((entry) => entry.key.trim() === key)?.value;
+  }
+
+  function handleAdditionalFieldsChange() {
+    ($form as Record<string, unknown>).additionalFrontMatter = JSON.stringify(
+      additionalEntries,
+    );
+  }
 
   let orpcClient: ReturnType<typeof createLightCmsClient> | undefined;
   onMount(() => {
@@ -125,6 +193,10 @@
       seededPath = entry.path;
       editor.commands.setContent(entry.body ?? "", { contentType: "markdown" });
       rawMarkdown = entry.body ?? "";
+      additionalEntries = parseAdditionalEntries(
+        (data.form.data as Record<string, unknown>).additionalFrontMatter,
+      );
+      additionalFieldsOpen = false;
     }
   });
 
@@ -415,7 +487,25 @@
           </p>
 
           <div class="space-y-4">
-            <h3 class="text-lg font-medium">Front Matter</h3>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-lg font-medium">Front Matter</h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                class="gap-1.5 text-xs"
+                onclick={() => (additionalFieldsOpen = true)}
+              >
+                <Settings2 size={14} /> Additional fields
+                {#if additionalEntries.length > 0}
+                  <span
+                    class="rounded-full bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] text-primary"
+                  >
+                    {additionalEntries.length}
+                  </span>
+                {/if}
+              </Button>
+            </div>
             <Separator />
 
             <div class="grid gap-4 md:grid-cols-2">
@@ -1016,5 +1106,12 @@
         ></form>
       {/if}
     </Card>
+
+    <FrontmatterDrawer
+      bind:open={additionalFieldsOpen}
+      bind:entries={additionalEntries}
+      hiddenKeys={INLINE_FRONTMATTER_KEYS}
+      onchange={handleAdditionalFieldsChange}
+    />
   </main>
 </div>
