@@ -1,6 +1,7 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import { message, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
+import { z } from "zod";
 import { buildEntrySchema } from "$lib/schemas/entry";
 import {
   buildFrontMatter,
@@ -18,6 +19,116 @@ import { isGitHubStatus } from "$lib/server/github";
 import { joinPath, normalizeFolder } from "$lib/server/paths";
 import type { Actions, PageServerLoad } from "./$types";
 
+/** Frontmatter keys rendered as inline form fields; the drawer handles the rest. */
+const INLINE_FRONTMATTER_KEYS = new Set(["title", "slug", "description", "date", "draft", "tags"]);
+
+const RESERVED_FRONTMATTER_KEYS = new Set(["body", "__proto__", "constructor", "prototype"]);
+
+const FRONTMATTER_KEY_PATTERN = /^[A-Za-z_][A-Za-z0-9_.-]*$/;
+
+function isAdditionalFrontMatterKey(key: string): boolean {
+  const normalized = key.trim().toLowerCase();
+  return (
+    normalized.length > 0 &&
+    !INLINE_FRONTMATTER_KEYS.has(normalized) &&
+    !RESERVED_FRONTMATTER_KEYS.has(normalized)
+  );
+}
+
+function toEntryValue(value: unknown): string {
+  if (value === undefined || value === null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") return JSON.stringify(value);
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
+    return String(value);
+  }
+  return "";
+}
+
+function serializeAdditionalFrontMatter(frontMatter: FrontMatter): string {
+  const entries = Object.entries(frontMatter)
+    .filter(([key]) => isAdditionalFrontMatterKey(key))
+    .map(([key, value]) => ({ key, value: toEntryValue(value) }));
+  return JSON.stringify(entries);
+}
+
+function parseEntryValue(value: string): unknown {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return "";
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return value;
+  }
+}
+
+function parseAdditionalFrontMatter(rawEntries: string): Array<{ key: string; value: unknown }> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawEntries.trim().length > 0 ? rawEntries : "[]");
+  } catch {
+    throw new Error("Additional fields could not be parsed.");
+  }
+  if (!Array.isArray(parsed)) {
+    throw new Error("Additional fields must be a list.");
+  }
+
+  const fields: Array<{ key: string; value: unknown }> = [];
+  for (const item of parsed) {
+    if (typeof item !== "object" || item === null) continue;
+    const { key, value } = item as { key?: unknown; value?: unknown };
+    if (typeof key !== "string") continue;
+
+    const trimmedKey = key.trim();
+    if (!isAdditionalFrontMatterKey(trimmedKey)) continue;
+    if (!FRONTMATTER_KEY_PATTERN.test(trimmedKey)) {
+      throw new Error(`"${trimmedKey}" is not a valid front matter key.`);
+    }
+
+    fields.push({
+      key: trimmedKey,
+      value: parseEntryValue(typeof value === "string" ? value : toEntryValue(value)),
+    });
+  }
+  return fields;
+}
+
+/**
+ * The drawer is the only editor for non-inline collection fields, so its values
+ * replace the hidden form defaults before the frontmatter is built.
+ */
+function applyAdditionalFrontMatter(
+  collection: Parameters<typeof buildEntrySchema>[0],
+  values: Record<string, unknown>,
+  fields: Array<{ key: string; value: unknown }>,
+): FrontMatter {
+  const fieldValues: Record<string, unknown> = { ...values };
+
+  for (const field of collection.fields) {
+    if (isAdditionalFrontMatterKey(field.name)) {
+      delete fieldValues[field.name];
+    }
+  }
+  for (const { key, value } of fields) {
+    fieldValues[key] = value;
+  }
+
+  const frontMatter = buildFrontMatter(collection, fieldValues);
+  for (const { key, value } of fields) {
+    if (!(key in frontMatter)) {
+      frontMatter[key] = value;
+    }
+  }
+  return frontMatter;
+}
+
+function buildEditorSchema(collection: Parameters<typeof buildEntrySchema>[0]) {
+  return z.object({
+    ...buildEntrySchema(collection).shape,
+    additionalFrontMatter: z.string().default("[]"),
+  });
+}
+
 export const load: PageServerLoad = async ({ locals, params, url }) => {
   if (!locals.session) {
     throw redirect(302, "/auth");
@@ -30,10 +141,13 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
   );
 
   const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
-  const schema = buildEntrySchema(collection);
+  const schema = buildEditorSchema(collection);
 
   if (params.slug === "new") {
-    const emptyEntry = buildEmptyFormData(collection);
+    const emptyEntry: Record<string, unknown> = {
+      ...buildEmptyFormData(collection),
+      additionalFrontMatter: "[]",
+    };
     const form = await superValidate(emptyEntry, zod4(schema));
     form.errors = {};
 
@@ -59,6 +173,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     slug: entry.slug,
     body: entry.body,
     ...flattenFrontMatter(collection, entry.frontMatter),
+    additionalFrontMatter: serializeAdditionalFrontMatter(entry.frontMatter),
   };
   const form = await superValidate(formData, zod4(schema));
 
@@ -87,7 +202,7 @@ export const actions: Actions = {
     );
 
     const folder = normalizeFolder(url.searchParams.get("folder") ?? "");
-    const schema = buildEntrySchema(collection);
+    const schema = buildEditorSchema(collection);
     const form = await superValidate(request, zod4(schema));
 
     if (!form.valid) {
@@ -97,17 +212,23 @@ export const actions: Actions = {
     const {
       slug: _slug,
       body,
+      additionalFrontMatter,
       ...rawFieldValues
     } = form.data as {
       slug: string;
       body: string;
+      additionalFrontMatter: string;
       [key: string]: unknown;
     };
     const collectionUrl = `/cms/${encodeURIComponent(collection.name)}?${appendFolder(query, folder)}`;
 
     let frontMatter: FrontMatter;
     try {
-      frontMatter = buildFrontMatter(collection, rawFieldValues);
+      frontMatter = applyAdditionalFrontMatter(
+        collection,
+        rawFieldValues,
+        parseAdditionalFrontMatter(additionalFrontMatter),
+      );
     } catch (cause) {
       return setError(
         form,

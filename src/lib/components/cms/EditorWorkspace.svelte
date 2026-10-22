@@ -1,5 +1,6 @@
 <script lang="ts">
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+  import Calendar from "@lucide/svelte/icons/calendar";
   import Clock3 from "@lucide/svelte/icons/clock-3";
   import CloudCheck from "@lucide/svelte/icons/cloud-check";
   import FileCode from "@lucide/svelte/icons/file-code";
@@ -17,10 +18,11 @@
   import { enhance } from "$app/forms";
   import { goto } from "$app/navigation";
   import SaveStatus from "$lib/components/cms/SaveStatus.svelte";
-  import { FrontmatterDrawer } from "$lib/components/custom";
+  import { FrontmatterDrawer, TagManager } from "$lib/components/custom";
   import { createEditor, Edra } from "$lib/components/edra/shadcn";
   import type { EdraEditorProps } from "$lib/components/edra/shadcn/editor";
   import { Button } from "$lib/components/ui/button";
+  import { Checkbox } from "$lib/components/ui/checkbox";
   import {
     Dialog,
     DialogClose,
@@ -88,7 +90,9 @@
     const result: Array<{ key: string; value: string }> = [];
     for (const [key, value] of Object.entries(frontMatter)) {
       let serializedValue = "";
-      if (typeof value === "object" && value !== null) {
+      if (value instanceof Date) {
+        serializedValue = value.toISOString();
+      } else if (typeof value === "object" && value !== null) {
         serializedValue = JSON.stringify(value);
       } else if (value !== undefined && value !== null) {
         serializedValue = String(value);
@@ -99,6 +103,116 @@
   }
 
   type EditorMode = "rich" | "markdown" | "raw";
+
+  /** Frontmatter keys edited inline; the drawer only handles the rest. */
+  const BASIC_FRONTMATTER_KEYS = [
+    "title",
+    "slug",
+    "description",
+    "date",
+    "draft",
+    "tags",
+  ] as const;
+
+  function isBasicFrontmatterKey(key: string): boolean {
+    const normalized = key.trim().toLowerCase();
+    return BASIC_FRONTMATTER_KEYS.some((basicKey) => basicKey === normalized);
+  }
+
+  function findFrontmatterEntryIndex(key: string): number {
+    const normalized = key.trim().toLowerCase();
+    return frontMatterEntries.findIndex(
+      (entry) => entry.key.trim().toLowerCase() === normalized,
+    );
+  }
+
+  function getFrontmatterValue(key: string): string {
+    const index = findFrontmatterEntryIndex(key);
+    if (index === -1) {
+      return "";
+    }
+    return frontMatterEntries[index]?.value ?? "";
+  }
+
+  function setFrontmatterValue(key: string, value: string): void {
+    const index = findFrontmatterEntryIndex(key);
+
+    if (index === -1) {
+      if (value.length === 0) {
+        return;
+      }
+      frontMatterEntries = [...frontMatterEntries, { key, value }];
+    } else if (value.length === 0) {
+      frontMatterEntries = frontMatterEntries.filter(
+        (_, entryIndex) => entryIndex !== index,
+      );
+    } else {
+      frontMatterEntries = frontMatterEntries.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, value } : entry,
+      );
+    }
+
+    hasUnsavedChanges = true;
+  }
+
+  function setDraftValue(checked: boolean): void {
+    if (!checked && findFrontmatterEntryIndex("draft") === -1) {
+      return;
+    }
+    setFrontmatterValue("draft", checked ? "true" : "false");
+  }
+
+  function parseTagList(value: string): string[] {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      return [];
+    }
+
+    if (trimmed.startsWith("[")) {
+      try {
+        const parsed: unknown = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) {
+          return parsed
+            .map((item) => String(item).trim())
+            .filter((item) => item.length > 0);
+        }
+      } catch {
+        // Not JSON — fall back to comma-separated values.
+      }
+    }
+
+    return trimmed
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+  }
+
+  function setTagsValue(tags: string[]): void {
+    setFrontmatterValue("tags", tags.length > 0 ? JSON.stringify(tags) : "");
+  }
+
+  /** Keys whose values must stay strings even when they look numeric or boolean. */
+  const TEXT_FRONTMATTER_KEYS = new Set([
+    "title",
+    "slug",
+    "description",
+    "date",
+  ]);
+
+  function parseFrontmatterValue(key: string, raw: string): unknown {
+    const normalized = key.trim().toLowerCase();
+    if (normalized === "draft") {
+      return raw.trim().toLowerCase() === "true";
+    }
+    if (TEXT_FRONTMATTER_KEYS.has(normalized)) {
+      return raw;
+    }
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return raw;
+    }
+  }
 
   let editorMode = $state<EditorMode>(
     untrack(() => {
@@ -115,6 +229,15 @@
     untrack(() => toFrontMatterEntries(file.frontMatter)),
   );
   let showFrontmatter = $state(false);
+
+  const basicDraft = $derived(
+    getFrontmatterValue("draft").trim().toLowerCase() === "true",
+  );
+  const basicTags = $derived(parseTagList(getFrontmatterValue("tags")));
+  const additionalFrontmatterCount = $derived(
+    frontMatterEntries.filter((entry) => !isBasicFrontmatterKey(entry.key))
+      .length,
+  );
   let deleteDialogOpen = $state(false);
   let moveDialogOpen = $state(false);
   let destinationFolder = $state(untrack(() => parentPath(file.path)));
@@ -198,11 +321,7 @@
       if (trimmedKey.length === 0) {
         continue;
       }
-      try {
-        obj[trimmedKey] = JSON.parse(entry.value);
-      } catch {
-        obj[trimmedKey] = entry.value;
-      }
+      obj[trimmedKey] = parseFrontmatterValue(trimmedKey, entry.value);
     }
     return JSON.stringify(obj);
   });
@@ -331,22 +450,6 @@
     <div class="flex items-center gap-2.5">
       <SaveStatus saving={isSaving} {hasUnsavedChanges} {lastSaved} />
 
-      {#if file.isMarkdown}
-        <Button
-          type="button"
-          variant="outline"
-          class="gap-1.5 text-xs rounded-xl"
-          onclick={() => (showFrontmatter = !showFrontmatter)}
-        >
-          <Settings2 size={14} /> Frontmatter
-          {#if frontMatterEntries.length > 0}
-            <span class="rounded-full bg-primary/10 text-primary px-1.5 py-0.2 text-[10px] font-mono">
-              {frontMatterEntries.length}
-            </span>
-          {/if}
-        </Button>
-      {/if}
-
       {#if moveUrl}
         <Button
           type="button"
@@ -426,11 +529,132 @@
     <input type="hidden" name="frontMatter" value={frontMatterJson} />
   </form>
 
-  <!-- Frontmatter Drawer -->
+  <!-- Front Matter: core fields stay inline, extras live in the drawer -->
+  {#if file.isMarkdown}
+    <section class="space-y-4" aria-labelledby="frontmatter-heading">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="space-y-1">
+          <h3 id="frontmatter-heading" class="text-lg font-medium">
+            Front Matter
+          </h3>
+          <p class="text-xs text-muted-foreground">
+            Core metadata stored at the top of the file.
+          </p>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          class="gap-1.5 text-xs"
+          onclick={() => (showFrontmatter = true)}
+        >
+          <Settings2 size={14} /> Additional fields
+          {#if additionalFrontmatterCount > 0}
+            <span
+              class="rounded-full bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] text-primary"
+            >
+              {additionalFrontmatterCount}
+            </span>
+          {/if}
+        </Button>
+      </div>
+
+      <Separator />
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="grid gap-2 md:col-span-2">
+          <Label for="frontmatter-title" class="font-semibold">Title</Label>
+          <Input
+            id="frontmatter-title"
+            value={getFrontmatterValue("title")}
+            placeholder="Enter title..."
+            oninput={(event) =>
+              setFrontmatterValue("title", event.currentTarget.value)}
+          />
+        </div>
+
+        <div class="grid gap-2">
+          <Label for="frontmatter-slug" class="font-semibold">Slug</Label>
+          <Input
+            id="frontmatter-slug"
+            class="font-mono text-xs"
+            value={getFrontmatterValue("slug")}
+            placeholder="e.g. my-first-post"
+            oninput={(event) =>
+              setFrontmatterValue("slug", event.currentTarget.value)}
+          />
+        </div>
+
+        <div class="grid gap-2">
+          <Label for="frontmatter-date" class="font-semibold">Date</Label>
+          <div class="flex items-center gap-2">
+            <Input
+              id="frontmatter-date"
+              class="font-mono text-xs"
+              value={getFrontmatterValue("date")}
+              placeholder="YYYY-MM-DDTHH:mm:ssZ"
+              oninput={(event) =>
+                setFrontmatterValue("date", event.currentTarget.value)}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              class="h-9 shrink-0 gap-1.5 text-[11px]"
+              title="Set to the current date and time"
+              onclick={() =>
+                setFrontmatterValue("date", new Date().toISOString())}
+            >
+              <Calendar size={12} /> Now
+            </Button>
+          </div>
+        </div>
+
+        <div class="grid gap-2 md:col-span-2">
+          <Label for="frontmatter-description" class="font-semibold">
+            Description
+          </Label>
+          <Textarea
+            id="frontmatter-description"
+            rows={3}
+            value={getFrontmatterValue("description")}
+            placeholder="Enter description..."
+            oninput={(event) =>
+              setFrontmatterValue("description", event.currentTarget.value)}
+          />
+        </div>
+
+        <div class="grid gap-2 md:col-span-2">
+          <Label for="frontmatter-draft" class="font-semibold">Draft</Label>
+          <div class="flex h-9 items-center gap-2 rounded-md border px-3">
+            <Checkbox
+              id="frontmatter-draft"
+              checked={basicDraft}
+              onCheckedChange={(checked) => setDraftValue(checked === true)}
+            />
+            <Label
+              for="frontmatter-draft"
+              class="cursor-pointer text-sm font-normal text-muted-foreground"
+            >
+              Hide from published builds
+            </Label>
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <TagManager tags={basicTags} onTagsChange={setTagsValue} />
+        </div>
+      </div>
+    </section>
+  {/if}
+
+  <!-- Additional frontmatter drawer (core fields are edited inline) -->
   {#if file.isMarkdown}
     <FrontmatterDrawer
       bind:open={showFrontmatter}
       bind:entries={frontMatterEntries}
+      hiddenKeys={BASIC_FRONTMATTER_KEYS}
       onchange={() => (hasUnsavedChanges = true)}
     />
   {/if}
