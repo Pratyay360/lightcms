@@ -12,7 +12,6 @@
 	const blocked = $derived(isNoindexPath(page.url.pathname));
 
 	const websiteSchema = $derived({
-		"@context": "https://schema.org",
 		"@type": "WebSite",
 		name: SITE.name,
 		url: SITE.origin,
@@ -29,7 +28,8 @@
 
 		const contributed = pageSeo.jsonLd;
 		const nodes = contributed === undefined ? [websiteSchema] : [websiteSchema, contributed].flat();
-		const json = JSON.stringify(nodes).replaceAll("<", "\\u003c");
+		const graph = { "@context": "https://schema.org", "@graph": nodes };
+		const json = JSON.stringify(graph).replaceAll("<", "\\u003c");
 
 		return `${LD_SCRIPT_OPEN}${json}${LD_SCRIPT_CLOSE}`;
 	});

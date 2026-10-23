@@ -8,7 +8,6 @@ export const prerender = true;
 export const load = (): { seo: PageSeoOverride } => ({
   seo: {
     jsonLd: {
-      "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       name: SITE.name,
       url: SITE.origin,
