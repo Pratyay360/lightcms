@@ -7,6 +7,8 @@ export const SITE = {
   contactFormUrl: "https://app.youform.com/forms/smwrhikc",
   sponsorUrl: "https://upi.pratyay.online",
   blogUrl: "https://light-cms.github.io",
+  twitterUrl: "https://x.com/lightcms5",
+  blueskyUrl: "https://bsky.app/@lightcms.bsky.app",
 } as const;
 
 export const HOME_TITLE = `${SITE.name} | Git backed CMS for static site generators`;

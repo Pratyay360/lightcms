@@ -1,4 +1,3 @@
-import { env } from "$env/dynamic/public";
 import { OpenTelemetry } from "@ai-sdk/otel";
 import { logs } from "@opentelemetry/api-logs";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
