@@ -17,7 +17,10 @@ const createLinter = async (): Promise<Linter> => {
 };
 
 const getLinter = (): Promise<Linter> => {
-  linterPromise ??= createLinter();
+  linterPromise ??= createLinter().catch((error: unknown) => {
+    linterPromise = null;
+    throw error;
+  });
   return linterPromise;
 };
 
@@ -46,5 +49,7 @@ export const lintText = async (text: string): Promise<HarperIssue[]> => {
 };
 
 export const primeHarper = (): void => {
-  void getLinter();
+  getLinter().catch((error: unknown) => {
+    console.error("[harper] linter setup failed:", error);
+  });
 };
