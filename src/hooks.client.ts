@@ -1,4 +1,5 @@
 import { dev } from "$app/environment";
+import { env } from "$env/dynamic/public";
 import type { HandleClientError } from "@sveltejs/kit";
 import posthog from "posthog-js";
 
@@ -9,13 +10,13 @@ export function isPostHogInitialized() {
 }
 
 export function init() {
-  const key = process.env.PUBLIC_POSTHOG_KEY!;
-  const host = process.env.PUBLIC_POSTHOG_HOST!;
+  const key = env.PUBLIC_POSTHOG_KEY;
+  const host = env.PUBLIC_POSTHOG_HOST;
 
   if (!key) {
     if (dev) {
-      throw new Error(
-        "PUBLIC_POSTHOG_KEY variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once PUBLIC_POSTHOG_KEY is configured",
+      console.warn(
+        "PUBLIC_POSTHOG_KEY variable required by PostHog is missing or un-configured, this causes events to be silently missed. This warning stops appearing once PUBLIC_POSTHOG_KEY is configured",
       );
     }
     return;
@@ -23,8 +24,8 @@ export function init() {
 
   if (!host) {
     if (dev) {
-      throw new Error(
-        "PUBLIC_POSTHOG_HOST variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once PUBLIC_POSTHOG_HOST is configured",
+      console.warn(
+        "PUBLIC_POSTHOG_HOST variable required by PostHog is missing or un-configured, this causes events to be silently missed. This warning stops appearing once PUBLIC_POSTHOG_HOST is configured",
       );
     }
     return;

@@ -76,7 +76,7 @@ preserving options to ease the process:
 2. **Select Repository**: Pick the GitHub repository containing your static blog or website (Astro, Hugo, SvelteKit, Jekyll, Next.js, etc.).
 3. **Write & Format**: Create new articles or edit existing posts with real time visual feedback, asset uploads, and front matter management.
 4. **Publish**: LightCMS automatically creates a commit or pull request to your chosen branch.
-5. **Automated Deployment**: Your existing build pipeline cloudflare pages, netlify, or vercel integrates with LightCMS to automatically deploy your site. But for custom deployment needs, 
+5. **Automated Deployment**: Your existing build pipeline cloudflare pages, netlify, or vercel integrates with LightCMS to automatically deploy your site. But for custom deployment needs,
 
 ### Dont't worry we have a lot of preconfigured sample repositories with ci pipelines to deploy on github pagess
 
