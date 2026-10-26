@@ -67,11 +67,11 @@ Once your repository is configured, you never need a terminal to publish:
 
 ## What It Costs
 
-| Item                                     | Cost                      |
-| :--------------------------------------- | :------------------------ |
-| Static site generator                    | Free (open source)        |
-| Hosting (Cloudflare Pages, GitHub Pages) | Free tier                 |
-| Git-backed CMS (LightCMS, self-hosted)   | Free (Apache 2.0)         |
+| Item                                     | Cost               |
+| :--------------------------------------- | :----------------- |
+| Static site generator                    | Free (open source) |
+| Hosting (Cloudflare Pages, GitHub Pages) | Free tier          |
+| Git-backed CMS (LightCMS, self-hosted)   | Free (Apache 2.0)  |
 
 You can run a serious publication for the price of a domain name.
 There is a fourth column nobody lists: energy. A static blog served from cdn emits a fraction of the CO2 of a server rendered site.

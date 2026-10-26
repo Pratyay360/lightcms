@@ -59,8 +59,9 @@ You cannot improve what you do, if not measured:
 ## Where LightCMS Fits
 
 > LightCMS works on exactly:
-  - content is committed as Markdown to your own repository, published by a static site generator, and served as compiled minified files from your hosting provider's edge network.
-  - The CMS itself runs only while you are writing there is no production database serving readers, because readers are served by a CDN.
+
+- content is committed as Markdown to your own repository, published by a static site generator, and served as compiled minified files from your hosting provider's edge network.
+- The CMS itself runs only while you are writing there is no production database serving readers, because readers are served by a CDN.
 
 ### Cost of running Static Sites
 

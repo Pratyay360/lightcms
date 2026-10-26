@@ -14,6 +14,7 @@
   import { page } from "$app/state";
   import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
   import MetaTags from "$lib/components/custom/MetaTags.svelte";
+  import StarRepoDialog from "$lib/components/custom/StarRepoDialog.svelte";
   import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
   import { Avatar } from "$lib/components/ui/avatar";
   import { Button } from "$lib/components/ui/button";
@@ -35,6 +36,7 @@ const userInitial = $derived(
 
 let posthogClient: typeof import("posthog-js").default | undefined;
 let identifiedUserId: string | undefined;
+let starDialogOpen = $state(false);
 
 function identifyCurrentUser() {
   if (!user) {
@@ -60,15 +62,28 @@ onMount(async () => {
 
   posthogClient = (await import("posthog-js")).default;
   identifyCurrentUser();
+
+  const dismissed = localStorage.getItem("lightcms-star-dialog-dismissed");
+  if (!dismissed) {
+    setTimeout(() => {
+      starDialogOpen = true;
+    }, 3000);
+  }
 });
 
 $effect(() => {
   identifyCurrentUser();
 });
+
+function dismissStarDialog() {
+  localStorage.setItem("lightcms-star-dialog-dismissed", "true");
+  starDialogOpen = false;
+}
 </script>
 
 <ModeWatcher defaultTheme={DEFAULT_THEME_ID} modeStorageKey={MODE_STORAGE_KEY} themeStorageKey={THEME_STORAGE_KEY} />
 <Toaster />
+<StarRepoDialog bind:open={starDialogOpen} />
 
 <MetaTags />
 

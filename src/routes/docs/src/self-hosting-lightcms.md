@@ -73,6 +73,7 @@ LightCMS uses a GitHub App for two things: signing users in with GitHub (OAuth),
 through installations. You can create it with the built in Probot setup wizard, or by hand.
 
 ### Option A: Probot setup wizard
+
 start the bot with:
 
 ```bash
@@ -84,7 +85,6 @@ With no credentials in `.env`, Probot starts a setup server at `http://localhost
 1. Open `http://localhost:3000` and click **Register GitHub App**.
 2. Choose your personal account or an organization.
 3. Confirm. Probot creates the app and writes its credentials to your `.env` file.
-
 
 The wizard sets the app's webhook URL to a Smee channel (or `http://localhost:3000/`), not to LightCMS's webhook
 endpoint. Update it in the GitHub App settings before going live (see [Production deployment](#6-production-deployment)).
@@ -279,8 +279,6 @@ bun run dev
 
 ![permissions detailed](https://i.ibb.co/0p7tk88V/image.png)
 
-
-
 LightCMS is now available at `http://localhost:5173`. Set `BETTER_AUTH_URL` to this address, and sign in with GitHub for the first time.
 
 ### Testing webhooks locally
@@ -318,9 +316,9 @@ bun run preview
 
 ## Troubleshooting
 
-Make a account with [Wit.ai](https://wit.ai/) it's a free service by meta                                  |
-And any openai compatible API for transcription.                                                           |
-One can use [groq](https://groq.com/) or [assemblyai](https://assemblyai.com/) or                          |
+Make a account with [Wit.ai](https://wit.ai/) it's a free service by meta |
+And any openai compatible API for transcription. |
+One can use [groq](https://groq.com/) or [assemblyai](https://assemblyai.com/) or |
 [elevenlabs](https://elevenlabs.io/) or [deepgram](https://deepgram.com/) or [sarvam](https://sarvam.ai/). |
 
 ## For development purpose you can use the following credentials for posthog
@@ -328,15 +326,12 @@ One can use [groq](https://groq.com/) or [assemblyai](https://assemblyai.com/) o
 PUBLIC_POSTHOG_KEY = "phc_AS2JXQsqEwNNreH5kra5Eefd5TijExE5eiLfwdzXLhPg"
 PUBLIC_POSTHOG_URL = "https://us.i.posthog.com"
 
-
 ```env
 PUBLIC_POSTHOG_KEY=phc_AS2JXQsqEwNNreH5kra5Eefd5TijExE5eiLfwdzXLhPg
 PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
-
 https://wit.ai
-
 
 ![wit.ai](https://i.ibb.co/MySskPTt/image.png)
 
@@ -344,7 +339,6 @@ https://wit.ai
 WIT_AI_TOKEN="Server access token"
 WIT_AI_CLIENT_TOKEN="Client access token"
 ```
-
 
 ```env
 APP_ID=
@@ -359,7 +353,7 @@ GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
 GITHUB_PRIVATE_KEY=
 GITHUB_WEBHOOK_SECRET=
-MAIL_FROM= 
+MAIL_FROM=
 MAIL_HOST=
 MAIL_PASS=
 MAIL_PORT=
@@ -378,6 +372,5 @@ WEBHOOK_SECRET=
 WIT_AI_CLIENT_TOKEN=
 WIT_AI_TOKEN=
 ```
-
 
 ![configuration for the bot](https://i.ibb.co/jP5tgcJH/image.png)

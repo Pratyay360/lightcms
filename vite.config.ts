@@ -2,69 +2,35 @@ import adapter from "@sveltejs/adapter-vercel";
 import { sveltekit } from "@sveltejs/kit/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { mdsvex } from "mdsvex";
-import { defineConfig, lazyPlugins } from "vite-plus";
+import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   fmt: {},
   lint: {
-    jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
-    rules: { "vite-plus/prefer-vite-plus-imports": "error" },
     options: { typeAware: true, typeCheck: true },
   },
   server: {
     allowedHosts: true,
   },
-  resolve: {
-    dedupe: [
-      "prosemirror-model",
-      "prosemirror-state",
-      "prosemirror-view",
-      "prosemirror-transform",
-      "prosemirror-commands",
-      "prosemirror-keymap",
-      "prosemirror-history",
-      "prosemirror-inputrules",
-      "prosemirror-schema-list",
-      "prosemirror-gapcursor",
-      "prosemirror-dropcursor",
-      "prosemirror-tables",
-      "prosemirror-changeset",
-    ],
-  },
-  ssr: {
-    noExternal: [
-      "vite-plus",
-      "better-auth",
-      "@better-auth/core",
-      "@better-auth/drizzle-adapter",
-      "@better-auth/infra",
-      "@better-auth/passkey",
-      "@better-auth/telemetry",
-      "@better-auth/utils",
-    ],
-  },
-
-  plugins: lazyPlugins(async () => [
-    {
-      name: "superforms-skip-dead-default",
-      enforce: "pre",
-    },
+  plugins: [
     tailwindcss(),
     sveltekit({
       adapter: adapter(),
       paths: {
-        relative: false,
+        relative: true,
       },
       experimental: {
         remoteFunctions: true,
         forkPreloads: true,
       },
-      typescript: {
-        config: (config) => {
-          config.include.push("../drizzle.config.ts");
+      vitePlugin: {
+        inspector: {
+          // toggleKeyCombo: "alt-x",
+          showToggleButton: "active",
+          toggleButtonPos: "bottom-right",
         },
       },
     }),
     mdsvex({ extensions: [".svelte", ".md"] }),
-  ]),
+  ],
 });
