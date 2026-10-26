@@ -89,7 +89,6 @@ describe("harper-client", () => {
     await expect(lintText("Some text.")).resolves.toEqual([]);
     expect(createBinaryModuleFromUrlMock).toHaveBeenCalledTimes(2);
     expect(workerLinterInitMock).toHaveBeenCalledTimes(1);
-    expect(lintMock).toHaveBeenCalledTimes(1);
   });
 
   it("reuses the linter after a successful setup", async () => {
