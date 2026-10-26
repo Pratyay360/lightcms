@@ -181,5 +181,8 @@
     "esbuild",
     "svelte-preprocess",
     "protobufjs"
-  ]
+  ],
+  "allowScripts": {
+    "core-js": true
+  }
 }
