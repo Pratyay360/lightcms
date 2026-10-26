@@ -1,4 +1,4 @@
-import { type Lint, type Linter, WorkerLinter } from "harper.js";
+import { createBinaryModuleFromUrl, type Lint, type Linter, WorkerLinter } from "harper.js";
 import { binary } from "harper.js/binary";
 import type { HarperIssue } from "./types.ts";
 
@@ -10,8 +10,15 @@ const nextIssueId = (): string => {
   return `harper-${issueCounter}`;
 };
 
+/**
+ * `WorkerLinter` calls `setup()` on its binary without handling the rejection, and a binary
+ * module keeps a failed load. This function loads a fresh module first, so a failed WASM fetch
+ * rejects in this chain. The next attempt then fetches the binary again.
+ */
 const createLinter = async (): Promise<Linter> => {
-  const worker = new WorkerLinter({ binary });
+  const wasmModule = createBinaryModuleFromUrl(binary.url.toString(), binary.glueFlavor);
+  await wasmModule.setup();
+  const worker = new WorkerLinter({ binary: wasmModule });
   await worker.setup();
   return worker;
 };
