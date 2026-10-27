@@ -177,6 +177,8 @@ function dismissStarDialog() {
 
     <Button href="https://app.youform.com/forms/smwrhikc">Contact Us</Button>
 
+    <a href="https://startupfa.me/s/lightcms?utm_source=www.lightcms.me" target="_blank"><img src="https://startupfa.me/badge?t=small&theme=dark&r=full" alt="LightCMS - Featured on Startup Fame" width="240" height="36" /></a>
+
     <Carbonbadge />
   </div>
 </footer>
