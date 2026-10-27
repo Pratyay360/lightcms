@@ -1,0 +1,38 @@
+# LightCMS Skills
+
+> A skill for building, customizing, porting, and publishing static-site templates that are compatible with LightCMS, covering Hugo, Astro/Starlight, Zola, Eleventy, Jekyll, Zine, and mdBook.
+
+This skill encodes the conventions shared by the `light-cms` template repositories and the failure modes that appear when a normal static-site project is connected to LightCMS: content discovery, YAML front matter, slug and filename rules, ISO dates, `mise.toml` tasks, and CI deployment. The repository root is the skill itself — `SKILL.md` is the entry point, `references/` holds per-generator deep dives, and `scripts/check-content.mjs` validates the content contract.
+
+Start with SKILL.md, then follow its routing table to one reference.
+
+## Start here
+
+- [SKILL.md](SKILL.md): Entry point — the seven-point content contract, request routing, generator matrix, template build steps, validation checklist, and failure modes
+- [README.md](README.md): Install the skill, repository layout, and how to run the content checker
+
+## References
+
+- [content-contract.md](references/content-contract.md): The shared layer every template must satisfy — LightCMS discovery, front matter, slug, and content-authoring rules
+- [hugo.md](references/hugo.md): Building or customizing the Hugo template, including the richer `blogtemplate` variant
+- [astro.md](references/astro.md): Building or customizing the Astro/Starlight documentation-and-blog template
+- [zola.md](references/zola.md): Building or customizing the single-binary Zola template
+- [eleventy.md](references/eleventy.md): Building or customizing the minimal-JavaScript Eleventy template
+- [jekyll.md](references/jekyll.md): Building or customizing the Jekyll template, especially filename and date handling with the `nodate` plugin
+- [zine.md](references/zine.md): Working with the Zine two-repository setup and the Markdown-to-SuperMD conversion step
+- [mdbook.md](references/mdbook.md): Building or customizing the mdBook documentation template
+- [deployment.md](references/deployment.md): Wiring GitHub Pages, Cloudflare Pages, Vercel, Netlify, or Surge
+- [quality-checklist.md](references/quality-checklist.md): Reviewing a finished template or a port before handoff
+
+## Scripts
+
+- [check-content.mjs](scripts/check-content.mjs): Validates a content root; exits non-zero on missing titles/descriptions, invalid dates, non-boolean drafts, and epoch filenames
+
+```bash
+node scripts/check-content.mjs content
+node scripts/check-content.mjs src
+node scripts/check-content.mjs _posts
+node scripts/check-content.mjs src --allow-no-frontmatter   # mdBook
+```
+
+TOML front matter is accepted because Hugo and Zola samples often use it; LightCMS itself writes YAML, so always test at least one YAML entry.
