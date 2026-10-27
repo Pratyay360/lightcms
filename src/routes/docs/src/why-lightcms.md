@@ -1,6 +1,6 @@
 ---
 title: Why LightCMS?
-description: The philosophy behind LightCMS — why writing should be frictionless, why Git-backed content matters, and keeping complexity away from the writer.
+description: The philosophy behind LightCMS — why writing should be frictionless, why Git backed content matters, and keeping complexity away from the writer.
 serial: 2
 date: 2026-09-18T00:41:00Z
 draft: false
