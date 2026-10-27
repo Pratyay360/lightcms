@@ -1,0 +1,19 @@
+{
+  "skill_name": "lightcms-skills",
+  "evals": [
+    {
+      "id": 0,
+      "name": "zola-template-from-scratch",
+      "prompt": "Create a new LightCMS-ready Zola blog template in the current directory. It needs a home page, an about page, a blog section with two sample posts, a 404 page, plain CSS, a favicon, a mise.toml with preview and build tasks, and a GitHub Actions workflow that deploys to GitHub Pages at https://example.github.io/my-blog/. A writer using LightCMS should be able to create a post with title, description, date, draft, and tags and see it at a clean URL. Build the site and verify the rendered pages. Do not copy an existing repository; create the files.",
+      "expected_output": "A complete Zola site that builds to public/, with human-slug sample posts, YAML front matter accepted by LightCMS, correct base_url, mise tasks, and a Pages workflow uploading ./public.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "jekyll-lightcms-filename-repair",
+      "prompt": "This Jekyll blog is connected to LightCMS. New posts saved as _posts/hello-world.md never show up on the site. Find out why and fix it so LightCMS-created filenames load, add a default post layout so writers do not have to add one, and keep the existing post filename. Do not rename the post to a date-prefixed filename. Check that the configuration is consistent for a site served at /my-blog/ and update the README with the fix.",
+      "expected_output": "The repo includes a Jekyll post reader override that accepts non-date filenames, a _config.yml default that applies the post layout, the original _posts/hello-world.md unchanged, and a README note explaining LightCMS filename compatibility.",
+      "files": []
+    }
+  ]
+}
