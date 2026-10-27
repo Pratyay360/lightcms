@@ -24,7 +24,7 @@ import Sparkles from "@lucide/svelte/icons/sparkles";
         Fall back in love with writing again.
       </h1>
       <p class="text-base leading-relaxed text-muted-foreground sm:text-lg">
-        Giving everyone a voice to speak. A lightweight, Git backed content workspace for sharing and publishing experiences with zero friction.
+        Giving everyone a voice to speak. A lightweight, Git backed headless content workspace for sharing experiences over the web with zero friction.
       </p>
     </div>
 
@@ -77,6 +77,16 @@ import Sparkles from "@lucide/svelte/icons/sparkles";
         <p class="text-xs leading-relaxed text-muted-foreground">
           Leverage GitHub's platform and git's version control capabilities for managing content of your static site.
         </p>
+      </div>
+      <div class="space-y-3 p-4 rounded-xl border border-border bg-card text-card-foreground shadow-xs">
+        <FileText size={20} class="text-primary" />
+        <h3 class="text-sm font-bold text-foreground">Integrate LightCMS with your static site</h3>
+        <p class="text-xs leading-relaxed text-muted-foreground">
+          Want to use lightcms with your existing static site? use <code class="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">llms.txt</code> for your LLM adapt accordingly.
+        </p>
+        <a href="/skills/llms.txt" class="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+          Use llms.txt <ArrowRight size={12} />
+        </a>
       </div>
     </div>
   </div>
