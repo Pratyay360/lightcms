@@ -1,43 +1,16 @@
 <p align="center">
-  <img alt="header" src="https://shieldcn.dev/header/gradient.svg?title=Light+CMS&amp;subtitle=A+lightweight%2C+Git-backed+content+workspace&amp;mode=dark" />
+  <img alt="header" src="https://shieldcn.dev/header/gradient.svg?title=Light+cms&amp;subtitle=A+simple%2C+easy+to+use%2C+Git+based+headless+CMS+that+works+with+any+static+site+generator+%28SSG%29.&amp;mode=dark" />
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/stars/light-cms/lightcms.svg?variant=secondary" /><img alt="GitHub Stars" src="https://shieldcn.dev/github/stars/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/forks/light-cms/lightcms.svg?variant=secondary" /><img alt="GitHub Forks" src="https://shieldcn.dev/github/forks/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/watchers/light-cms/lightcms.svg?variant=secondary" /><img alt="Watchers" src="https://shieldcn.dev/github/watchers/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/branches/light-cms/lightcms.svg?variant=ghost" /><img alt="Branches" src="https://shieldcn.dev/github/branches/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/contributors/light-cms/lightcms.svg?theme=emerald" /><img alt="Contributors" src="https://shieldcn.dev/github/contributors/light-cms/lightcms.svg?theme=emerald&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/last-commit/light-cms/lightcms.svg?variant=secondary" /><img alt="Last commit" src="https://shieldcn.dev/github/last-commit/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/commits/light-cms/lightcms.svg?variant=secondary" /><img alt="Commits" src="https://shieldcn.dev/github/commits/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/open-issues/light-cms/lightcms.svg?variant=secondary" /><img alt="Open issues" src="https://shieldcn.dev/github/open-issues/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/closed-issues/light-cms/lightcms.svg?variant=ghost" /><img alt="Closed issues" src="https://shieldcn.dev/github/closed-issues/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/open-prs/light-cms/lightcms.svg?variant=secondary" /><img alt="Open PRs" src="https://shieldcn.dev/github/open-prs/light-cms/lightcms.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/closed-prs/light-cms/lightcms.svg?variant=ghost" /><img alt="Closed PRs" src="https://shieldcn.dev/github/closed-prs/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/merged-prs/light-cms/lightcms.svg?variant=ghost" /><img alt="Merged PRs" src="https://shieldcn.dev/github/merged-prs/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/license/light-cms/lightcms.svg?variant=ghost" /><img alt="License" src="https://shieldcn.dev/github/license/light-cms/lightcms.svg?variant=ghost&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Package_mgr-Bun-000000.svg?variant=branded&amp;logo=bun" /><img alt="Package mgr · Bun" src="https://shieldcn.dev/badge/Package_mgr-Bun-000000.svg?variant=branded&amp;mode=light&amp;logo=bun" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Language-TypeScript-3178C6.svg?variant=branded&amp;logo=typescript" /><img alt="Language · TypeScript" src="https://shieldcn.dev/badge/Language-TypeScript-3178C6.svg?variant=branded&amp;mode=light&amp;logo=typescript" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Lint-Biome-60A5FA.svg?variant=branded&amp;logo=biome" /><img alt="Lint · Biome" src="https://shieldcn.dev/badge/Lint-Biome-60A5FA.svg?variant=branded&amp;mode=light&amp;logo=biome" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Bundler-Vite-646CFF.svg?variant=branded&amp;logo=vite" /><img alt="Bundler · Vite" src="https://shieldcn.dev/badge/Bundler-Vite-646CFF.svg?variant=branded&amp;mode=light&amp;logo=vite" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-AI_SDK_%C2%B7_OpenAI-412991.svg?variant=branded&amp;logo=openai" /><img alt="AI SDK · OpenAI" src="https://shieldcn.dev/badge/Stack-AI_SDK_%C2%B7_OpenAI-412991.svg?variant=branded&amp;mode=light&amp;logo=openai" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-AI_SDK-000000.svg?variant=branded&amp;logo=vercel" /><img alt="AI SDK" src="https://shieldcn.dev/badge/Stack-AI_SDK-000000.svg?variant=branded&amp;mode=light&amp;logo=vercel" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-PostgreSQL-4169E1.svg?variant=branded&amp;logo=postgresql" /><img alt="PostgreSQL" src="https://shieldcn.dev/badge/Stack-PostgreSQL-4169E1.svg?variant=branded&amp;mode=light&amp;logo=postgresql" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-Zustand-FFB800.svg?variant=branded&amp;logo=zustand" /><img alt="Zustand" src="https://shieldcn.dev/badge/Stack-Zustand-FFB800.svg?variant=branded&amp;mode=light&amp;logo=zustand" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-SvelteKit-FF3E00.svg?variant=branded&amp;logo=svelte" /><img alt="SvelteKit" src="https://shieldcn.dev/badge/Stack-SvelteKit-FF3E00.svg?variant=branded&amp;mode=light&amp;logo=svelte" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-Better_Auth-000000.svg?variant=branded&amp;logo=ri%3ARiShieldKeyholeFill" /><img alt="Better Auth" src="https://shieldcn.dev/badge/Stack-Better_Auth-000000.svg?variant=branded&amp;mode=light&amp;logo=ri%3ARiShieldKeyholeFill" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-Drizzle-C5F74F.svg?variant=branded&amp;logo=drizzle" /><img alt="Drizzle" src="https://shieldcn.dev/badge/Stack-Drizzle-C5F74F.svg?variant=branded&amp;mode=light&amp;logo=drizzle" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-Playwright-2EAD33.svg?variant=branded&amp;logo=playwright" /><img alt="Playwright" src="https://shieldcn.dev/badge/Stack-Playwright-2EAD33.svg?variant=branded&amp;mode=light&amp;logo=playwright" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Stack-Tailwind_CSS-06B6D4.svg?variant=branded&amp;logo=tailwindcss" /><img alt="Tailwind CSS" src="https://shieldcn.dev/badge/Stack-Tailwind_CSS-06B6D4.svg?variant=branded&amp;mode=light&amp;logo=tailwindcss" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/ESM-only-16a34a.svg?variant=secondary" /><img alt="ESM only" src="https://shieldcn.dev/badge/ESM-only-16a34a.svg?variant=secondary&amp;mode=light" /></picture>
-  <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Agent--friendly-AGENTS.md-D97757.svg?variant=secondary" /><img alt="Agent-friendly AGENTS.md" src="https://shieldcn.dev/badge/Agent--friendly-AGENTS.md-D97757.svg?variant=secondary&amp;mode=light" /></picture>
   <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Sponsor-GitHub-ea4aaa.svg?variant=secondary&amp;logo=githubsponsors" /><img alt="GitHub Sponsors" src="https://shieldcn.dev/badge/Sponsor-GitHub-ea4aaa.svg?variant=secondary&amp;mode=light&amp;logo=githubsponsors" /></picture>
 </p>
-
 <p align="center">
   <img alt="badge" src="https://shieldcn.dev/npm/react.svg" />
   <img alt="badge" src="https://shieldcn.dev/github/light-cms/lightcms/stars.svg" />
 </p>
+
+[![releaseszn](https://releaseszn.com/badge/lightcms.svg)](https://releaseszn.com/p/lightcms)
 
 ## Overview
 
