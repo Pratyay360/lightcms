@@ -4,10 +4,10 @@ Hugo is the safest default for large blogs and content-heavy sites. It reads YAM
 
 ## Two variants in the `light-cms` org
 
-| Variant | Use it for | Content path | Theme |
-| --- | --- | --- | --- |
-| `hugo_blog` | Minimal starter, no external dependencies | `content/posts` | Built-in layouts in `layouts/` |
-| `blogtemplate` | Personal blog with richer styling and editor schema | `content/post` | Built-in theme, Sass, pagefind, Surge deploy |
+| Variant        | Use it for                                          | Content path    | Theme                                        |
+| -------------- | --------------------------------------------------- | --------------- | -------------------------------------------- |
+| `hugo_blog`    | Minimal starter, no external dependencies           | `content/posts` | Built-in layouts in `layouts/`               |
+| `blogtemplate` | Personal blog with richer styling and editor schema | `content/post`  | Built-in theme, Sass, pagefind, Surge deploy |
 
 Start from `hugo_blog` unless the user asks for the richer blog. Do not copy `blogtemplate` wholesale into a new project without trimming its personal configuration.
 
@@ -72,7 +72,7 @@ Hugo accepts YAML, so a LightCMS-created file works:
 ---
 title: First Post
 description: What this starter includes.
-date: '2026-01-10T00:00:00Z'
+date: "2026-01-10T00:00:00Z"
 draft: false
 tags:
   - intro

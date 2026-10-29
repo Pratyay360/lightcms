@@ -1,7 +1,9 @@
 ---
 title: Self Hosting LightCMS
-description: Step by step guide to self hosting LightCMS, covering the GitHub App, PostgreSQL, environment variables, optional AI, image CDN and email services, and deploying to Vercel.
+description: Guide to self host LightCMS, covering the GitHub App, PostgreSQL, environment variables, optional AI, CDN and email, and deploying to edge.
 serial: 4
+section: Get Started
+badge: Deploy
 date: 2026-09-18T01:45:00Z
 draft: false
 tags:
@@ -11,8 +13,9 @@ tags:
   - deployment
 keywords:
   - lightcms
+  - probot
   - self-hosting
-  - github app
+  - github_app
   - vercel
   - sveltekit
 preview: /og-image.png
@@ -152,9 +155,7 @@ the Probot wizard writes it.
 
 ### Required for development
 
-LightCMS reports analytics and errors to [PostHog](https://posthog.com). When the keys are missing, the app **throws in
-development** to stop events being silently dropped. In production they are optional, and telemetry is skipped when
-they are unset.
+LightCMS reports analytics and errors to [PostHog](https://posthog.com). When the keys are missing, the app **throws in development** to stop events being silently dropped. In production they are optional, and telemetry is skipped when they are unset.
 
 ```bash
 PUBLIC_POSTHOG_KEY="phc_xxxxxxxxxxxx"

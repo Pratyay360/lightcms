@@ -33,6 +33,7 @@ const user = $derived(data.user);
 const userInitial = $derived(
   (user?.name ?? user?.email ?? "U").charAt(0).toUpperCase(),
 );
+const isDocs = $derived(page.url.pathname.startsWith("/docs"));
 
 let posthogClient: typeof import("posthog-js").default | undefined;
 let identifiedUserId: string | undefined;
@@ -96,7 +97,7 @@ function dismissStarDialog() {
     class="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md transition-colors"
   >
     <div
-      class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
+      class="mx-auto flex h-16 {isDocs ? 'max-w-[1536px]' : 'max-w-7xl'} items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
     >
       <a
         class="group flex items-center gap-2.5 rounded-lg p-1.5 focus-visible:outline-2 focus-visible:outline-primary"
@@ -106,7 +107,7 @@ function dismissStarDialog() {
         <span
           class="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-105 group-hover:rotate-3"
         >
-          <FileBadge2Icon size={20} />
+          <image src="/"/>
         </span>
         <span
           class="hidden text-sm font-black tracking-wider uppercase text-foreground sm:inline"
@@ -124,10 +125,10 @@ function dismissStarDialog() {
           <span class="hidden sm:inline">CMS</span>
         </a>
         <a
-          class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 {page.url.pathname.startsWith('/docs') ? 'bg-primary/10 text-primary' : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'}"
+          class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 {isDocs ? 'bg-primary/10 text-primary' : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'}"
           href="/docs"
           aria-label="Documentation"
-          aria-current={page.url.pathname.startsWith("/docs") ? "page" : undefined}
+          aria-current={isDocs ? "page" : undefined}
         >
           <BookOpen size={15} />
           <span class="hidden sm:inline">Docs</span>
@@ -163,21 +164,21 @@ function dismissStarDialog() {
   <div class="relative overflow-hidden">
     <main
       id="main-content"
-      class="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 relative z-10"
+      class="{isDocs ? 'mx-auto w-full max-w-[1536px] px-4 sm:px-6 lg:px-8 py-4 sm:py-6' : 'mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8'} relative z-10"
     >
       {@render children()}
     </main>
   </div>
   <footer class="border-t border-border/50 py-8 text-center text-xs text-muted-foreground bg-muted/20">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <div class="mx-auto {isDocs ? 'max-w-[1536px]' : 'max-w-7xl'} px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
     <div class="flex items-center gap-1.5 font-bold text-foreground">
       <Sparkles size={14} class="text-primary" />
       <span>LightCMS</span>
     </div>
 
-    <Button href="https://app.youform.com/forms/smwrhikc">Contact Us</Button>
+    <Button href="https://app.youform.com/forms/smwrhikc" target="_blank" rel="noopener noreferrer">Contact Us</Button>
 
-    <a href="https://startupfa.me/s/lightcms?utm_source=www.lightcms.me" target="_blank"><img src="https://startupfa.me/badge?t=small&theme=dark&r=full" alt="LightCMS - Featured on Startup Fame" width="240" height="36" /></a>
+    <a href="https://startupfa.me/s/lightcms?utm_source=www.lightcms.me" target="_blank" rel="noopener noreferrer"><img src="https://startupfa.me/badge?t=small&theme=dark&r=full" alt="LightCMS - Featured on Startup Fame" width="240" height="36" /></a>
 
     <Carbonbadge />
   </div>

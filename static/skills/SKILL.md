@@ -29,28 +29,28 @@ Treat these as the definition of “LightCMS-ready.” Each one exists because b
 
 Pick one primary route before editing. If the request is ambiguous, inspect the repository first; the presence of `hugo.toml`, `astro.config.mjs`, `_config.yml`, `eleventy.config.js`, `zola.toml`, `book.toml`, or `.smd` files usually settles it.
 
-| Intent | Route |
-| --- | --- |
-| Create a new template from scratch | Read [references/content-contract.md](references/content-contract.md), then the matching SSG reference |
-| Customize a copied template (rename, theme, add pages) | Read the matching SSG reference and [references/quality-checklist.md](references/quality-checklist.md) |
-| Port an existing site to LightCMS | Read [references/content-contract.md](references/content-contract.md) and the matching SSG reference; focus on collection discovery and filename compatibility |
-| Author or fix content in an existing LightCMS repo | Read [references/content-contract.md](references/content-contract.md); only load an SSG reference when a build or URL issue appears |
-| Deploy or fix CI | Read [references/deployment.md](references/deployment.md) and the matching SSG reference |
-| Add a new SSG variant | Follow the structure of an existing reference, then add a row to the matrix below and a link in this file |
+| Intent                                                 | Route                                                                                                                                                          |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Create a new template from scratch                     | Read [references/content-contract.md](references/content-contract.md), then the matching SSG reference                                                         |
+| Customize a copied template (rename, theme, add pages) | Read the matching SSG reference and [references/quality-checklist.md](references/quality-checklist.md)                                                         |
+| Port an existing site to LightCMS                      | Read [references/content-contract.md](references/content-contract.md) and the matching SSG reference; focus on collection discovery and filename compatibility |
+| Author or fix content in an existing LightCMS repo     | Read [references/content-contract.md](references/content-contract.md); only load an SSG reference when a build or URL issue appears                            |
+| Deploy or fix CI                                       | Read [references/deployment.md](references/deployment.md) and the matching SSG reference                                                                       |
+| Add a new SSG variant                                  | Follow the structure of an existing reference, then add a row to the matrix below and a link in this file                                                      |
 
 ## Choose the generator
 
 Use the user's stated generator. If they have no preference, recommend based on the job rather than novelty.
 
-| Generator | Best for | Native content root | Output | URL source | Main LightCMS gotcha |
-| --- | --- | --- | --- | --- | --- |
-| **Hugo** | Large blogs, fast builds, built-in theme | `content/` | `public/` | Filename or `url` | `baseURL` must include the project path on GitHub Pages |
-| **Astro + Starlight** | Docs, guides, small blogs | `src/content/docs/` | `dist/` | File path or `slug` | Epoch filenames become epoch URLs unless a slug is set |
-| **Zola** | Single binary, no runtime | `content/` | `public/` | Filename, `slug`, or `path` | YAML works, but date quoting and `sort_by = "date"` need testing |
-| **Eleventy** | Minimal JS, full templating control | `src/` | `_site/` | File path or `permalink` | `pathPrefix` must match the deploy path |
-| **Jekyll** | GitHub Pages heritage, Ruby | `_posts/` | `_site/` | Filename/date or `permalink` | Default post reader rejects non-date filenames; include `nodate.rb` |
-| **Zine** | SuperMD/zine-ssg experiments | `content/` | `public/` | File path | `.smd` is not Markdown; use the md2smd bridge or pick another generator |
-| **mdBook** | Documentation books | `src/` | `book/` | `SUMMARY.md` | New chapters need a `SUMMARY.md` entry; front matter is not native |
+| Generator             | Best for                                 | Native content root | Output    | URL source                   | Main LightCMS gotcha                                                    |
+| --------------------- | ---------------------------------------- | ------------------- | --------- | ---------------------------- | ----------------------------------------------------------------------- |
+| **Hugo**              | Large blogs, fast builds, built-in theme | `content/`          | `public/` | Filename or `url`            | `baseURL` must include the project path on GitHub Pages                 |
+| **Astro + Starlight** | Docs, guides, small blogs                | `src/content/docs/` | `dist/`   | File path or `slug`          | Epoch filenames become epoch URLs unless a slug is set                  |
+| **Zola**              | Single binary, no runtime                | `content/`          | `public/` | Filename, `slug`, or `path`  | YAML works, but date quoting and `sort_by = "date"` need testing        |
+| **Eleventy**          | Minimal JS, full templating control      | `src/`              | `_site/`  | File path or `permalink`     | `pathPrefix` must match the deploy path                                 |
+| **Jekyll**            | GitHub Pages heritage, Ruby              | `_posts/`           | `_site/`  | Filename/date or `permalink` | Default post reader rejects non-date filenames; include `nodate.rb`     |
+| **Zine**              | SuperMD/zine-ssg experiments             | `content/`          | `public/` | File path                    | `.smd` is not Markdown; use the md2smd bridge or pick another generator |
+| **mdBook**            | Documentation books                      | `src/`              | `book/`   | `SUMMARY.md`                 | New chapters need a `SUMMARY.md` entry; front matter is not native      |
 
 ## Build a template
 
@@ -105,18 +105,18 @@ For a content-only change, run the same build and check the changed page. A cont
 
 ## References
 
-| File | Read it when |
-| --- | --- |
-| [references/content-contract.md](references/content-contract.md) | You need the exact LightCMS discovery, front matter, slug, or content-authoring rules |
-| [references/hugo.md](references/hugo.md) | Building or customizing the Hugo template (including the richer `blogtemplate` variant) |
-| [references/astro.md](references/astro.md) | Building or customizing the Astro/Starlight template |
-| [references/zola.md](references/zola.md) | Building or customizing the Zola template |
-| [references/eleventy.md](references/eleventy.md) | Building or customizing the Eleventy template |
-| [references/jekyll.md](references/jekyll.md) | Building or customizing the Jekyll template, especially filename/date handling |
-| [references/zine.md](references/zine.md) | Working with the Zine two-repo setup or converting Markdown to SuperMD |
-| [references/mdbook.md](references/mdbook.md) | Building or customizing the mdBook documentation template |
-| [references/deployment.md](references/deployment.md) | Wiring GitHub Pages, Cloudflare Pages, Vercel, Netlify, or Surge |
-| [references/quality-checklist.md](references/quality-checklist.md) | Reviewing a finished template or a port |
+| File                                                               | Read it when                                                                            |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| [references/content-contract.md](references/content-contract.md)   | You need the exact LightCMS discovery, front matter, slug, or content-authoring rules   |
+| [references/hugo.md](references/hugo.md)                           | Building or customizing the Hugo template (including the richer `blogtemplate` variant) |
+| [references/astro.md](references/astro.md)                         | Building or customizing the Astro/Starlight template                                    |
+| [references/zola.md](references/zola.md)                           | Building or customizing the Zola template                                               |
+| [references/eleventy.md](references/eleventy.md)                   | Building or customizing the Eleventy template                                           |
+| [references/jekyll.md](references/jekyll.md)                       | Building or customizing the Jekyll template, especially filename/date handling          |
+| [references/zine.md](references/zine.md)                           | Working with the Zine two-repo setup or converting Markdown to SuperMD                  |
+| [references/mdbook.md](references/mdbook.md)                       | Building or customizing the mdBook documentation template                               |
+| [references/deployment.md](references/deployment.md)               | Wiring GitHub Pages, Cloudflare Pages, Vercel, Netlify, or Surge                        |
+| [references/quality-checklist.md](references/quality-checklist.md) | Reviewing a finished template or a port                                                 |
 
 ## What a finished handoff looks like
 

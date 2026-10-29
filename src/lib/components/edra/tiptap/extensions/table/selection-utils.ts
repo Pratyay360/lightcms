@@ -25,8 +25,17 @@ export const findTable = (selection: Selection) =>
     selection,
   );
 
-export const isCellSelection = (selection: Selection): selection is CellSelection =>
-  selection instanceof CellSelection;
+export const isCellSelection = (selection: Selection): selection is CellSelection => {
+  if (selection instanceof CellSelection) {
+    return true;
+  }
+  return Boolean(
+    selection &&
+      typeof selection === "object" &&
+      "$anchorCell" in selection &&
+      "$headCell" in selection,
+  );
+};
 
 export const isColumnSelected = (columnIndex: number) => (selection: Selection) => {
   if (isCellSelection(selection)) {

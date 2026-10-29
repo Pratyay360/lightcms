@@ -263,7 +263,7 @@ async function _onBranchCreated(branchName: string) {
       <p class="mx-auto mt-2 max-w-lg text-sm text-muted-foreground leading-relaxed">
         {_installationCount === 0
           ? "Link LightCMS to your GitHub account to grant repository access. You can configure which repositories LightCMS can access at any time."
-          : `Pick a repository and branch to mount its content. LightCMS discovers the markdown collections in your repository and lets you manage them directly from Git history.`}
+          : `Pick your own repo from the dropdown .`}
       </p>
       {#if _installationCount === 0 || _repositoryCount === 0}
         <a class="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-xs mt-6 hover:opacity-90 transition-all" href="/github/install">

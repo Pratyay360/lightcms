@@ -103,3 +103,67 @@ export function absoluteUrl(pathname: string): string {
 export function canonicalPathname(url: URL): string {
   return normalizePathname(url.pathname);
 }
+
+export const ORGANIZATION_SCHEMA = {
+  "@type": "Organization",
+  name: SITE.name,
+  url: SITE.origin,
+  logo: `${SITE.origin}/apple-touch-icon.png`,
+  sameAs: [SITE.repository, SITE.twitterUrl, SITE.blueskyUrl, SITE.blogUrl],
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: SITE.contactEmail,
+    contactType: "customer support",
+    url: SITE.contactFormUrl,
+  },
+} as const;
+
+export function buildBreadcrumbsSchema(
+  pathname: string,
+  pageTitle: string,
+): Record<string, unknown> {
+  const normalized = normalizePathname(pathname);
+  const items: Array<Record<string, unknown>> = [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: SITE.origin,
+    },
+  ];
+
+  if (normalized === "/" || normalized === "") {
+    return {
+      "@type": "BreadcrumbList",
+      itemListElement: items,
+    };
+  }
+
+  const segments = normalized.split("/").filter((segment) => segment.length > 0);
+  let currentPath = "";
+
+  for (let index = 0; index < segments.length; index += 1) {
+    const segment = segments[index];
+    currentPath += `/${segment}`;
+    const isLast = index === segments.length - 1;
+
+    let name = segment.charAt(0).toUpperCase() + segment.slice(1);
+    if (isLast) {
+      name = pageTitle.split("|")[0].trim();
+    } else if (segment === "docs") {
+      name = "Docs";
+    }
+
+    items.push({
+      "@type": "ListItem",
+      position: items.length + 1,
+      name,
+      item: absoluteUrl(currentPath),
+    });
+  }
+
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: items,
+  };
+}

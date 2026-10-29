@@ -11,6 +11,20 @@ export interface DocEntry {
   date: string | null;
   preview: string;
   raw: string;
+  section: string;
+  badge: string | null;
+}
+
+export interface DocNavItem {
+  slug: string;
+  title: string;
+  badge: string | null;
+  description: string;
+}
+
+export interface DocNavSection {
+  title: string;
+  items: DocNavItem[];
 }
 
 function toIsoDate(value: unknown): string | null {
@@ -25,7 +39,11 @@ function toIsoDate(value: unknown): string | null {
 }
 
 function toSlug(path: string): string {
-  return path.split("/").pop()?.replace(/\.md$/, "") ?? "";
+  const segment = path.split("/").pop();
+  if (!segment) {
+    return "";
+  }
+  return segment.replace(/\.md$/, "");
 }
 
 function toTitle(frontmatter: Record<string, unknown>, slug: string): string {
@@ -70,15 +88,48 @@ function toKeywords(frontmatter: Record<string, unknown>): string[] {
 
 function toSerial(frontmatter: Record<string, unknown>): number {
   const serial = Number(frontmatter.serial ?? frontmatter.weight ?? 0);
-  return Number.isFinite(serial) ? serial : 0;
+  if (Number.isFinite(serial)) {
+    return serial;
+  }
+  return 0;
 }
 
 function toPreview(frontmatter: Record<string, unknown>): string {
   const preview = frontmatter.preview;
   if (typeof preview === "string" && preview.trim().length > 0) {
-    return preview.trim().replace(/^\/static(?=\/)/, "") || DEFAULT_OG_IMAGE;
+    const sanitized = preview.trim().replace(/^\/static(?=\/)/, "");
+    if (sanitized.length > 0) {
+      return sanitized;
+    }
   }
   return DEFAULT_OG_IMAGE;
+}
+
+function toSection(frontmatter: Record<string, unknown>, slug: string): string {
+  if (typeof frontmatter.section === "string" && frontmatter.section.trim().length > 0) {
+    return frontmatter.section.trim();
+  }
+  if (typeof frontmatter.category === "string" && frontmatter.category.trim().length > 0) {
+    return frontmatter.category.trim();
+  }
+  if (
+    slug === "getting-started-with-lightcms" ||
+    slug === "why-lightcms" ||
+    slug === "self-hosting-lightcms"
+  ) {
+    return "Get Started";
+  }
+  if (slug === "faq") {
+    return "Reference";
+  }
+  return "Guides";
+}
+
+function toBadge(frontmatter: Record<string, unknown>): string | null {
+  if (typeof frontmatter.badge === "string" && frontmatter.badge.trim().length > 0) {
+    return frontmatter.badge.trim();
+  }
+  return null;
 }
 
 export async function loadDocEntries(): Promise<DocEntry[]> {
@@ -109,10 +160,54 @@ export async function loadDocEntries(): Promise<DocEntry[]> {
       date: toIsoDate(frontmatter.date),
       preview: toPreview(frontmatter),
       raw,
+      section: toSection(frontmatter, slug),
+      badge: toBadge(frontmatter),
     });
   }
 
-  entries.sort((a, b) => a.serial - b.serial || a.slug.localeCompare(b.slug));
+  entries.sort((a, b) => {
+    if (a.serial !== b.serial) {
+      return a.serial - b.serial;
+    }
+    return a.slug.localeCompare(b.slug);
+  });
 
   return entries;
+}
+
+export function groupDocsBySection(entries: DocEntry[]): DocNavSection[] {
+  const sectionsMap = new Map<string, DocNavItem[]>();
+
+  for (const entry of entries) {
+    const list = sectionsMap.get(entry.section);
+    const item: DocNavItem = {
+      slug: entry.slug,
+      title: entry.title,
+      badge: entry.badge,
+      description: entry.description,
+    };
+
+    if (list) {
+      list.push(item);
+    } else {
+      sectionsMap.set(entry.section, [item]);
+    }
+  }
+
+  const preferredOrder = ["Get Started", "Guides", "Reference"];
+  const result: DocNavSection[] = [];
+
+  for (const name of preferredOrder) {
+    const items = sectionsMap.get(name);
+    if (items && items.length > 0) {
+      result.push({ title: name, items });
+      sectionsMap.delete(name);
+    }
+  }
+
+  for (const [title, items] of sectionsMap.entries()) {
+    result.push({ title, items });
+  }
+
+  return result;
 }

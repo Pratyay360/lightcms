@@ -100,11 +100,24 @@ Test the result. Jekyll's `:title` placeholder is derived from the filename, so 
 
 ## Front matter
 
+```ruby
+# nodate.rb
+class Jekyll::PostReader
+  def read_posts(dir)
+    read_publishable(dir, "_posts", /.*\.md$/)
+  end
+
+  def read_drafts(dir)
+    read_publishable(dir, "_drafts", /.*\.md$/)
+  end
+end
+```
+
 ```markdown
 ---
 title: First Post
 description: What this starter includes.
-date: '2026-01-10T00:00:00Z'
+date: "2026-01-10T00:00:00Z"
 draft: false
 tags:
   - intro

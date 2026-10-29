@@ -12,8 +12,7 @@ export async function sendMail({
   text: string;
 }) {
   const mailHost = process.env.MAIL_HOST;
-  const rawPort = process.env.MAIL_PORT;
-  const mailPort = rawPort ? Number.parseInt(rawPort, 10) : 587;
+  const mailPort = Number(process.env.MAIL_PORT);
   const mailUser = process.env.MAIL_USER;
   const mailPass = process.env.MAIL_PASS;
   const mailFrom = process.env.MAIL_FROM;

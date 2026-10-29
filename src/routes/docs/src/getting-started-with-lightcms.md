@@ -1,6 +1,5 @@
 ---
-title: Getting Started with LightCMS
-description: Learn how to use LightCMS and integrate it with your existing static site generator.
+title: Introduction
 serial: 1
 date: 2026-09-01T16:44:00Z
 draft: false
@@ -15,27 +14,26 @@ tags:
 keywords:
   - lightcms
   - getting started
+  - introduction
   - wysiwyg
   - markdown
   - git-backed
-preview: /og-image.png
+
 ---
 
-**LightCMS** is a lightweight, Git backed content management system and workspace designed to bring the excitement of writing back
-and to make the process of writing fun and easier than ever before.
-It bridges the gap between the power of static site generators and the simplicity
-of a distraction-free, visual editor.
+
+[Lightcms](https://lightcms.me) is a git based headless cms for static site generators.
+
 
 ## Core Pillars
 
-LightCMS is designed around a single guiding principle:
-**Give everyone a voice to speak — nothing should stand between you and sharing your knowledge.**
+LightCMS is designed around a single guiding principle: **Give everyone a voice to speak — nothing should stand between one sharing his/her knowledge or experiences online.**
 
 ### 1. 🗂️ Git-Backed Storage (Zero Lock-In)
 
-Your content belongs to you and on your own git repository. Every draft, post, and revision is stored directly as Markdown and front matter files in your own GitHub repository.
-No proprietary database exports, no vendor lock in, and full version history
-with Git branches, commits, and pull requests.
+Your content belongs to you and on your own git repository. Every draft, post, and revision is stored directly as a file with front matter.
+No database to think about, no vendor lock in, and full version history with Git branches,
+ commits, and pull requests.
 
 ### 2. ✍️ Awesome Editor and Front Matter support
 
@@ -48,13 +46,13 @@ tables, task lists, and drag-and-drop media.
 
 Drafting and editing is faster with an integrated AI writing companion. Ask the copilot
 to outline articles, rephrase paragraphs, expand ideas, or fix grammar
-powered by any OpenAI-compatible provider (OpenAI, OpenRouter, Ollama, NVIDIA NIM).
+powered by any OpenAI compatible provider (OpenAI, OpenRouter, Ollama cloud, NVIDIA NIM).
 
 ### 4. 🎙️ Speech to Text
 
-Capture inspiration on the fly. Record your thoughts directly inside the editor
-and let [OpenAI Whisper](https://openai.com/index/whisper/) and [Wit.ai](https://wit.ai/)
-transcribe your speech into text and write at the speed of thought.
+Write at the speed you think, record your thoughts directly in the editor
+and let [OpenAI Whisper](https://openai.com/index/whisper/) or [Wit.ai](https://wit.ai/)
+transcribe that into text.
 
 ### 5. 🌗 First Class Themes and Appearance
 
@@ -62,8 +60,8 @@ Carefully curated light and dark modes with all major custom theme support cater
 
 ### 6. 📬 Automated Newsletter Dispatch
 
-Built-in support for [Newsy](https://github.com/light-cms/newsy) turns newly
-published posts into email newsletters sent directly to your audience without any monthly third-party subscriptions.
+Built in support for [Newsy](https://newsy.lightcms.me) turns newly published posts into
+newsletters and sents directly to your audience without any monthly third party subscriptions.
 
 ---
 
@@ -80,9 +78,7 @@ preserving options to ease the process:
 
 ### Dont't worry we have a lot of preconfigured sample repositories with ci pipelines to deploy on github pagess
 
-Model repositories for all major static site generators
-
-you can hand this over to your agent for further customization.
+Model repositories for all major static site generators, you can hand this over to your agent for further customization.
 
 ---
 

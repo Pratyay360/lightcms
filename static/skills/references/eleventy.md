@@ -77,7 +77,7 @@ The templates use the `url` filter for links, which applies `pathPrefix`. Hand-w
 ---
 title: First Post
 description: What this starter includes.
-date: '2026-01-10T00:00:00Z'
+date: "2026-01-10T00:00:00Z"
 draft: false
 tags:
   - intro

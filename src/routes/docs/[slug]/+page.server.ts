@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { absoluteUrl, SITE } from "$lib/seo";
 import { loadDocEntries } from "$lib/server/docs";
-import { renderMarkdown } from "$lib/server/markdown";
+import { renderDocMarkdown } from "$lib/server/markdown";
 import type { PageServerLoad } from "./$types";
 
 export const prerender = true;
@@ -15,14 +15,14 @@ export const load: PageServerLoad = async ({ params }) => {
   const entries = await loadDocEntries();
 
   const index = entries.findIndex((entry) => entry.slug === params.slug);
-  const current = index === -1 ? undefined : entries[index];
-
-  if (current === undefined) {
+  if (index === -1) {
     throw error(404, "Document not found");
   }
 
+  const current = entries[index];
   const previous = index > 0 ? entries[index - 1] : undefined;
   const next = entries[index + 1];
+  const rendered = await renderDocMarkdown(current.raw);
   const docUrl = absoluteUrl(`/docs/${current.slug}`);
   const homeUrl = absoluteUrl("/");
   const docsUrl = absoluteUrl("/docs");
@@ -36,7 +36,12 @@ export const load: PageServerLoad = async ({ params }) => {
     title: current.title,
     description: current.description,
     keywords: current.keywords,
-    content: await renderMarkdown(current.raw),
+    content: rendered.html,
+    headings: rendered.headings,
+    raw: current.raw,
+    section: current.section,
+    badge: current.badge,
+    slug: current.slug,
     previous:
       previous === undefined ? null : { slug: `/docs/${previous.slug}`, title: previous.title },
     next: next === undefined ? null : { slug: `/docs/${next.slug}`, title: next.title },

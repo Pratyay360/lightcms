@@ -1,16 +1,18 @@
 import { TableCell as TiptapTableCell } from "@tiptap/extension-table";
-import { Plugin } from "@tiptap/pm/state";
-import { addRowAfter } from "@tiptap/pm/tables";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import strings from "../../../strings.js";
 
 import { createGripInteractionPlugin } from "./grip-interaction.js";
 import { getCellsInColumn, isRowSelected, selectRow } from "./utils.js";
 
+const tableCellPluginKey = new PluginKey("table-cell-decorations");
+
 export const TableCell = TiptapTableCell.extend({
   addProseMirrorPlugins() {
     return [
       new Plugin({
+        key: tableCellPluginKey,
         props: {
           decorations: (state) => {
             if (!this.editor.isEditable) {
@@ -20,28 +22,28 @@ export const TableCell = TiptapTableCell.extend({
             const { doc, selection } = state;
             const decorations: Decoration[] = [];
             const firstColCells = getCellsInColumn(0)(selection);
-            if (firstColCells) {
+            if (firstColCells && firstColCells.length > 0) {
               firstColCells.forEach(({ pos }: { pos: number }, index: number) => {
                 decorations.push(
                   Decoration.widget(pos + 1, () => {
                     const rowSelected = isRowSelected(index)(selection);
-                    let className = "grip-row";
+                    const classList = ["grip-row"];
 
                     if (rowSelected) {
-                      className += " selected";
+                      classList.push("selected");
                     }
 
                     if (index === 0) {
-                      className += " first";
+                      classList.push("first");
                     }
 
                     if (index === firstColCells.length - 1) {
-                      className += " last";
+                      classList.push("last");
                     }
 
                     const grip = document.createElement("a");
 
-                    grip.className = className;
+                    grip.className = classList.join(" ");
                     grip.setAttribute("role", "button");
                     grip.setAttribute("aria-label", strings.extension.table.selectRow);
                     grip.setAttribute("tabindex", "0");
@@ -57,9 +59,7 @@ export const TableCell = TiptapTableCell.extend({
                   }),
                 );
               });
-            }
 
-            if (firstColCells && firstColCells.length > 0) {
               const lastRowCell = firstColCells[firstColCells.length - 1];
               decorations.push(
                 Decoration.widget(lastRowCell.pos + 1, () => {
@@ -72,16 +72,15 @@ export const TableCell = TiptapTableCell.extend({
                   btn.addEventListener("mousedown", (event) => {
                     event.preventDefault();
                     event.stopImmediatePropagation();
-                    // Select last row, then add after
-                    this.editor.view.dispatch(
-                      selectRow(firstColCells.length - 1)(this.editor.state.tr),
-                    );
-                    this.editor.commands.focus();
-                    addRowAfter(this.editor.state, this.editor.view.dispatch);
+                    this.editor.chain().focus().addRowAfter().run();
                   });
                   return btn;
                 }),
               );
+            }
+
+            if (decorations.length === 0) {
+              return DecorationSet.empty;
             }
 
             return DecorationSet.create(doc, decorations);

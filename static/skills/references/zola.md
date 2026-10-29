@@ -90,7 +90,7 @@ sort_by: date
 Zola's documentation says dates in TOML must not be quoted. YAML is supported for porting legacy content, but the date type still matters. LightCMS writes a quoted ISO string such as:
 
 ```yaml
-date: '2026-10-14T10:00:00Z'
+date: "2026-10-14T10:00:00Z"
 ```
 
 A quick build with a current Zola release accepted that exact YAML and rendered the page at `/blog/hello-world/`. Still run the same test with the version pinned in `mise.toml`, because the date parser is the kind of thing that changes between releases. If the quoted date is rejected, choose one of these fixes:

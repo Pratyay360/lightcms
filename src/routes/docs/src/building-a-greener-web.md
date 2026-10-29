@@ -1,6 +1,6 @@
 ---
 title: "Static Sites and CO2: Building a Greener Web"
-description: Why static sites emit less carbon than dynamic ones, how CDN caching and object storage cuts both energy and carbon footprint, how to measure your website's carbon footprint, and what a greener web looks like.
+description: Why static sites emit less carbon, how CDN caching cuts energy use, and what a greener web looks like.
 date: 2026-10-14T13:30:00Z
 draft: false
 tags:
@@ -77,4 +77,5 @@ Some notable static site hosting providers are:
 - [Render](https://render.com/)
 - [surge](https://surge.sh/)
 
-or even from a custom s3 bucket one can serve a static site.
+even from a custom s3 bucket one can serve a static site.
+

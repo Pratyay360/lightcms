@@ -26,14 +26,7 @@ const SKIP_DIRS = new Set([
   "public",
 ]);
 
-const PAGE_NAMES = new Set([
-  "about",
-  "index",
-  "intro",
-  "readme",
-  "summary",
-  "_index",
-]);
+const PAGE_NAMES = new Set(["about", "index", "intro", "readme", "summary", "_index"]);
 
 const CANDIDATE_ROOTS = ["content", "src", "_posts", "posts"];
 
@@ -122,7 +115,10 @@ function parseFrontMatter(source) {
 
 function isPost(relPath, rootIsPosts) {
   const normalized = relPath.replaceAll("\\", "/").toLowerCase();
-  const base = normalized.split("/").pop().replace(/\.(md|mdx)$/, "");
+  const base = normalized
+    .split("/")
+    .pop()
+    .replace(/\.(md|mdx)$/, "");
   if (PAGE_NAMES.has(base)) return false;
   if (rootIsPosts) return true;
   return (
@@ -192,7 +188,10 @@ for (const file of await walk(root)) {
   const rel = relative(root, file);
   const source = await readFile(file, "utf8");
   const parsed = parseFrontMatter(source);
-  const base = rel.split("/").pop().replace(/\.(md|mdx)$/, "");
+  const base = rel
+    .split("/")
+    .pop()
+    .replace(/\.(md|mdx)$/, "");
   const post = isPost(rel, rootIsPosts);
 
   if (base.toLowerCase() === "summary") continue;
@@ -219,9 +218,7 @@ for (const file of await walk(root)) {
     if (!date) {
       errors.push(`${rel}: post missing date`);
     } else if (
-      !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)?$/.test(
-        date,
-      )
+      !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)?$/.test(date)
     ) {
       errors.push(`${rel}: date is not ISO 8601 (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ssZ)`);
     } else if (!date.includes("T")) {

@@ -1,6 +1,6 @@
 ---
-title: "How to Start a Blog in 2026: The Markdown & frontmatter schema"
-description: A step by step guide to starting a fast, cheap, durable blog with Markdown, a static site generator, and a Git backed CMS — no hosting bills, no lock in.
+title: "How to Start a Blog in 2026: Static sites & Markdown"
+description: Guide to starting a fast, cheap, durable blog with Markdown, a static site generator, and a Git backed CMS — no hosting bills, no lock in.
 serial: 12
 date: 2026-10-14T12:50:00Z
 draft: false
@@ -22,7 +22,7 @@ preview: /og-image.png
 Starting a blog in 2026 is dramatically easier — and cheaper — than it used to be. You do not need WordPress hosting, a page builder, or a monthly platform fee. The modern recipe is **Markdown files, a static site generator, free hosting, and a Git-backed CMS for editing**. Total cost: zero dollars. Your blog loads faster than 99% of the blogs written about blogging.
 
 ## Step 1: Create Your Repository from a Template
-          
+
 Pick a starter from the [light-cms](https://github.com/light-cms) GitHub organization and click **Use this template** to create a repository under your own account. Each one is a small, working blog with sample content, so you can preview it before changing anything.
 
 | Template                                                      | Generator                                   | Live demo                                        | Preview locally              |

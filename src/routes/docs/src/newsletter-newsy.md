@@ -22,7 +22,7 @@ Connecting with your directly via email is one of the most effective ways to
 build a dedicated audience. However, the traditional process of managing a newsletter has become
 needlessly cumbersome, bloated, and expensive.
 
-LightCMS embraces a modern, developer friendly alternative: **Git-driven newsletters** powered by [Newsy](https://github.com/light-cms/newsy) .
+LightCMS embraces a modern, developer friendly alternative: **Git driven newsletters** powered by [Newsy](https://newsy.lightcms.me/). for more information visit the [repo](https://github.com/light-cms/newsy).
 
 ---
 
@@ -42,12 +42,9 @@ With conventional platforms like Mailchimp, Substack, or Brevo, your workflow ty
 
 The **Newsy** philosophy is simple: **Your Git repository is the single source of truth for your newsletter.**
 
-[Newsy](https://github.com/light-cms/newsy) is an open-source, automated newsletter service that monitors your GitHub repository:
+[Newsy](https://newsy.lightcms.me) is an open source, automated newsletter service that monitors your GitHub repository:
 
-1. **Write & Publish**: When you finish drafting an article in LightCMS and hit Publish, the Markdown file (`.md`, `.mdx`, or `.html`) is committed to your repository.
-2. **Detection**: Newsy observes repository push events and detects newly created content files in your configured blog directory.
-3. **Dispatch**: Newsy parses the Markdown, formats it into clean, responsive HTML, and broadcasts the newsletter directly to your subscribers via your own SMTP provider.
-
-Learn more and explore the source on the [Newsy GitHub Repository](https://github.com/light-cms/newsy) and the [Newsy Website](https://newsy.lightcms.me).
+Newsy observes repository events and intelligently detects newly created content files in your configured repo. It handles the rest on its own.
+Learn more and explore the [Newsy Website](https://newsy.lightcms.me).
 
 ---

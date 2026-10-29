@@ -29,15 +29,15 @@ The default built-in collection is `posts`, which resolves to a root-level `post
 
 Use the generator's natural content root unless there is a strong reason not to:
 
-| Generator | Top-level collection | Writer-facing folder |
-| --- | --- | --- |
-| Hugo | `content` | `content/posts` |
-| Astro + Starlight | `src` | `src/content/docs/blog` |
-| Zola | `content` | `content/blog` |
-| Eleventy | `src` | `src/posts` |
-| Jekyll | `_posts` | directly in `_posts` |
-| Zine | `content` | `content/blog` |
-| mdBook | `src` | `src` (chapters listed in `SUMMARY.md`) |
+| Generator         | Top-level collection | Writer-facing folder                    |
+| ----------------- | -------------------- | --------------------------------------- |
+| Hugo              | `content`            | `content/posts`                         |
+| Astro + Starlight | `src`                | `src/content/docs/blog`                 |
+| Zola              | `content`            | `content/blog`                          |
+| Eleventy          | `src`                | `src/posts`                             |
+| Jekyll            | `_posts`             | directly in `_posts`                    |
+| Zine              | `content`            | `content/blog`                          |
+| mdBook            | `src`                | `src` (chapters listed in `SUMMARY.md`) |
 
 Do not move a framework's content root just to make the collection name prettier. A `content` collection with a `posts` folder is understandable and keeps the SSG's conventions intact. Document the mapping in the README.
 
@@ -62,14 +62,14 @@ LightCMS validates slugs with lowercase letters, numbers, and hyphens only. It r
 
 ### What each generator does with a filename
 
-| Generator | Default URL from `hello-world.md` | Override available |
-| --- | --- | --- |
-| Hugo | `/posts/hello-world/` | `url` front matter, or `slug` |
-| Astro/Starlight | `/blog/hello-world/` | `slug` front matter or `docsLoader({ generateId })` |
-| Zola | `/blog/hello-world/` | `slug` or `path` front matter |
-| Eleventy | `/posts/hello-world/` | `permalink` front matter or computed data |
-| Jekyll | `/hello-world/` | `permalink` front matter or config defaults |
-| mdBook | `hello-world.html` | Only via `SUMMARY.md` and output config |
+| Generator       | Default URL from `hello-world.md` | Override available                                  |
+| --------------- | --------------------------------- | --------------------------------------------------- |
+| Hugo            | `/posts/hello-world/`             | `url` front matter, or `slug`                       |
+| Astro/Starlight | `/blog/hello-world/`              | `slug` front matter or `docsLoader({ generateId })` |
+| Zola            | `/blog/hello-world/`              | `slug` or `path` front matter                       |
+| Eleventy        | `/posts/hello-world/`             | `permalink` front matter or computed data           |
+| Jekyll          | `/hello-world/`                   | `permalink` front matter or config defaults         |
+| mdBook          | `hello-world.html`                | Only via `SUMMARY.md` and output config             |
 
 For every one of these, the simplest reliable rule is: **set a human slug when creating the entry.** Do not build a template that depends on the timestamp default.
 
@@ -109,7 +109,7 @@ LightCMS reads and writes YAML front matter. A normal entry looks like this:
 ---
 title: A Human-Readable Title
 description: One sentence used for SEO and cards.
-date: '2026-10-14T10:00:00Z'
+date: "2026-10-14T10:00:00Z"
 draft: false
 tags:
   - lightcms
@@ -123,26 +123,26 @@ The body starts here.
 
 ### Fields that work everywhere
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `title` | string | Required by every template; also the editor's primary label |
-| `description` | string | Meta description and list-page summary |
-| `date` | datetime | LightCMS writes ISO 8601 UTC; quote it in YAML |
-| `draft` | boolean | `true` hides the entry in generators that honor drafts |
-| `tags` | string list | Used for taxonomies when the generator has them; Zola needs a nested mirror before tag pages work |
-| `keywords` | string list | Safe extra metadata; not all themes render it |
+| Field         | Type        | Notes                                                                                             |
+| ------------- | ----------- | ------------------------------------------------------------------------------------------------- |
+| `title`       | string      | Required by every template; also the editor's primary label                                       |
+| `description` | string      | Meta description and list-page summary                                                            |
+| `date`        | datetime    | LightCMS writes ISO 8601 UTC; quote it in YAML                                                    |
+| `draft`       | boolean     | `true` hides the entry in generators that honor drafts                                            |
+| `tags`        | string list | Used for taxonomies when the generator has them; Zola needs a nested mirror before tag pages work |
+| `keywords`    | string list | Safe extra metadata; not all themes render it                                                     |
 
 ### Fields to add only when the generator uses them
 
-| Field | Used by | Caution |
-| --- | --- | --- |
-| `weight` | Hugo, Zola | Changes ordering; do not add by default |
-| `slug` | Zola, Astro/Starlight | LightCMS preserves it as an additional field, but routing should not depend on that |
-| `url` | Hugo | A configured LightCMS field, so it survives edits |
-| `permalink` | Jekyll, Eleventy | Not a built-in LightCMS field; verify it survives an edit |
-| `layout` | Jekyll, Eleventy | Better set through config defaults or directory data |
-| `isCJKLanguage`, `headless` | Hugo | Hugo-specific; omit from others |
-| `publishDate`, `expiryDate` | Hugo | Scheduling only works if the template honors it |
+| Field                       | Used by               | Caution                                                                             |
+| --------------------------- | --------------------- | ----------------------------------------------------------------------------------- |
+| `weight`                    | Hugo, Zola            | Changes ordering; do not add by default                                             |
+| `slug`                      | Zola, Astro/Starlight | LightCMS preserves it as an additional field, but routing should not depend on that |
+| `url`                       | Hugo                  | A configured LightCMS field, so it survives edits                                   |
+| `permalink`                 | Jekyll, Eleventy      | Not a built-in LightCMS field; verify it survives an edit                           |
+| `layout`                    | Jekyll, Eleventy      | Better set through config defaults or directory data                                |
+| `isCJKLanguage`, `headless` | Hugo                  | Hugo-specific; omit from others                                                     |
+| `publishDate`, `expiryDate` | Hugo                  | Scheduling only works if the template honors it                                     |
 
 ### Date rules
 

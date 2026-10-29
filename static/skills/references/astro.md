@@ -86,7 +86,7 @@ A post:
 ---
 title: First Post
 description: What this starter includes.
-date: '2026-01-10T00:00:00Z'
+date: "2026-01-10T00:00:00Z"
 draft: false
 tags:
   - intro
@@ -145,9 +145,7 @@ docsLoader({
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
-    const directory = entry.includes("/")
-      ? entry.slice(0, entry.lastIndexOf("/") + 1)
-      : "";
+    const directory = entry.includes("/") ? entry.slice(0, entry.lastIndexOf("/") + 1) : "";
     return `${directory}${slug}`;
   },
 });

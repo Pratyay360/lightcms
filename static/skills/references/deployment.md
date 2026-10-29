@@ -4,15 +4,15 @@ The template's build command is the contract. Every host should run the same com
 
 ## Output directories
 
-| Generator | Command | Publish |
-| --- | --- | --- |
-| Hugo | `mise run build` (`hugo`) | `public/` |
-| Astro | `mise run build` (`astro build`) | `dist/` |
-| Zola | `mise run build` (`zola build`) | `public/` |
-| Eleventy | `mise run build` (`eleventy`) | `_site/` |
-| Jekyll | `bundle exec jekyll build` | `_site/` |
-| Zine | `mise run build` (`zine release -f`) | `public/` |
-| mdBook | `mise run build` (`mdbook build`) | `book/` |
+| Generator | Command                              | Publish   |
+| --------- | ------------------------------------ | --------- |
+| Hugo      | `mise run build` (`hugo`)            | `public/` |
+| Astro     | `mise run build` (`astro build`)     | `dist/`   |
+| Zola      | `mise run build` (`zola build`)      | `public/` |
+| Eleventy  | `mise run build` (`eleventy`)        | `_site/`  |
+| Jekyll    | `bundle exec jekyll build`           | `_site/`  |
+| Zine      | `mise run build` (`zine release -f`) | `public/` |
+| mdBook    | `mise run build` (`mdbook build`)    | `book/`   |
 
 A wrong publish directory is the most common “the build succeeded but the site is blank” failure.
 
@@ -20,14 +20,14 @@ A wrong publish directory is the most common “the build succeeded but the site
 
 Set the site's base path before deploying:
 
-| Host | Typical public URL | Base setting |
-| --- | --- | --- |
-| GitHub Pages project site | `https://<user>.github.io/<repo>/` | Hugo `baseURL` includes `/<repo>/`; Astro `base: "/<repo>"`; Eleventy `pathPrefix: "/<repo>/"`; Jekyll `baseurl: "/<repo>"`; Zola `base_url` includes `/<repo>` |
-| GitHub Pages user/org site | `https://<user>.github.io/` | Root path |
-| Cloudflare Pages | `https://<project>.pages.dev/` | Root path |
-| Vercel | `https://<project>.vercel.app/` | Root path |
-| Netlify | `https://<project>.netlify.app/` | Root path |
-| Custom domain | The domain root | Root path |
+| Host                       | Typical public URL                 | Base setting                                                                                                                                                    |
+| -------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GitHub Pages project site  | `https://<user>.github.io/<repo>/` | Hugo `baseURL` includes `/<repo>/`; Astro `base: "/<repo>"`; Eleventy `pathPrefix: "/<repo>/"`; Jekyll `baseurl: "/<repo>"`; Zola `base_url` includes `/<repo>` |
+| GitHub Pages user/org site | `https://<user>.github.io/`        | Root path                                                                                                                                                       |
+| Cloudflare Pages           | `https://<project>.pages.dev/`     | Root path                                                                                                                                                       |
+| Vercel                     | `https://<project>.vercel.app/`    | Root path                                                                                                                                                       |
+| Netlify                    | `https://<project>.netlify.app/`   | Root path                                                                                                                                                       |
+| Custom domain              | The domain root                    | Root path                                                                                                                                                       |
 
 If assets 404 only on the deployed site, the base path is wrong. If they 404 only locally, the local server is not serving under the base path; test with the production-style command.
 

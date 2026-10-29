@@ -1,10 +1,12 @@
 import { TableHeader as TiptapTableHeader } from "@tiptap/extension-table";
-import { Plugin } from "@tiptap/pm/state";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import strings from "../../../strings.js";
 
 import { createGripInteractionPlugin } from "./grip-interaction.js";
 import { getCellsInRow, isColumnSelected, selectColumn } from "./utils.js";
+
+const tableHeaderPluginKey = new PluginKey("table-header-decorations");
 
 export const TableHeader = TiptapTableHeader.extend({
   addAttributes() {
@@ -19,11 +21,10 @@ export const TableHeader = TiptapTableHeader.extend({
         default: null,
         parseHTML: (element) => {
           const colwidth = element.getAttribute("colwidth");
-          const value = colwidth
-            ? colwidth.split(",").map((item) => Number.parseInt(item, 10))
-            : null;
-
-          return value;
+          if (!colwidth) {
+            return null;
+          }
+          return colwidth.split(",").map((item) => Number.parseInt(item, 10));
         },
       },
       style: {
@@ -35,6 +36,7 @@ export const TableHeader = TiptapTableHeader.extend({
   addProseMirrorPlugins() {
     return [
       new Plugin({
+        key: tableHeaderPluginKey,
         props: {
           decorations: (state) => {
             if (!this.editor.isEditable) {
@@ -45,28 +47,28 @@ export const TableHeader = TiptapTableHeader.extend({
             const decorations: Decoration[] = [];
             const cells = getCellsInRow(0)(selection);
 
-            if (cells) {
+            if (cells && cells.length > 0) {
               cells.forEach(({ pos }: { pos: number }, index: number) => {
                 decorations.push(
                   Decoration.widget(pos + 1, () => {
                     const colSelected = isColumnSelected(index)(selection);
-                    let className = "grip-column";
+                    const classList = ["grip-column"];
 
                     if (colSelected) {
-                      className += " selected";
+                      classList.push("selected");
                     }
 
                     if (index === 0) {
-                      className += " first";
+                      classList.push("first");
                     }
 
                     if (index === cells.length - 1) {
-                      className += " last";
+                      classList.push("last");
                     }
 
                     const grip = document.createElement("a");
 
-                    grip.className = className;
+                    grip.className = classList.join(" ");
                     grip.setAttribute("role", "button");
                     grip.setAttribute("aria-label", strings.extension.table.selectColumn);
                     grip.setAttribute("tabindex", "0");
@@ -96,14 +98,16 @@ export const TableHeader = TiptapTableHeader.extend({
                   btn.addEventListener("mousedown", (event) => {
                     event.preventDefault();
                     event.stopImmediatePropagation();
-                    // Select last column, then add after
-                    this.editor.view.dispatch(selectColumn(cells.length - 1)(this.editor.state.tr));
                     this.editor.chain().focus().addColumnAfter().run();
                   });
 
                   return btn;
                 }),
               );
+            }
+
+            if (decorations.length === 0) {
+              return DecorationSet.empty;
             }
 
             return DecorationSet.create(doc, decorations);
@@ -116,7 +120,13 @@ export const TableHeader = TiptapTableHeader.extend({
         showClass: "show-col-grip",
         hoverClass: "last-column-hover",
         getIndex: (cell) => (cell as HTMLTableCellElement).cellIndex,
-        isLast: (table, index) => index === (table.rows[0]?.cells.length ?? 0) - 1,
+        isLast: (table, index) => {
+          const firstRow = table.rows[0];
+          if (!firstRow) {
+            return false;
+          }
+          return index === firstRow.cells.length - 1;
+        },
       }),
     ];
   },

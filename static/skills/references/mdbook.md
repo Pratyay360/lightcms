@@ -61,7 +61,7 @@ mdBook renders the chapter Markdown as-is. A LightCMS-created file starts with:
 ```markdown
 ---
 title: My Chapter
-date: '2026-10-14T10:00:00Z'
+date: "2026-10-14T10:00:00Z"
 draft: false
 ---
 

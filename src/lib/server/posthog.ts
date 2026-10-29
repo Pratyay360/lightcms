@@ -1,4 +1,3 @@
-// import { env } from "$env/dynamic/public";
 import { PostHog } from "posthog-node";
 
 let posthogClient: PostHog | undefined;
@@ -6,8 +5,8 @@ let posthogClient: PostHog | undefined;
 function getPostHogClient() {
   if (posthogClient) return posthogClient;
 
-  const key = process.env.PUBLIC_POSTHOG_KEY!;
-  const host = process.env.PUBLIC_POSTHOG_HOST!;
+  const key = import.meta.env.PUBLIC_POSTHOG_KEY!;
+  const host = import.meta.env.PUBLIC_POSTHOG_HOST!;
 
   if (!key) {
     if (process.env.NODE_ENV !== "production") {

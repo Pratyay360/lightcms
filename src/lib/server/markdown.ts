@@ -38,33 +38,67 @@ function uniqueId(base: string, seen: Map<string, number>): string {
   return count === 0 ? base : `${base}-${count}`;
 }
 
+export interface DocHeading {
+  id: string;
+  text: string;
+  depth: number;
+}
+
+export interface RenderedDoc {
+  html: string;
+  headings: DocHeading[];
+}
+
 /**
  * mdsvex only emits `id` attributes when a slugger is configured, so headings
  * arrive bare. Fragments such as `#section-name` would otherwise never resolve,
  * which SvelteKit rejects at prerender time.
  */
-export function addHeadingIds(html: string): string {
+export function extractHeadingsAndAddIds(html: string): RenderedDoc {
   const seen = new Map<string, number>();
+  const headings: DocHeading[] = [];
 
-  return html.replace(/<h([1-6])>([\s\S]*?)<\/h\1>/g, (_heading, level, inner) => {
-    const text = inner
-      .replace(/<[^>]*>/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-    const explicit = text.match(EXPLICIT_ID_PATTERN);
+  const processedHtml = html.replace(
+    /<h([1-6])>([\s\S]*?)<\/h\1>/g,
+    (_heading, levelStr, inner) => {
+      const depth = Number.parseInt(levelStr, 10);
+      const rawText = inner
+        .replace(/<[^>]*>/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+      const explicit = rawText.match(EXPLICIT_ID_PATTERN);
 
-    if (explicit) {
-      const id = uniqueId(explicit[1], seen);
-      const cleanInner = inner.replace(/\s*\{#([A-Za-z][\w:.-]*)\}\s*$/, "");
+      let id: string;
+      let cleanText: string;
+      let cleanInner: string;
 
-      return `<h${level} id="${id}">${cleanInner}</h${level}>`;
-    }
+      if (explicit) {
+        id = uniqueId(explicit[1], seen);
+        cleanInner = inner.replace(/\s*\{#([A-Za-z][\w:.-]*)\}\s*$/, "");
+        cleanText = rawText.replace(/\s*\{#([A-Za-z][\w:.-]*)\}\s*$/, "");
+      } else {
+        id = uniqueId(slugify(rawText), seen);
+        cleanInner = inner;
+        cleanText = rawText;
+      }
 
-    return `<h${level} id="${uniqueId(slugify(text), seen)}">${inner}</h${level}>`;
-  });
+      if (depth >= 2 && depth <= 3) {
+        headings.push({ id, text: cleanText, depth });
+      }
+
+      return `<h${depth} id="${id}">${cleanInner}</h${depth}>`;
+    },
+  );
+
+  return { html: processedHtml, headings };
 }
 
-export async function renderMarkdown(source: string) {
+export function addHeadingIds(html: string): string {
+  const rendered = extractHeadingsAndAddIds(html);
+  return rendered.html;
+}
+
+export async function renderDocMarkdown(source: string): Promise<RenderedDoc> {
   const compiled = await compile(source, {
     highlight: {
       highlighter: async (code, lang) => {
@@ -84,8 +118,17 @@ export async function renderMarkdown(source: string) {
       },
     },
   });
-  let html = compiled?.code || "";
-  html = html.replace(/<script[\s\S]*?<\/script>/gi, "");
 
-  return addHeadingIds(html.trim());
+  let rawHtml = "";
+  if (compiled && typeof compiled.code === "string") {
+    rawHtml = compiled.code;
+  }
+  const cleanHtml = rawHtml.replace(/<script[\s\S]*?<\/script>/gi, "").trim();
+
+  return extractHeadingsAndAddIds(cleanHtml);
+}
+
+export async function renderMarkdown(source: string): Promise<string> {
+  const rendered = await renderDocMarkdown(source);
+  return rendered.html;
 }

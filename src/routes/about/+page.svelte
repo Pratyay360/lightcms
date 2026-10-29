@@ -39,14 +39,14 @@
     </header>
 
     <p>
-      LightCMS is focused on simplicity, speed, and great experience for both managing and creating content. It is created for
+      LightCMS is focused on simplicity, and great user experience for both managing and crafting content. It is created for
       anyone who wants to share their experiences and knowledge on the web without unnecessary complexity. No
-      matter the SSG(vendor neutral), no matter the tech stack, if it supports frontmatter schema, Lightcms can be used with it.
+      matter the SSG(Static Site generator) if it has support for frontmatter [lightcms]() will be a good companion to it.
     </p>
 
     <p>
-      The goal of LightCMS is to bridge the gap between people willing to sharing their experiences and
-      the internet itself. It's built to support the Jamstack approach for creating, managing and sharing content.
+      The goal of LightCMS is to bridge the gap between people willing to share their experiences and
+      the complexity which acts as a gatekeeper. It's built to support the Jamstack approach for creating, managing and sharing content.
     </p>
 
     <footer class="space-y-4 border-t border-border pt-6">

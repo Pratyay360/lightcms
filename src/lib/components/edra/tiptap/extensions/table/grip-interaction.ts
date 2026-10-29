@@ -1,4 +1,4 @@
-import { Plugin } from "@tiptap/pm/state";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
 
 export interface GripInteractionOptions {
   /** CSS class for the grip elements (e.g. "grip-row" or "grip-column") */
@@ -48,6 +48,7 @@ export function createGripInteractionPlugin(opts: GripInteractionOptions): Plugi
   }
 
   return new Plugin({
+    key: new PluginKey(`table-grip-${opts.gripSelector}`),
     props: {
       handleDOMEvents: {
         mousemove: (_view, event) => {

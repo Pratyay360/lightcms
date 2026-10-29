@@ -9,13 +9,13 @@ export const tableCommands: EdraCommand[] = [
     tooltip: strings.command.table,
     onClick: (editor) => {
       if (editor.isActive("table")) {
-        const del = confirm("Do you really want to delete this table??");
-        if (del) {
+        const shouldDelete = confirm("Do you really want to delete this table??");
+        if (shouldDelete) {
           editor.chain().focus().deleteTable().run();
           return;
         }
       }
-      editor.chain().focus().insertTable({ cols: 3, rows: 3, withHeaderRow: false }).run();
+      editor.chain().focus().insertTable({ cols: 3, rows: 3, withHeaderRow: true }).run();
     },
     isActive: (editor) => editor.isActive("table"),
   },

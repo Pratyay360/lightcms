@@ -42,15 +42,15 @@ The checker is a fast heuristic, not a Markdown parser. It checks YAML/TOML fron
 
 After the build, confirm the output exists at the path the deploy workflow uploads:
 
-| Generator | Build output | Check |
-| --- | --- | --- |
-| Hugo | `public/` | `test -f public/index.html && test -f public/posts/first-post/index.html` |
-| Astro | `dist/` | `test -f dist/index.html && test -f dist/blog/first-post/index.html` |
-| Zola | `public/` | `test -f public/index.html && test -f public/blog/first-post/index.html` |
-| Eleventy | `_site/` | `test -f _site/index.html && test -f _site/posts/first-post/index.html` |
-| Jekyll | `_site/` | `test -f _site/index.html && test -f _site/first-post/index.html` |
-| Zine | `public/` | `test -f public/index.html && test -f public/blog/first-post/index.html` |
-| mdBook | `book/` | `test -f book/index.html && test -f book/chapter_1.html` |
+| Generator | Build output | Check                                                                     |
+| --------- | ------------ | ------------------------------------------------------------------------- |
+| Hugo      | `public/`    | `test -f public/index.html && test -f public/posts/first-post/index.html` |
+| Astro     | `dist/`      | `test -f dist/index.html && test -f dist/blog/first-post/index.html`      |
+| Zola      | `public/`    | `test -f public/index.html && test -f public/blog/first-post/index.html`  |
+| Eleventy  | `_site/`     | `test -f _site/index.html && test -f _site/posts/first-post/index.html`   |
+| Jekyll    | `_site/`     | `test -f _site/index.html && test -f _site/first-post/index.html`         |
+| Zine      | `public/`    | `test -f public/index.html && test -f public/blog/first-post/index.html`  |
+| mdBook    | `book/`      | `test -f book/index.html && test -f book/chapter_1.html`                  |
 
 The exact post path depends on the slug and permalink rule. Adjust the filename, not the generator's output directory.
 
@@ -117,18 +117,18 @@ For mdBook specifically:
 
 ## Common findings
 
-| Symptom | Likely cause | Fix |
-| --- | --- | --- |
-| Site is blank after deploy | Wrong artifact directory | Match the table above |
-| CSS 404s only on GitHub Pages | Root-relative asset paths | Use the generator's base-aware URL helper |
-| LightCMS post does not appear | Wrong collection folder, draft flag, or filename filter | Check the top-level collection and the generator's post reader |
-| Post URL is a timestamp | Epoch slug left in place | Use a human slug; add a filename-independent rule if needed |
-| Tag pages are empty | Generator expects a different taxonomy shape | Mirror `tags` at build time, or document that tag pages are unsupported |
-| Jekyll silently skips posts | Default date-prefixed reader | Include `_plugins/nodate.rb` and build outside safe mode |
-| Zola build fails on a date | Quoted/unquoted date mismatch in the pinned version | Test with LightCMS's exact YAML; normalize before build if needed |
-| mdBook shows `---` and `title:` | YAML front matter rendered as Markdown | Add a strip step or do not use mdBook for LightCMS authoring |
-| Draft still public | Generator does not honor `draft` | Implement a filter or move drafts out of the content root |
-| CI passes but deploy is stale | Pages source is a branch, not Actions | Switch Pages to GitHub Actions and rerun |
+| Symptom                         | Likely cause                                            | Fix                                                                     |
+| ------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Site is blank after deploy      | Wrong artifact directory                                | Match the table above                                                   |
+| CSS 404s only on GitHub Pages   | Root-relative asset paths                               | Use the generator's base-aware URL helper                               |
+| LightCMS post does not appear   | Wrong collection folder, draft flag, or filename filter | Check the top-level collection and the generator's post reader          |
+| Post URL is a timestamp         | Epoch slug left in place                                | Use a human slug; add a filename-independent rule if needed             |
+| Tag pages are empty             | Generator expects a different taxonomy shape            | Mirror `tags` at build time, or document that tag pages are unsupported |
+| Jekyll silently skips posts     | Default date-prefixed reader                            | Include `_plugins/nodate.rb` and build outside safe mode                |
+| Zola build fails on a date      | Quoted/unquoted date mismatch in the pinned version     | Test with LightCMS's exact YAML; normalize before build if needed       |
+| mdBook shows `---` and `title:` | YAML front matter rendered as Markdown                  | Add a strip step or do not use mdBook for LightCMS authoring            |
+| Draft still public              | Generator does not honor `draft`                        | Implement a filter or move drafts out of the content root               |
+| CI passes but deploy is stale   | Pages source is a branch, not Actions                   | Switch Pages to GitHub Actions and rerun                                |
 
 ## Handoff report
 
