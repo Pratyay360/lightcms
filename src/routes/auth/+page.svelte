@@ -1,89 +1,97 @@
 <script lang="ts">
-  import FingerprintPattern from "@lucide/svelte/icons/fingerprint-pattern";
-  import GitBranch from "@lucide/svelte/icons/git-branch";
-  import LogOut from "@lucide/svelte/icons/log-out";
-  import Mail from "@lucide/svelte/icons/mail";
-  import ShieldCheck from "@lucide/svelte/icons/shield-check";
-  import { untrack } from "svelte";
-  import { superForm } from "sveltekit-superforms";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/state";
-  import { authClient, signIn, signOut } from "$lib/auth-client";
-  import { Button } from "$lib/components/ui/button";
-  import { Input } from "$lib/components/ui/input";
-  import type { PageData } from "./$types";
+import FingerprintPattern from "@lucide/svelte/icons/fingerprint-pattern";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import LogOut from "@lucide/svelte/icons/log-out";
+import Mail from "@lucide/svelte/icons/mail";
+import ShieldCheck from "@lucide/svelte/icons/shield-check";
+import { untrack } from "svelte";
+import { superForm } from "sveltekit-superforms";
+import { goto } from "$app/navigation";
+import { page } from "$app/state";
+import { authClient, signIn, signOut } from "$lib/auth-client";
+import { Button } from "$lib/components/ui/button";
+import { Input } from "$lib/components/ui/input";
+import type { PageData } from "./$types";
 
-  let { data }: { data: PageData } = $props();
-  const authForm = untrack(() => superForm(data.form));
-  const {
-    form: authValues,
-    errors: authErrors,
-    enhance: authEnhance,
-    message: authMessage,
-    submitting: authSubmitting,
-  } = authForm;
+let { data }: { data: PageData } = $props();
+const authForm = untrack(() => superForm(data.form));
+const {
+	form: authValues,
+	errors: authErrors,
+	enhance: authEnhance,
+	message: authMessage,
+	submitting: authSubmitting,
+} = authForm;
 
-  let isUsingPasskey = $state(false);
-  let isAddingPasskey = $state(false);
+let isUsingPasskey = $state(false);
+let isAddingPasskey = $state(false);
 
-  let isSigningInWithGitHub = $state(false);
-  async function signInWithGitHub() {
-    if (isSigningInWithGitHub) return;
-    isSigningInWithGitHub = true;
-    try {
-      await signIn.social({ provider: "github", callbackURL: "/cms", errorCallbackURL: "/auth" });
-    } finally {
-      isSigningInWithGitHub = false;
-    }
-  }
+let isSigningInWithGitHub = $state(false);
+async function signInWithGitHub() {
+	if (isSigningInWithGitHub) return;
+	isSigningInWithGitHub = true;
+	try {
+		await signIn.social({
+			provider: "github",
+			callbackURL: "/cms",
+			errorCallbackURL: "/auth",
+		});
+	} finally {
+		isSigningInWithGitHub = false;
+	}
+}
 
-  let _isLinkingGitHub = $state(false);
-  async function _linkGitHub() {
-    _isLinkingGitHub = true;
-    try {
-      await authClient.linkSocial({ provider: "github", callbackURL: "/cms", errorCallbackURL: "/auth" });
-    } finally {
-      _isLinkingGitHub = false;
-    }
-  }
+let _isLinkingGitHub = $state(false);
+async function _linkGitHub() {
+	_isLinkingGitHub = true;
+	try {
+		await authClient.linkSocial({
+			provider: "github",
+			callbackURL: "/cms",
+			errorCallbackURL: "/auth",
+		});
+	} finally {
+		_isLinkingGitHub = false;
+	}
+}
 
-  async function signOutUser() {
-    try {
-      await signOut();
-    } finally {
-      await goto("/signout", { invalidateAll: true });
-    }
-  }
+async function signOutUser() {
+	try {
+		await signOut();
+	} finally {
+		await goto("/signout", { invalidateAll: true });
+	}
+}
 
-  async function signInWithPasskey() {
-    isUsingPasskey = true;
+async function signInWithPasskey() {
+	isUsingPasskey = true;
 
-    try {
-      const result = await signIn.passkey();
+	try {
+		const result = await signIn.passkey();
 
-      if (result.error) {
-        return;
-      }
+		if (result.error) {
+			return;
+		}
 
-      window.location.assign("/cms");
-    } finally {
-      isUsingPasskey = false;
-    }
-  }
+		window.location.assign("/cms");
+	} finally {
+		isUsingPasskey = false;
+	}
+}
 
-  async function addPasskey() {
-    isAddingPasskey = true;
+async function addPasskey() {
+	isAddingPasskey = true;
 
-    try {
-      const result = await authClient.passkey.addPasskey();
+	try {
+		const result = await authClient.passkey.addPasskey();
 
-      if (result.error) {
-        return;
-      }
-    } finally {
-      isAddingPasskey = false;
-    }
-  }
+		if (result.error) {
+			return;
+		}
+	} finally {
+		isAddingPasskey = false;
+	}
+}
 </script>
 
 <svelte:head>

@@ -1,19 +1,18 @@
 <script lang="ts">
-	import type { HTMLAnchorAttributes } from "svelte/elements";
-	import { cn, type WithElementRef } from "$lib/utils";
-	import { type BadgeVariant, badgeVariants } from "./badge.js";
+import type { HTMLAnchorAttributes } from "svelte/elements";
+import { cn, type WithElementRef } from "$lib/utils";
+import { type BadgeVariant, badgeVariants } from "./badge.js";
 
-
-	let {
-		ref = $bindable(null),
-		href,
-		class: className,
-		variant = "default",
-		children,
-		...restProps
-	}: WithElementRef<HTMLAnchorAttributes> & {
-		variant?: BadgeVariant;
-	} = $props();
+let {
+	ref = $bindable(null),
+	href,
+	class: className,
+	variant = "default",
+	children,
+	...restProps
+}: WithElementRef<HTMLAnchorAttributes> & {
+	variant?: BadgeVariant;
+} = $props();
 </script>
 
 <svelte:element

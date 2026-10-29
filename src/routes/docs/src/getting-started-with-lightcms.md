@@ -1,39 +1,34 @@
 ---
+
 title: Introduction
 serial: 1
 date: 2026-09-01T16:44:00Z
 draft: false
 tags:
-  - lightcms
-  - cms
-  - git
-  - ssg
-  - static
-  - site
-  - generator
-keywords:
-  - lightcms
-  - getting started
-  - introduction
-  - wysiwyg
-  - markdown
-  - git-backed
+- lightcms
+- cms
+- git
+- ssg
+- static
+- site
+- generator
+  keywords:
+- "lightcms"
+- "getting started"
+- "introduction"
+- "wysiwyg"
+- "markdown"
+- "git-backed"
 
 ---
 
-
-[Lightcms](https://lightcms.me) is a git based headless cms for static site generators.
-
-
-## Core Pillars
-
-LightCMS is designed around a single guiding principle: **Give everyone a voice to speak — nothing should stand between one sharing his/her knowledge or experiences online.**
+---
 
 ### 1. 🗂️ Git-Backed Storage (Zero Lock-In)
 
 Your content belongs to you and on your own git repository. Every draft, post, and revision is stored directly as a file with front matter.
 No database to think about, no vendor lock in, and full version history with Git branches,
- commits, and pull requests.
+commits, and pull requests.
 
 ### 2. ✍️ Awesome Editor and Front Matter support
 

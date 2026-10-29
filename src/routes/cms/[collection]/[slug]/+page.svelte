@@ -1,365 +1,376 @@
 <script lang="ts">
-  import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-  import Clock3 from "@lucide/svelte/icons/clock-3";
-  import CloudCheck from "@lucide/svelte/icons/cloud-check";
-  import FileCode from "@lucide/svelte/icons/file-code";
-  import FolderInput from "@lucide/svelte/icons/folder-input";
-  import FolderOpen from "@lucide/svelte/icons/folder-open";
-  import Maximize from "@lucide/svelte/icons/maximize";
-  import Minimize from "@lucide/svelte/icons/minimize";
-  import Save from "@lucide/svelte/icons/save";
-  import Settings2 from "@lucide/svelte/icons/settings-2";
-  import Trash from "@lucide/svelte/icons/trash";
-  import Type from "@lucide/svelte/icons/type";
+import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+import Clock3 from "@lucide/svelte/icons/clock-3";
+import CloudCheck from "@lucide/svelte/icons/cloud-check";
+import FileCode from "@lucide/svelte/icons/file-code";
+import FolderInput from "@lucide/svelte/icons/folder-input";
+import FolderOpen from "@lucide/svelte/icons/folder-open";
+import Maximize from "@lucide/svelte/icons/maximize";
+import Minimize from "@lucide/svelte/icons/minimize";
+import Save from "@lucide/svelte/icons/save";
+import Settings2 from "@lucide/svelte/icons/settings-2";
+import Trash from "@lucide/svelte/icons/trash";
+import Type from "@lucide/svelte/icons/type";
 
-  import { onMount, untrack } from "svelte";
-  import { superForm } from "sveltekit-superforms";
-  import { enhance as formEnhance } from "$app/forms";
-  import { goto } from "$app/navigation";
-  import SaveStatus from "$lib/components/cms/SaveStatus.svelte";
-  import { FrontmatterDrawer, TagManager, type FrontmatterEntry } from "$lib/components/custom";
-  import { createEditor, Edra } from "$lib/components/edra/shadcn";
-  import {
-    Alert,
-    AlertDescription,
-    AlertTitle,
-  } from "$lib/components/ui/alert";
-  import { Badge } from "$lib/components/ui/badge";
-  import { Button } from "$lib/components/ui/button";
-  import { Card, CardContent, CardFooter } from "$lib/components/ui/card";
-  import { Checkbox } from "$lib/components/ui/checkbox";
-  import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "$lib/components/ui/dialog";
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import { Separator } from "$lib/components/ui/separator";
-  import { Textarea } from "$lib/components/ui/textarea";
-  import { createLightCmsClient } from "$lib/orpc-client";
-  import { buildPayloadQuery } from "$lib/utils/cms-url";
-  import { timeAgo } from "$lib/utils/time-ago";
-  import { uploadFile } from "$lib/utils/upload-file";
-  import type { PageData } from "./$types";
+import { onMount, untrack } from "svelte";
+import { superForm } from "sveltekit-superforms";
+import { enhance as formEnhance } from "$app/forms";
+import { goto } from "$app/navigation";
+import SaveStatus from "$lib/components/cms/SaveStatus.svelte";
+import {
+	FrontmatterDrawer,
+	type FrontmatterEntry,
+	TagManager,
+} from "$lib/components/custom";
+import { createEditor, Edra } from "$lib/components/edra/shadcn";
+import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import { Card, CardContent, CardFooter } from "$lib/components/ui/card";
+import { Checkbox } from "$lib/components/ui/checkbox";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { Separator } from "$lib/components/ui/separator";
+import { Textarea } from "$lib/components/ui/textarea";
+import { createLightCmsClient } from "$lib/orpc-client";
+import { buildPayloadQuery } from "$lib/utils/cms-url";
+import { timeAgo } from "$lib/utils/time-ago";
+import { uploadFile } from "$lib/utils/upload-file";
+import type { PageData } from "./$types";
 
-  let { data }: { data: PageData } = $props();
+let { data }: { data: PageData } = $props();
 
-  function buildClientValidators() {
-    const requiredFields = data.collection.fields.filter(
-      (f) => f.required && f.name !== "body" && f.name !== "slug" && !f.list && f.type !== "checkbox",
-    );
-    return {
-      async validate(formData: Record<string, unknown>) {
-        const issues: { path: string[]; message: string }[] = [];
-        for (const field of requiredFields) {
-          const drawerValue = findAdditionalEntryValue(field.name);
-          const value =
-            drawerValue !== undefined && drawerValue.trim().length > 0
-              ? drawerValue
-              : formData[field.name];
-          const label = field.label ?? field.name;
-          if (field.type === "number") {
-            if (value === "" || value === undefined || value === null) {
-              issues.push({ path: [field.name], message: `${label} is required.` });
-            }
-          } else if (value === undefined || value === null || (typeof value === "string" && value.trim() === "")) {
-            issues.push({ path: [field.name], message: `${label} is required.` });
-          }
-        }
-        return { success: issues.length === 0, data: formData, issues };
-      },
-    };
-  }
+function buildClientValidators() {
+	const requiredFields = data.collection.fields.filter(
+		(f) =>
+			f.required &&
+			f.name !== "body" &&
+			f.name !== "slug" &&
+			!f.list &&
+			f.type !== "checkbox",
+	);
+	return {
+		async validate(formData: Record<string, unknown>) {
+			const issues: { path: string[]; message: string }[] = [];
+			for (const field of requiredFields) {
+				const drawerValue = findAdditionalEntryValue(field.name);
+				const value =
+					drawerValue !== undefined && drawerValue.trim().length > 0
+						? drawerValue
+						: formData[field.name];
+				const label = field.label ?? field.name;
+				if (field.type === "number") {
+					if (value === "" || value === undefined || value === null) {
+						issues.push({
+							path: [field.name],
+							message: `${label} is required.`,
+						});
+					}
+				} else if (
+					value === undefined ||
+					value === null ||
+					(typeof value === "string" && value.trim() === "")
+				) {
+					issues.push({ path: [field.name], message: `${label} is required.` });
+				}
+			}
+			return { success: issues.length === 0, data: formData, issues };
+		},
+	};
+}
 
-  const { form, errors, enhance, delayed, message, submitting } = untrack(
-    () => {
-      return superForm(data.form, {
-        dataType: "json",
-        resetForm: false,
-        invalidateAll: false,
-        validators: buildClientValidators(),
-        warnings: { duplicateId: false },
-        onUpdated({ form: f }) {
-          if (f.valid && f.message) {
-            lastSaved = new Date();
-            initialSnapshot = JSON.stringify($form);
-            hasUnsavedChanges = false;
-          }
-        },
-      });
-    },
-  );
+const { form, errors, enhance, delayed, message, submitting } = untrack(() => {
+	return superForm(data.form, {
+		dataType: "json",
+		resetForm: false,
+		invalidateAll: false,
+		validators: buildClientValidators(),
+		warnings: { duplicateId: false },
+		onUpdated({ form: f }) {
+			if (f.valid && f.message) {
+				lastSaved = new Date();
+				initialSnapshot = JSON.stringify($form);
+				hasUnsavedChanges = false;
+			}
+		},
+	});
+});
 
-  /** Frontmatter keys rendered inline; the drawer only edits the rest. */
-  const INLINE_FRONTMATTER_KEYS = [
-    "title",
-    "slug",
-    "description",
-    "date",
-    "draft",
-    "tags",
-  ] as const;
+/** Frontmatter keys rendered inline; the drawer only edits the rest. */
+const INLINE_FRONTMATTER_KEYS = [
+	"title",
+	"slug",
+	"description",
+	"date",
+	"draft",
+	"tags",
+] as const;
 
-  function toEntryValue(value: unknown): string {
-    if (value === undefined || value === null) return "";
-    if (typeof value === "string") return value;
-    if (typeof value === "object") return JSON.stringify(value);
-    if (
-      typeof value === "number" ||
-      typeof value === "boolean" ||
-      typeof value === "bigint"
-    ) {
-      return String(value);
-    }
-    return "";
-  }
+function toEntryValue(value: unknown): string {
+	if (value === undefined || value === null) return "";
+	if (typeof value === "string") return value;
+	if (typeof value === "object") return JSON.stringify(value);
+	if (
+		typeof value === "number" ||
+		typeof value === "boolean" ||
+		typeof value === "bigint"
+	) {
+		return String(value);
+	}
+	return "";
+}
 
-  function parseAdditionalEntries(raw: unknown): FrontmatterEntry[] {
-    const serialized = typeof raw === "string" ? raw : "";
-    try {
-      const parsed: unknown = JSON.parse(
-        serialized.trim().length > 0 ? serialized : "[]",
-      );
-      if (!Array.isArray(parsed)) return [];
+function parseAdditionalEntries(raw: unknown): FrontmatterEntry[] {
+	const serialized = typeof raw === "string" ? raw : "";
+	try {
+		const parsed: unknown = JSON.parse(
+			serialized.trim().length > 0 ? serialized : "[]",
+		);
+		if (!Array.isArray(parsed)) return [];
 
-      const entries: FrontmatterEntry[] = [];
-      for (const item of parsed) {
-        if (typeof item !== "object" || item === null) continue;
-        const { key, value } = item as { key?: unknown; value?: unknown };
-        if (typeof key !== "string") continue;
-        entries.push({ key, value: toEntryValue(value) });
-      }
-      return entries;
-    } catch {
-      return [];
-    }
-  }
+		const entries: FrontmatterEntry[] = [];
+		for (const item of parsed) {
+			if (typeof item !== "object" || item === null) continue;
+			const { key, value } = item as { key?: unknown; value?: unknown };
+			if (typeof key !== "string") continue;
+			entries.push({ key, value: toEntryValue(value) });
+		}
+		return entries;
+	} catch {
+		return [];
+	}
+}
 
-  let additionalEntries = $state<FrontmatterEntry[]>(
-    untrack(() =>
-      parseAdditionalEntries(
-        ($form as Record<string, unknown>).additionalFrontMatter,
-      ),
-    ),
-  );
-  let additionalFieldsOpen = $state(false);
+let additionalEntries = $state<FrontmatterEntry[]>(
+	untrack(() =>
+		parseAdditionalEntries(
+			($form as Record<string, unknown>).additionalFrontMatter,
+		),
+	),
+);
+let additionalFieldsOpen = $state(false);
 
-  function findAdditionalEntryValue(key: string): string | undefined {
-    return additionalEntries.find((entry) => entry.key.trim() === key)?.value;
-  }
+function findAdditionalEntryValue(key: string): string | undefined {
+	return additionalEntries.find((entry) => entry.key.trim() === key)?.value;
+}
 
-  function handleAdditionalFieldsChange() {
-    ($form as Record<string, unknown>).additionalFrontMatter = JSON.stringify(
-      additionalEntries,
-    );
-  }
+function handleAdditionalFieldsChange() {
+	($form as Record<string, unknown>).additionalFrontMatter =
+		JSON.stringify(additionalEntries);
+}
 
-  let orpcClient: ReturnType<typeof createLightCmsClient> | undefined;
-  onMount(() => {
-    orpcClient = createLightCmsClient();
-  });
+let orpcClient: ReturnType<typeof createLightCmsClient> | undefined;
+onMount(() => {
+	orpcClient = createLightCmsClient();
+});
 
-  const editor = createEditor({
-    callAI: async (prompt: string, onChunk: (chunk: string) => void) => {
-      try {
-        if (!orpcClient) orpcClient = createLightCmsClient();
-        const stream = await orpcClient.ai.generateContent({ prompt });
-        for await (const chunk of stream) {
-          onChunk(chunk);
-        }
-      } catch (err) {
-        throw new Error(String(err));
-      }
-    },
-    onUpdate: () => {
-      if (!editor) return;
-      ($form as Record<string, unknown>).body = editor.getMarkdown();
-    },
-    onFileUpload: async (file: File) => uploadFile(file),
-  });
+const editor = createEditor({
+	callAI: async (prompt: string, onChunk: (chunk: string) => void) => {
+		try {
+			if (!orpcClient) orpcClient = createLightCmsClient();
+			const stream = await orpcClient.ai.generateContent({ prompt });
+			for await (const chunk of stream) {
+				onChunk(chunk);
+			}
+		} catch (err) {
+			throw new Error(String(err));
+		}
+	},
+	onUpdate: () => {
+		if (!editor) return;
+		($form as Record<string, unknown>).body = editor.getMarkdown();
+	},
+	onFileUpload: async (file: File) => uploadFile(file),
+});
 
-  let seededPath = $state("");
-  let editorMode = $state<"rich" | "markdown">("rich");
-  let rawMarkdown = $state("");
-  $effect(() => {
-    const entry = data.entry;
-    if (entry && entry.path !== seededPath && editor) {
-      seededPath = entry.path;
-      editor.commands.setContent(entry.body ?? "", { contentType: "markdown" });
-      rawMarkdown = entry.body ?? "";
-      additionalEntries = parseAdditionalEntries(
-        (data.form.data as Record<string, unknown>).additionalFrontMatter,
-      );
-      additionalFieldsOpen = false;
-    }
-  });
+let seededPath = $state("");
+let editorMode = $state<"rich" | "markdown">("rich");
+let rawMarkdown = $state("");
+$effect(() => {
+	const entry = data.entry;
+	if (entry && entry.path !== seededPath && editor) {
+		seededPath = entry.path;
+		editor.commands.setContent(entry.body ?? "", { contentType: "markdown" });
+		rawMarkdown = entry.body ?? "";
+		additionalEntries = parseAdditionalEntries(
+			(data.form.data as Record<string, unknown>).additionalFrontMatter,
+		);
+		additionalFieldsOpen = false;
+	}
+});
 
-  function switchToMarkdown() {
-    if (!editor) return;
-    rawMarkdown = editor.getMarkdown();
-    editorMode = "markdown";
-  }
+function switchToMarkdown() {
+	if (!editor) return;
+	rawMarkdown = editor.getMarkdown();
+	editorMode = "markdown";
+}
 
-  function switchToRich() {
-    if (!editor) return;
-    ($form as Record<string, string>).body = rawMarkdown;
-    editor.commands.setContent(rawMarkdown, { contentType: "markdown" });
-    editorMode = "rich";
-  }
+function switchToRich() {
+	if (!editor) return;
+	($form as Record<string, string>).body = rawMarkdown;
+	editor.commands.setContent(rawMarkdown, { contentType: "markdown" });
+	editorMode = "rich";
+}
 
-  let contentFullscreen = $state(false);
-  $effect(() => {
-    if (!contentFullscreen) return;
-    document.body.style.overflow = "hidden";
-    const guard = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !e.defaultPrevented) {
-        contentFullscreen = false;
-        if (editorMode === "rich" && editor) {
-          editor.commands.focus("end");
-        } else if (editorMode === "markdown") {
-          const markdownEditor = document.getElementById(
-            "markdown-editor",
-          ) as HTMLTextAreaElement | null;
-          markdownEditor?.focus();
-        }
-      }
-    };
-    window.addEventListener("keydown", guard);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", guard);
-    };
-  });
+let contentFullscreen = $state(false);
+$effect(() => {
+	if (!contentFullscreen) return;
+	document.body.style.overflow = "hidden";
+	const guard = (e: KeyboardEvent) => {
+		if (e.key === "Escape" && !e.defaultPrevented) {
+			contentFullscreen = false;
+			if (editorMode === "rich" && editor) {
+				editor.commands.focus("end");
+			} else if (editorMode === "markdown") {
+				const markdownEditor = document.getElementById(
+					"markdown-editor",
+				) as HTMLTextAreaElement | null;
+				markdownEditor?.focus();
+			}
+		}
+	};
+	window.addEventListener("keydown", guard);
+	return () => {
+		document.body.style.overflow = "";
+		window.removeEventListener("keydown", guard);
+	};
+});
 
-  function handleGlobalKeydown(e: KeyboardEvent) {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
-      e.preventDefault();
-      const formElement = document.getElementById(
-        "main-entry-form",
-      ) as HTMLFormElement;
-      formElement?.requestSubmit();
-    }
-  }
+function handleGlobalKeydown(e: KeyboardEvent) {
+	if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+		e.preventDefault();
+		const formElement = document.getElementById(
+			"main-entry-form",
+		) as HTMLFormElement;
+		formElement?.requestSubmit();
+	}
+}
 
-  $effect(() => {
-    if (!contentFullscreen) return;
-    if (editorMode === "rich" && editor) {
-      const frame = requestAnimationFrame(() => editor.commands.focus("end"));
-      return () => cancelAnimationFrame(frame);
-    } else if (editorMode === "markdown") {
-      const frame = requestAnimationFrame(() => {
-        const markdownEditor = document.getElementById(
-          "markdown-editor",
-        ) as HTMLTextAreaElement | null;
-        markdownEditor?.focus();
-      });
-      return () => cancelAnimationFrame(frame);
-    }
-  });
+$effect(() => {
+	if (!contentFullscreen) return;
+	if (editorMode === "rich" && editor) {
+		const frame = requestAnimationFrame(() => editor.commands.focus("end"));
+		return () => cancelAnimationFrame(frame);
+	} else if (editorMode === "markdown") {
+		const frame = requestAnimationFrame(() => {
+			const markdownEditor = document.getElementById(
+				"markdown-editor",
+			) as HTMLTextAreaElement | null;
+			markdownEditor?.focus();
+		});
+		return () => cancelAnimationFrame(frame);
+	}
+});
 
-  const bodyText = $derived(
-    String(($form as Record<string, unknown>).body ?? ""),
-  );
-  const wordCount = $derived(
-    bodyText.trim() ? bodyText.trim().split(/\s+/).length : 0,
-  );
-  const charCount = $derived(bodyText.length);
-  const readingMinutes = $derived(
-    wordCount === 0 ? 0 : Math.max(1, Math.round(wordCount / 200)),
-  );
+const bodyText = $derived(
+	String(($form as Record<string, unknown>).body ?? ""),
+);
+const wordCount = $derived(
+	bodyText.trim() ? bodyText.trim().split(/\s+/).length : 0,
+);
+const charCount = $derived(bodyText.length);
+const readingMinutes = $derived(
+	wordCount === 0 ? 0 : Math.max(1, Math.round(wordCount / 200)),
+);
 
-  let initialSnapshot = untrack(() => JSON.stringify(data.form.data));
-  let hasUnsavedChanges = $state(false);
-  let lastSaved = $state<Date | null>(null);
+let initialSnapshot = untrack(() => JSON.stringify(data.form.data));
+let hasUnsavedChanges = $state(false);
+let lastSaved = $state<Date | null>(null);
 
-  $effect(() => {
-    hasUnsavedChanges = JSON.stringify($form) !== initialSnapshot;
-  });
+$effect(() => {
+	hasUnsavedChanges = JSON.stringify($form) !== initialSnapshot;
+});
 
-  onMount(() => {
-    const guard = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) e.preventDefault();
-    };
-    window.addEventListener("beforeunload", guard);
-    return () => window.removeEventListener("beforeunload", guard);
-  });
+onMount(() => {
+	const guard = (e: BeforeUnloadEvent) => {
+		if (hasUnsavedChanges) e.preventDefault();
+	};
+	window.addEventListener("beforeunload", guard);
+	return () => window.removeEventListener("beforeunload", guard);
+});
 
-  function getTags(): string[] {
-    const value = ($form as Record<string, unknown>).tags;
-    if (Array.isArray(value)) return value as string[];
-    if (typeof value === "string")
-      return value
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean);
-    return [];
-  }
+function getTags(): string[] {
+	const value = ($form as Record<string, unknown>).tags;
+	if (Array.isArray(value)) return value as string[];
+	if (typeof value === "string")
+		return value
+			.split(",")
+			.map((t) => t.trim())
+			.filter(Boolean);
+	return [];
+}
 
-  const tags = $derived(getTags());
+const tags = $derived(getTags());
 
-  function handleTagsChange(newTags: string[]) {
-    ($form as Record<string, unknown>).tags = newTags;
-  }
+function handleTagsChange(newTags: string[]) {
+	($form as Record<string, unknown>).tags = newTags;
+}
 
-  const currentTitle = $derived.by(() => {
-    const formTitle = ($form as Record<string, unknown>).title;
-    if (typeof formTitle === "string" && formTitle.trim().length > 0) {
-      return formTitle.trim();
-    }
-    const frontMatterTitle = data.entry?.frontMatter?.title;
-    if (typeof frontMatterTitle === "string" && frontMatterTitle.trim().length > 0) {
-      return frontMatterTitle.trim();
-    }
-    if (data.entry?.slug) {
-      return data.entry.slug;
-    }
-    if (data.isNew) {
-      return "New Entry";
-    }
-    return "";
-  });
+const currentTitle = $derived.by(() => {
+	const formTitle = ($form as Record<string, unknown>).title;
+	if (typeof formTitle === "string" && formTitle.trim().length > 0) {
+		return formTitle.trim();
+	}
+	const frontMatterTitle = data.entry?.frontMatter?.title;
+	if (
+		typeof frontMatterTitle === "string" &&
+		frontMatterTitle.trim().length > 0
+	) {
+		return frontMatterTitle.trim();
+	}
+	if (data.entry?.slug) {
+		return data.entry.slug;
+	}
+	if (data.isNew) {
+		return "New Entry";
+	}
+	return "";
+});
 
-  const saving = $derived($submitting || $delayed);
-  let deleting = $state(false);
-  function fieldError(name: string): string | undefined {
-    const e = ($errors as Record<string, string[] | undefined>)[name];
-    return e?.[0];
-  }
-  const errTitle = $derived(fieldError("title"));
-  const errDesc = $derived(fieldError("description"));
-  const errDate = $derived(fieldError("date"));
-  const folder = $derived(data.folder ?? "");
-  let moveDialogOpen = $state(false);
-  let targetFolderInput = $state(untrack(() => data.folder ?? ""));
-  let targetSlugInput = $state(untrack(() => data.entry?.slug ?? ""));
+const saving = $derived($submitting || $delayed);
+let deleting = $state(false);
+function fieldError(name: string): string | undefined {
+	const e = ($errors as Record<string, string[] | undefined>)[name];
+	return e?.[0];
+}
+const errTitle = $derived(fieldError("title"));
+const errDesc = $derived(fieldError("description"));
+const errDate = $derived(fieldError("date"));
+const folder = $derived(data.folder ?? "");
+let moveDialogOpen = $state(false);
+let targetFolderInput = $state(untrack(() => data.folder ?? ""));
+let targetSlugInput = $state(untrack(() => data.entry?.slug ?? ""));
 
-
-  const collectionUrl = $derived(() => {
-    const params = data?.query;
-    if (params && params.length > 0) {
-      return `/cms/${encodeURIComponent(data.collection.name)}?${params}`;
-    }
-    return `/cms/${encodeURIComponent(data.collection.name)}`;
-  });
-  const payloadQuery = $derived(buildPayloadQuery(data.query ?? "", folder));
-  const displayPath = $derived.by(() => {
-    if (data.entry?.path) {
-      return data.entry.path;
-    }
-    if (data.collection.path.length > 0 && folder.length > 0) {
-      return `${data.collection.path}/${folder}`;
-    }
-    if (data.collection.path.length > 0) {
-      return data.collection.path;
-    }
-    return folder;
-  });
+const collectionUrl = $derived(() => {
+	const params = data?.query;
+	if (params && params.length > 0) {
+		return `/cms/${encodeURIComponent(data.collection.name)}?${params}`;
+	}
+	return `/cms/${encodeURIComponent(data.collection.name)}`;
+});
+const payloadQuery = $derived(buildPayloadQuery(data.query ?? "", folder));
+const displayPath = $derived.by(() => {
+	if (data.entry?.path) {
+		return data.entry.path;
+	}
+	if (data.collection.path.length > 0 && folder.length > 0) {
+		return `${data.collection.path}/${folder}`;
+	}
+	if (data.collection.path.length > 0) {
+		return data.collection.path;
+	}
+	return folder;
+});
 </script>
 
 <svelte:head>

@@ -1,72 +1,72 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import type { SVGAttributes } from "svelte/elements";
-  import { cn } from "$lib/utils";
+import { onMount } from "svelte";
+import type { SVGAttributes } from "svelte/elements";
+import { cn } from "$lib/utils";
 
-  interface DotPatternProps extends SVGAttributes<SVGSVGElement> {
-    width?: number;
-    height?: number;
-    x?: number;
-    y?: number;
-    cx?: number;
-    cy?: number;
-    cr?: number;
-    class?: string;
-    glow?: boolean;
-  }
+interface DotPatternProps extends SVGAttributes<SVGSVGElement> {
+	width?: number;
+	height?: number;
+	x?: number;
+	y?: number;
+	cx?: number;
+	cy?: number;
+	cr?: number;
+	class?: string;
+	glow?: boolean;
+}
 
-  let {
-    width = 16,
-    height = 16,
-    x = 0,
-    y = 0,
-    cx = 1,
-    cy = 1,
-    cr = 1,
-    class: className,
-    glow = false,
-    ...props
-  }: DotPatternProps = $props();
+let {
+	width = 16,
+	height = 16,
+	x = 0,
+	y = 0,
+	cx = 1,
+	cy = 1,
+	cr = 1,
+	class: className,
+	glow = false,
+	...props
+}: DotPatternProps = $props();
 
-  const _id = $props.id();
-  let containerRef = $state<SVGSVGElement | null>(null);
-  let dimensions = $state({ width: 0, height: 0 });
+const _id = $props.id();
+let containerRef = $state<SVGSVGElement | null>(null);
+let dimensions = $state({ width: 0, height: 0 });
 
-  onMount(() => {
-    const updateDimensions = () => {
-      if (containerRef) {
-        const rect = containerRef.getBoundingClientRect();
-        dimensions = { width: rect.width, height: rect.height };
-      }
-    };
+onMount(() => {
+	const updateDimensions = () => {
+		if (containerRef) {
+			const rect = containerRef.getBoundingClientRect();
+			dimensions = { width: rect.width, height: rect.height };
+		}
+	};
 
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
-  });
+	updateDimensions();
+	window.addEventListener("resize", updateDimensions);
+	return () => window.removeEventListener("resize", updateDimensions);
+});
 
-  const _dots = $derived(
-    dimensions.width && dimensions.height
-      ? Array.from(
-          {
-            length:
-              Math.ceil(dimensions.width / width) *
-              Math.ceil(dimensions.height / height),
-          },
-          (_, i) => {
-            const cols = Math.ceil(dimensions.width / width);
-            const col = i % cols;
-            const row = Math.floor(i / cols);
-            return {
-              x: col * width + cx,
-              y: row * height + cy,
-              delay: Math.random() * 5,
-              duration: Math.random() * 3 + 2,
-            };
-          },
-        )
-      : [],
-  );
+const _dots = $derived(
+	dimensions.width && dimensions.height
+		? Array.from(
+				{
+					length:
+						Math.ceil(dimensions.width / width) *
+						Math.ceil(dimensions.height / height),
+				},
+				(_, i) => {
+					const cols = Math.ceil(dimensions.width / width);
+					const col = i % cols;
+					const row = Math.floor(i / cols);
+					return {
+						x: col * width + cx,
+						y: row * height + cy,
+						delay: Math.random() * 5,
+						duration: Math.random() * 3 + 2,
+					};
+				},
+			)
+		: [],
+);
 </script>
 
 <svg

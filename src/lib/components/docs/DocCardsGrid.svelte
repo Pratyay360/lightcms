@@ -1,17 +1,17 @@
 <script lang="ts">
-	interface DocCardItem {
-		title: string;
-		description: string;
-		icon?: any;
-		badge?: string;
-		href?: string;
-	}
+interface DocCardItem {
+	title: string;
+	description: string;
+	icon?: any;
+	badge?: string;
+	href?: string;
+}
 
-	let {
-		cards = []
-	}: {
-		cards: DocCardItem[];
-	} = $props();
+let {
+	cards = [],
+}: {
+	cards: DocCardItem[];
+} = $props();
 </script>
 
 <div class="my-8 grid gap-5 sm:grid-cols-2">

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import { cn } from '$lib/utils.js';
-	import { getTocItems } from './toc.state.svelte.js';
+import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+import { cn } from "$lib/utils.js";
+import { getTocItems } from "./toc.state.svelte.js";
 
-	const tocItems = $derived(getTocItems());
+const tocItems = $derived(getTocItems());
 </script>
 
 <Tooltip.Provider>

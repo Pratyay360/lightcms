@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { cn } from '$lib/utils.js';
-	import type { QuickAction } from './quick-actions.js';
+import { slide } from "svelte/transition";
+import { Button } from "$lib/components/ui/button/index.js";
+import { cn } from "$lib/utils.js";
+import type { QuickAction } from "./quick-actions.js";
 
-	interface Props {
-		actions: readonly QuickAction[];
-		activeIndex: number;
-		onSelect: (action: QuickAction) => void;
-		onHover: (index: number) => void;
-	}
+interface Props {
+	actions: readonly QuickAction[];
+	activeIndex: number;
+	onSelect: (action: QuickAction) => void;
+	onHover: (index: number) => void;
+}
 
-	const { actions, activeIndex, onSelect, onHover }: Props = $props();
+const { actions, activeIndex, onSelect, onHover }: Props = $props();
 </script>
 
 <div

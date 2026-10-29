@@ -1,37 +1,39 @@
 <script lang="ts">
-  import Blocks from "@lucide/svelte/icons/blocks";
-  import BookOpen from "@lucide/svelte/icons/book-open";
-  import FileBadge2Icon from "@lucide/svelte/icons/file-badge-2";
-  import Info from "@lucide/svelte/icons/info";
-  import LogIn from "@lucide/svelte/icons/log-in";
-  import Sparkles from "@lucide/svelte/icons/sparkles";
-  import { injectAnalytics } from '@vercel/analytics/sveltekit';
-  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
-  import { ModeWatcher } from "mode-watcher";
-  import "./layout.css";
-  import { onMount } from "svelte";
-  import { dev } from "$app/environment";
-  import { page } from "$app/state";
-  import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
-  import MetaTags from "$lib/components/custom/MetaTags.svelte";
-  import StarRepoDialog from "$lib/components/custom/StarRepoDialog.svelte";
-  import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
-  import { Avatar } from "$lib/components/ui/avatar";
-  import { Button } from "$lib/components/ui/button";
-  import { Toaster } from "$lib/components/ui/sonner";
-  import { DEFAULT_THEME_ID, MODE_STORAGE_KEY, THEME_STORAGE_KEY } from "$lib/themes.js";
+import Blocks from "@lucide/svelte/icons/blocks";
+import BookOpen from "@lucide/svelte/icons/book-open";
+import Info from "@lucide/svelte/icons/info";
+import LogIn from "@lucide/svelte/icons/log-in";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import { injectAnalytics } from "@vercel/analytics/sveltekit";
+import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
+import { ModeWatcher } from "mode-watcher";
+import "./layout.css";
+import { onMount } from "svelte";
+import { dev } from "$app/environment";
+import { page } from "$app/state";
+import Carbonbadge from "$lib/components/custom/CarbonBadge.svelte";
+import MetaTags from "$lib/components/custom/MetaTags.svelte";
+import StarRepoDialog from "$lib/components/custom/StarRepoDialog.svelte";
+import ToggleMode from "$lib/components/custom/ToggleMode.svelte";
+import { Avatar } from "$lib/components/ui/avatar";
+import { Button } from "$lib/components/ui/button";
+import { Toaster } from "$lib/components/ui/sonner";
+import {
+	DEFAULT_THEME_ID,
+	MODE_STORAGE_KEY,
+	THEME_STORAGE_KEY,
+} from "$lib/themes.js";
 
 if (!dev) {
-	injectAnalytics({ mode: 'production' });
+	injectAnalytics({ mode: "production" });
 	injectSpeedInsights();
 }
 let { children, data } = $props();
 
-
 const session = $derived(data.session);
 const user = $derived(data.user);
 const userInitial = $derived(
-  (user?.name ?? user?.email ?? "U").charAt(0).toUpperCase(),
+	(user?.name ?? user?.email ?? "U").charAt(0).toUpperCase(),
 );
 const isDocs = $derived(page.url.pathname.startsWith("/docs"));
 
@@ -40,45 +42,45 @@ let identifiedUserId: string | undefined;
 let starDialogOpen = $state(false);
 
 function identifyCurrentUser() {
-  if (!user) {
-    identifiedUserId = undefined;
-    return;
-  }
-  if (!posthogClient || user.id === identifiedUserId) return;
+	if (!user) {
+		identifiedUserId = undefined;
+		return;
+	}
+	if (!posthogClient || user.id === identifiedUserId) return;
 
-  if (identifiedUserId) {
-    posthogClient.reset();
-  }
+	if (identifiedUserId) {
+		posthogClient.reset();
+	}
 
-  posthogClient.identify(user.id, {
-    email: user.email,
-    name: user.name,
-  });
-  identifiedUserId = user.id;
+	posthogClient.identify(user.id, {
+		email: user.email,
+		name: user.name,
+	});
+	identifiedUserId = user.id;
 }
 
 onMount(async () => {
-  const { isPostHogInitialized } = await import("../hooks.client");
-  if (!isPostHogInitialized()) return;
+	const { isPostHogInitialized } = await import("../hooks.client");
+	if (!isPostHogInitialized()) return;
 
-  posthogClient = (await import("posthog-js")).default;
-  identifyCurrentUser();
+	posthogClient = (await import("posthog-js")).default;
+	identifyCurrentUser();
 
-  const dismissed = localStorage.getItem("lightcms-star-dialog-dismissed");
-  if (!dismissed) {
-    setTimeout(() => {
-      starDialogOpen = true;
-    }, 3000);
-  }
+	const dismissed = localStorage.getItem("lightcms-star-dialog-dismissed");
+	if (!dismissed) {
+		setTimeout(() => {
+			starDialogOpen = true;
+		}, 3000);
+	}
 });
 
 $effect(() => {
-  identifyCurrentUser();
+	identifyCurrentUser();
 });
 
 function dismissStarDialog() {
-  localStorage.setItem("lightcms-star-dialog-dismissed", "true");
-  starDialogOpen = false;
+	localStorage.setItem("lightcms-star-dialog-dismissed", "true");
+	starDialogOpen = false;
 }
 </script>
 
@@ -105,9 +107,15 @@ function dismissStarDialog() {
         aria-label="LightCMS home"
       >
         <span
-          class="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-105 group-hover:rotate-3"
+          class="grid size-9 place-items-center overflow-hidden rounded-xl bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-105 group-hover:rotate-3"
         >
-          <image src="/"/>
+          <img
+            src="/logo.png"
+            alt="LightCMS logo"
+            class="size-full object-cover"
+            width="36"
+            height="36"
+          />
         </span>
         <span
           class="hidden text-sm font-black tracking-wider uppercase text-foreground sm:inline"

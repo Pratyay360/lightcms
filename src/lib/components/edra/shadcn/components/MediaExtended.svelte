@@ -1,52 +1,53 @@
 <script lang="ts">
-	import type { NodeViewProps } from '@tiptap/core';
-	import { onMount, type Snippet } from 'svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { cn } from '$lib/utils.js';
-	import strings from '../../strings.js';
-	import { NodeViewWrapper } from '../../tiptap/index.js';
-	import { duplicateContent } from '../../utils.js';
-	import MediaToolbar from './media/MediaToolbar.svelte';
-	import { useMediaResize } from './media/resize.svelte.js';
+import type { NodeViewProps } from "@tiptap/core";
+import { onMount, type Snippet } from "svelte";
+import { Button } from "$lib/components/ui/button/index.js";
+import { cn } from "$lib/utils.js";
+import strings from "../../strings.js";
+import { NodeViewWrapper } from "../../tiptap/index.js";
+import { duplicateContent } from "../../utils.js";
+import MediaToolbar from "./media/MediaToolbar.svelte";
+import { useMediaResize } from "./media/resize.svelte.js";
 
-	interface MediaExtendedProps extends NodeViewProps {
-		children: Snippet<[]>;
-		mediaRef?: HTMLElement;
+interface MediaExtendedProps extends NodeViewProps {
+	children: Snippet<[]>;
+	mediaRef?: HTMLElement;
+}
+
+let {
+	node,
+	editor,
+	selected,
+	deleteNode,
+	updateAttributes,
+	children,
+	mediaRef = $bindable(),
+}: MediaExtendedProps = $props();
+
+let nodeRef = $state<HTMLElement | null>(null);
+let openedMore = $state(false);
+
+const resize = useMediaResize({
+	getMediaElement: () => mediaRef,
+	getContainerElement: () => nodeRef?.parentElement,
+	onWidthChange: (widthPercent) =>
+		updateAttributes({ width: `${widthPercent}%` }),
+});
+
+onMount(() => {
+	nodeRef = document.getElementById("resizable-container-media");
+});
+
+function handleCaption() {
+	const title = node.attrs.title;
+	if (title === null || String(title).trim() === "") {
+		updateAttributes({ title: strings.extension.media.captionPlaceholder });
 	}
+}
 
-	let {
-		node,
-		editor,
-		selected,
-		deleteNode,
-		updateAttributes,
-		children,
-		mediaRef = $bindable(),
-	}: MediaExtendedProps = $props();
-
-	let nodeRef = $state<HTMLElement | null>(null);
-	let openedMore = $state(false);
-
-	const resize = useMediaResize({
-		getMediaElement: () => mediaRef,
-		getContainerElement: () => nodeRef?.parentElement,
-		onWidthChange: (widthPercent) => updateAttributes({ width: `${widthPercent}%` }),
-	});
-
-	onMount(() => {
-		nodeRef = document.getElementById('resizable-container-media');
-	});
-
-	function handleCaption() {
-		const title = node.attrs.title;
-		if (title === null || String(title).trim() === '') {
-			updateAttributes({ title: strings.extension.media.captionPlaceholder });
-		}
-	}
-
-	function handleTitleChange(event: Event) {
-		updateAttributes({ title: (event.target as HTMLInputElement).value });
-	}
+function handleTitleChange(event: Event) {
+	updateAttributes({ title: (event.target as HTMLInputElement).value });
+}
 </script>
 
 <NodeViewWrapper

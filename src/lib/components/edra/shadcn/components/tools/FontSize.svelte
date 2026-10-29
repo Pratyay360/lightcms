@@ -1,32 +1,32 @@
 <script lang="ts">
-	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { getEditor, useEditorTransaction } from '../../../tiptap/index.js';
-	import Tooltip from '../Tooltip.svelte';
+import ChevronDown from "@lucide/svelte/icons/chevron-down";
+import { buttonVariants } from "$lib/components/ui/button/index.js";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+import { getEditor, useEditorTransaction } from "../../../tiptap/index.js";
+import Tooltip from "../Tooltip.svelte";
 
-	const editor = getEditor();
-	const transaction = useEditorTransaction(editor);
+const editor = getEditor();
+const transaction = useEditorTransaction(editor);
 
-	const currentSize = () => {
-		void transaction.version;
-		return editor.getAttributes('textStyle').fontSize || '';
-	};
+const currentSize = () => {
+	void transaction.version;
+	return editor.getAttributes("textStyle").fontSize || "";
+};
 
-	const FONT_SIZE = [
-		{ label: 'Tiny', value: '0.7rem' },
-		{ label: 'Smaller', value: '0.75rem' },
-		{ label: 'Small', value: '0.9rem' },
-		{ label: 'Default', value: '' },
-		{ label: 'Large', value: '1.25rem' },
-		{ label: 'Extra Large', value: '1.5rem' }
-	];
+const FONT_SIZE = [
+	{ label: "Tiny", value: "0.7rem" },
+	{ label: "Smaller", value: "0.75rem" },
+	{ label: "Small", value: "0.9rem" },
+	{ label: "Default", value: "" },
+	{ label: "Large", value: "1.25rem" },
+	{ label: "Extra Large", value: "1.5rem" },
+];
 
-	const currentLabel = $derived.by(() => {
-		const l = FONT_SIZE.find((f) => f.value === currentSize());
-		if (l) return l.label.split(' ')[0];
-		return 'Medium';
-	});
+const currentLabel = $derived.by(() => {
+	const l = FONT_SIZE.find((f) => f.value === currentSize());
+	if (l) return l.label.split(" ")[0];
+	return "Medium";
+});
 </script>
 
 <DropdownMenu.Root>

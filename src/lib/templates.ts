@@ -33,7 +33,9 @@ export async function fetchTemplates(
   owner: string,
   { token, org = false, fetch: fetchFn = fetch }: FetchTemplatesOptions = {},
 ): Promise<Template[]> {
-  const headers: Record<string, string> = { Accept: "application/vnd.github+json" };
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+  };
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const base = org ? `${API}/orgs/${owner}/repos` : `${API}/users/${owner}/repos`;

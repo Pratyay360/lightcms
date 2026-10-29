@@ -1,97 +1,103 @@
 <script lang="ts">
-	import { autoPlacement } from '@floating-ui/dom';
-	import Sparkles from "@lucide/svelte/icons/sparkles";
-	import Duplicate from '@lucide/svelte/icons/copy';
-	import GripVertical from '@lucide/svelte/icons/grip-vertical';
-	import Plus from '@lucide/svelte/icons/plus';
-	import RemoveFormatting from '@lucide/svelte/icons/remove-formatting';
-	import Delete from '@lucide/svelte/icons/trash-2';
-	import type { Editor } from '@tiptap/core';
-	import { DragHandlePlugin } from '@tiptap/extension-drag-handle';
-	import type { Node } from '@tiptap/pm/model';
-	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { cn } from '$lib/utils.js';
-	import { commands, type EdraCommand } from '../commands/index.ts';
-	import { getEditor } from '../tiptap/index.ts';
-	import AlignmentSubmenu from './drag-handle/AlignmentSubmenu.svelte';
-	import ColorsSubmenu from './drag-handle/ColorsSubmenu.svelte';
-	import CopyAsSubmenu from './drag-handle/CopyAsSubmenu.svelte';
-	import TurnIntoMenu from './drag-handle/TurnIntoMenu.svelte';
-	import {
-		handleAIHighlight,
-		handleDelete,
-		handleDuplicate,
-		handleRemoveFormatting,
-		insertNode,
-	} from './drag-handle-actions.js';
-	import { useAiEnabled } from './hooks/useAiEnabled.svelte.js';
+import { autoPlacement } from "@floating-ui/dom";
+import Duplicate from "@lucide/svelte/icons/copy";
+import GripVertical from "@lucide/svelte/icons/grip-vertical";
+import Plus from "@lucide/svelte/icons/plus";
+import RemoveFormatting from "@lucide/svelte/icons/remove-formatting";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import Delete from "@lucide/svelte/icons/trash-2";
+import type { Editor } from "@tiptap/core";
+import { DragHandlePlugin } from "@tiptap/extension-drag-handle";
+import type { Node } from "@tiptap/pm/model";
+import { onMount } from "svelte";
+import { Button } from "$lib/components/ui/button/index.js";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+import { cn } from "$lib/utils.js";
+import { commands, type EdraCommand } from "../commands/index.ts";
+import { getEditor } from "../tiptap/index.ts";
+import AlignmentSubmenu from "./drag-handle/AlignmentSubmenu.svelte";
+import ColorsSubmenu from "./drag-handle/ColorsSubmenu.svelte";
+import CopyAsSubmenu from "./drag-handle/CopyAsSubmenu.svelte";
+import TurnIntoMenu from "./drag-handle/TurnIntoMenu.svelte";
+import {
+	handleAIHighlight,
+	handleDelete,
+	handleDuplicate,
+	handleRemoveFormatting,
+	insertNode,
+} from "./drag-handle-actions.js";
+import { useAiEnabled } from "./hooks/useAiEnabled.svelte.js";
 
-	interface Props {
-		type?: 'simple' | 'extended';
-		class?: string;
-	}
-	const { type = 'simple', class: className }: Props = $props();
+interface Props {
+	type?: "simple" | "extended";
+	class?: string;
+}
+const { type = "simple", class: className }: Props = $props();
 
-	const turnIntos: Record<string, EdraCommand[]> = Object.entries(commands).reduce(
-		(acc, [key, value]) => {
-			if (key === 'alignment') return acc;
-			const turnIntoCommands = value.filter((c) => c.turnInto);
-			if (turnIntoCommands.length > 0) {
-				acc[key] = turnIntoCommands;
-			}
-			return acc;
+const turnIntos: Record<string, EdraCommand[]> = Object.entries(
+	commands,
+).reduce(
+	(acc, [key, value]) => {
+		if (key === "alignment") return acc;
+		const turnIntoCommands = value.filter((c) => c.turnInto);
+		if (turnIntoCommands.length > 0) {
+			acc[key] = turnIntoCommands;
+		}
+		return acc;
+	},
+	{} as Record<string, EdraCommand[]>,
+);
+
+let currentNode: Node | null = $state(null);
+let currentNodePos: number = $state(-1);
+let menuOpen = $state(false);
+
+const pluginKey = "globalDragHandle";
+let element = $state(document.createElement("div"));
+
+const editor = getEditor();
+const isAiEnabled = useAiEnabled(editor);
+
+const onNodeChange = (data: {
+	editor: Editor;
+	node: Node | null;
+	pos: number;
+}) => {
+	if (data.node) currentNode = data.node;
+	currentNodePos = data.pos;
+};
+
+onMount(() => {
+	const plugin = DragHandlePlugin({
+		element,
+		pluginKey,
+		editor,
+		computePositionConfig: {
+			strategy: "absolute",
+			middleware: [
+				autoPlacement({
+					allowedPlacements: ["left", "left-start"],
+				}),
+			],
 		},
-		{} as Record<string, EdraCommand[]>
-	);
-
-	let currentNode: Node | null = $state(null);
-	let currentNodePos: number = $state(-1);
-	let menuOpen = $state(false);
-
-	const pluginKey = 'globalDragHandle';
-	let element = $state(document.createElement('div'));
-
-	const editor = getEditor();
-	const isAiEnabled = useAiEnabled(editor);
-
-	const onNodeChange = (data: { editor: Editor; node: Node | null; pos: number }) => {
-		if (data.node) currentNode = data.node;
-		currentNodePos = data.pos;
-	};
-
-	onMount(() => {
-		const plugin = DragHandlePlugin({
-			element,
-			pluginKey,
-			editor,
-			computePositionConfig: {
-				strategy: 'absolute',
-				middleware: [
-					autoPlacement({
-						allowedPlacements: ['left', 'left-start']
-					})
-				]
+		nestedOptions: {
+			enabled: false,
+			rules: [],
+			defaultRules: true,
+			allowedContainers: undefined,
+			edgeDetection: {
+				threshold: 1,
+				edges: ["left", "top"],
+				strength: 1,
 			},
-			nestedOptions: {
-				enabled: false,
-				rules: [],
-				defaultRules: true,
-				allowedContainers: undefined,
-				edgeDetection: {
-					threshold: 1,
-					edges: ['left', 'top'],
-					strength: 1
-				}
-			},
-			onNodeChange
-		});
-		editor.registerPlugin(plugin.plugin);
-		return () => editor.unregisterPlugin(pluginKey);
+		},
+		onNodeChange,
 	});
+	editor.registerPlugin(plugin.plugin);
+	return () => editor.unregisterPlugin(pluginKey);
+});
 
-	const context = () => ({ editor, currentNode, currentNodePos });
+const context = () => ({ editor, currentNode, currentNodePos });
 </script>
 
 <div bind:this={element} class={cn('z-0!', className)} style="visibility: hidden;">

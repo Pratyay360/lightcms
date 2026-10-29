@@ -22,7 +22,10 @@ vi.mock("harper.js", () => ({
 }));
 
 vi.mock("harper.js/binary", () => ({
-  binary: { url: "https://example.test/harper_wasm_bg.wasm", glueFlavor: "full" },
+  binary: {
+    url: "https://example.test/harper_wasm_bg.wasm",
+    glueFlavor: "full",
+  },
 }));
 
 const loadClient = () => import("./harper-client.ts");

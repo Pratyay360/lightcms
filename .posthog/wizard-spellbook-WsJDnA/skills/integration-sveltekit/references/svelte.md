@@ -164,7 +164,9 @@ routes/+page.server.js
 import { PostHog } from "posthog-node";
 
 export async function load() {
-  const posthog = new PostHog("<ph_project_token>", { host: "https://us.i.posthog.com" });
+  const posthog = new PostHog("<ph_project_token>", {
+    host: "https://us.i.posthog.com",
+  });
 
   posthog.capture({
     distinctId: "distinct_id_of_the_user",
@@ -210,7 +212,9 @@ routes/+page.server.js
 ```javascript
 import { PostHog } from "posthog-node";
 
-const client = new PostHog("<ph_project_token>", { host: "https://us.i.posthog.com" });
+const client = new PostHog("<ph_project_token>", {
+  host: "https://us.i.posthog.com",
+});
 
 export async function load() {
   const distinctId = "distinct_id_of_the_user";

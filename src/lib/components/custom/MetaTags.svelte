@@ -1,54 +1,56 @@
 <script lang="ts">
-	import { page } from "$app/state";
-	import type { PageSeoOverride } from "$lib/seo";
-	import {
-		absoluteUrl,
-		buildBreadcrumbsSchema,
-		canonicalPathname,
-		isNoindexPath,
-		ORGANIZATION_SCHEMA,
-		resolvePageSeo,
-		SITE,
-	} from "$lib/seo";
+import { page } from "$app/state";
+import type { PageSeoOverride } from "$lib/seo";
+import {
+	absoluteUrl,
+	buildBreadcrumbsSchema,
+	canonicalPathname,
+	isNoindexPath,
+	ORGANIZATION_SCHEMA,
+	resolvePageSeo,
+	SITE,
+} from "$lib/seo";
 
-	// `page.data` merges the active route's load output, so a page contributes SEO
-	// by returning `{ seo }` from its `load` rather than by rendering its own head.
-	const pageSeo = $derived<PageSeoOverride>((page.data as { seo?: PageSeoOverride }).seo ?? {});
-	const resolved = $derived(resolvePageSeo(page.url.pathname, pageSeo));
-	const canonical = $derived(absoluteUrl(canonicalPathname(page.url)));
-	const imageUrl = $derived(absoluteUrl(resolved.image));
-	const blocked = $derived(isNoindexPath(page.url.pathname));
+// `page.data` merges the active route's load output, so a page contributes SEO
+// by returning `{ seo }` from its `load` rather than by rendering its own head.
+const pageSeo = $derived<PageSeoOverride>(
+	(page.data as { seo?: PageSeoOverride }).seo ?? {},
+);
+const resolved = $derived(resolvePageSeo(page.url.pathname, pageSeo));
+const canonical = $derived(absoluteUrl(canonicalPathname(page.url)));
+const imageUrl = $derived(absoluteUrl(resolved.image));
+const blocked = $derived(isNoindexPath(page.url.pathname));
 
-	const websiteSchema = $derived({
-		"@type": "WebSite",
-		name: SITE.name,
-		url: SITE.origin,
-		description: resolved.description,
-	});
+const websiteSchema = $derived({
+	"@type": "WebSite",
+	name: SITE.name,
+	url: SITE.origin,
+	description: resolved.description,
+});
 
-	const breadcrumbSchema = $derived(
-		buildBreadcrumbsSchema(page.url.pathname, resolved.title),
-	);
+const breadcrumbSchema = $derived(
+	buildBreadcrumbsSchema(page.url.pathname, resolved.title),
+);
 
-	const LD_SCRIPT_OPEN = '<script type="application/ld+json">';
-	const LD_SCRIPT_CLOSE = "</" + "script>";
+const LD_SCRIPT_OPEN = '<script type="application/ld+json">';
+const LD_SCRIPT_CLOSE = "</" + "script>";
 
-	const structuredData = $derived.by((): string | undefined => {
-		if (blocked) {
-			return undefined;
-		}
+const structuredData = $derived.by((): string | undefined => {
+	if (blocked) {
+		return undefined;
+	}
 
-		const baseSchemas = [websiteSchema, ORGANIZATION_SCHEMA, breadcrumbSchema];
-		const contributed = pageSeo.jsonLd;
-		const nodes =
-			contributed === undefined
-				? baseSchemas
-				: [...baseSchemas, contributed].flat();
-		const graph = { "@context": "https://schema.org", "@graph": nodes };
-		const json = JSON.stringify(graph).replaceAll("<", "\\u003c");
+	const baseSchemas = [websiteSchema, ORGANIZATION_SCHEMA, breadcrumbSchema];
+	const contributed = pageSeo.jsonLd;
+	const nodes =
+		contributed === undefined
+			? baseSchemas
+			: [...baseSchemas, contributed].flat();
+	const graph = { "@context": "https://schema.org", "@graph": nodes };
+	const json = JSON.stringify(graph).replaceAll("<", "\\u003c");
 
-		return `${LD_SCRIPT_OPEN}${json}${LD_SCRIPT_CLOSE}`;
-	});
+	return `${LD_SCRIPT_OPEN}${json}${LD_SCRIPT_CLOSE}`;
+});
 </script>
 
 <svelte:head>

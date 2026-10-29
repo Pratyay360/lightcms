@@ -1,15 +1,15 @@
 <script lang="ts">
-	import SearchIcon from '@lucide/svelte/icons/search';
-	import { Command as CommandPrimitive } from "bits-ui";
-	import * as InputGroup from "$lib/components/ui/input-group/index.js";
-	import { cn } from "$lib/utils.js";
+import SearchIcon from "@lucide/svelte/icons/search";
+import { Command as CommandPrimitive } from "bits-ui";
+import * as InputGroup from "$lib/components/ui/input-group/index.js";
+import { cn } from "$lib/utils.js";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		value = $bindable(""),
-		...restProps
-	}: CommandPrimitive.InputProps = $props();
+let {
+	ref = $bindable(null),
+	class: className,
+	value = $bindable(""),
+	...restProps
+}: CommandPrimitive.InputProps = $props();
 </script>
 
 <div data-slot="command-input-wrapper" class="p-1 pb-0">

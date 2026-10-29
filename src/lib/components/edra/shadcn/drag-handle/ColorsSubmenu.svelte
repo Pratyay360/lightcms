@@ -1,19 +1,19 @@
 <script lang="ts">
-	import Palette from '@lucide/svelte/icons/palette';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import type { Editor } from '../../tiptap/index.js';
-	import { quickcolors } from '../../utils.js';
+import Palette from "@lucide/svelte/icons/palette";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+import type { Editor } from "../../tiptap/index.js";
+import { quickcolors } from "../../utils.js";
 
-	interface Props {
-		editor: Editor;
-		currentNodePos: number;
-	}
+interface Props {
+	editor: Editor;
+	currentNodePos: number;
+}
 
-	const { editor, currentNodePos }: Props = $props();
+const { editor, currentNodePos }: Props = $props();
 
-	function isDefaultColor(color: { label: string; value: string }): boolean {
-		return color.value === '' || color.label === 'Default';
-	}
+function isDefaultColor(color: { label: string; value: string }): boolean {
+	return color.value === "" || color.label === "Default";
+}
 </script>
 
 <DropdownMenu.Sub>

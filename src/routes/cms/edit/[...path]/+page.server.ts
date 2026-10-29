@@ -3,8 +3,8 @@ import matter from "gray-matter";
 import { deleteRepoFile, getRepoFile, moveRepoFile, saveRepoFile } from "$lib/server/cms";
 
 import { getRepoCmsContext } from "$lib/server/cms-context";
-import { captureServerEvent } from "$lib/server/posthog";
 import { normalizeContentPath } from "$lib/server/paths";
+import { captureServerEvent } from "$lib/server/posthog";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {

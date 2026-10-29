@@ -1,112 +1,126 @@
 <script lang="ts">
-  import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-  import ChevronRight from "@lucide/svelte/icons/chevron-right";
-  import File from "@lucide/svelte/icons/file";
+import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+import ChevronRight from "@lucide/svelte/icons/chevron-right";
+import File from "@lucide/svelte/icons/file";
 
-  import FileText from "@lucide/svelte/icons/file-text";
-  import Folder from "@lucide/svelte/icons/folder";
-  import FolderInput from "@lucide/svelte/icons/folder-input";
-  import FolderPlus from "@lucide/svelte/icons/folder-plus";
-  import GitBranch from "@lucide/svelte/icons/git-branch";
-  import Home from "@lucide/svelte/icons/home";
-  import Plus from "@lucide/svelte/icons/plus";
-  import Trash2 from "@lucide/svelte/icons/trash-2";
-  import { Button } from "$lib/components/ui/button";
-  import { collectionEntryUrl } from "$lib/cms-urls";
-  import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-  } from "$lib/components/ui/dialog";
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import type { PageData } from "./$types";
+import FileText from "@lucide/svelte/icons/file-text";
+import Folder from "@lucide/svelte/icons/folder";
+import FolderInput from "@lucide/svelte/icons/folder-input";
+import FolderPlus from "@lucide/svelte/icons/folder-plus";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import Home from "@lucide/svelte/icons/home";
+import Plus from "@lucide/svelte/icons/plus";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import { collectionEntryUrl } from "$lib/cms-urls";
+import { Button } from "$lib/components/ui/button";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import type { PageData } from "./$types";
 
-  let { data, form }: { data: PageData; form?: { error?: string } | null } = $props();
+let { data, form }: { data: PageData; form?: { error?: string } | null } =
+	$props();
 
-  const tree = $derived(data.tree);
-  const folders = $derived(tree.folders);
-  const files = $derived(tree.files);
-  const breadcrumbs = $derived(tree.breadcrumbs);
-  const currentPath = $derived(tree.currentPath);
-  const parentPath = $derived(tree.parentPath);
-  const query = $derived(data.query);
-  const selection = $derived(data.selection);
+const tree = $derived(data.tree);
+const folders = $derived(tree.folders);
+const files = $derived(tree.files);
+const breadcrumbs = $derived(tree.breadcrumbs);
+const currentPath = $derived(tree.currentPath);
+const parentPath = $derived(tree.parentPath);
+const query = $derived(data.query);
+const selection = $derived(data.selection);
 
-  let createFolderOpen = $state(false);
-  let createFileOpen = $state(false);
-  let deleteItemTarget = $state<{ type: "file" | "folder"; path: string; name: string } | null>(null);
-  let moveFileTarget = $state<{ path: string; name: string; currentDir: string } | null>(null);
-  let destinationFolderInput = $state("");
-  let newFilenameInput = $state("");
-  let draggedFilePath = $state<string | null>(null);
-  let dropTargetFolder = $state<string | null>(null);
+let createFolderOpen = $state(false);
+let createFileOpen = $state(false);
+let deleteItemTarget = $state<{
+	type: "file" | "folder";
+	path: string;
+	name: string;
+} | null>(null);
+let moveFileTarget = $state<{
+	path: string;
+	name: string;
+	currentDir: string;
+} | null>(null);
+let destinationFolderInput = $state("");
+let newFilenameInput = $state("");
+let draggedFilePath = $state<string | null>(null);
+let dropTargetFolder = $state<string | null>(null);
 
-  function openMoveDialog(fileItem: { path: string; name: string }, prefilledTargetFolder?: string) {
-    const lastSlash = fileItem.path.lastIndexOf("/");
-    let currentDir = "";
-    if (lastSlash !== -1) {
-      currentDir = fileItem.path.slice(0, lastSlash);
-    }
-    moveFileTarget = { path: fileItem.path, name: fileItem.name, currentDir };
-    if (prefilledTargetFolder !== undefined) {
-      destinationFolderInput = prefilledTargetFolder;
-    } else {
-      destinationFolderInput = currentDir;
-    }
-    newFilenameInput = fileItem.name;
-  }
+function openMoveDialog(
+	fileItem: { path: string; name: string },
+	prefilledTargetFolder?: string,
+) {
+	const lastSlash = fileItem.path.lastIndexOf("/");
+	let currentDir = "";
+	if (lastSlash !== -1) {
+		currentDir = fileItem.path.slice(0, lastSlash);
+	}
+	moveFileTarget = { path: fileItem.path, name: fileItem.name, currentDir };
+	if (prefilledTargetFolder !== undefined) {
+		destinationFolderInput = prefilledTargetFolder;
+	} else {
+		destinationFolderInput = currentDir;
+	}
+	newFilenameInput = fileItem.name;
+}
 
-  function handleDragStart(e: DragEvent, fileItem: { path: string; name: string }) {
-    draggedFilePath = fileItem.path;
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", fileItem.path);
-    }
-  }
+function handleDragStart(
+	e: DragEvent,
+	fileItem: { path: string; name: string },
+) {
+	draggedFilePath = fileItem.path;
+	if (e.dataTransfer) {
+		e.dataTransfer.effectAllowed = "move";
+		e.dataTransfer.setData("text/plain", fileItem.path);
+	}
+}
 
-  function handleDragEnd() {
-    draggedFilePath = null;
-    dropTargetFolder = null;
-  }
+function handleDragEnd() {
+	draggedFilePath = null;
+	dropTargetFolder = null;
+}
 
-  function handleDragOverFolder(e: DragEvent, folderPath: string) {
-    if (!draggedFilePath) return;
-    e.preventDefault();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = "move";
-    }
-    dropTargetFolder = folderPath;
-  }
+function handleDragOverFolder(e: DragEvent, folderPath: string) {
+	if (!draggedFilePath) return;
+	e.preventDefault();
+	if (e.dataTransfer) {
+		e.dataTransfer.dropEffect = "move";
+	}
+	dropTargetFolder = folderPath;
+}
 
-  function handleDragLeaveFolder(folderPath: string) {
-    if (dropTargetFolder === folderPath) {
-      dropTargetFolder = null;
-    }
-  }
+function handleDragLeaveFolder(folderPath: string) {
+	if (dropTargetFolder === folderPath) {
+		dropTargetFolder = null;
+	}
+}
 
-  function handleDropOnFolder(e: DragEvent, targetFolderPath: string) {
-    e.preventDefault();
-    dropTargetFolder = null;
-    if (!draggedFilePath) return;
-    const movingPath = draggedFilePath;
-    draggedFilePath = null;
-    const filename = movingPath.split("/").pop() ?? "";
-    openMoveDialog({ path: movingPath, name: filename }, targetFolderPath);
-  }
+function handleDropOnFolder(e: DragEvent, targetFolderPath: string) {
+	e.preventDefault();
+	dropTargetFolder = null;
+	if (!draggedFilePath) return;
+	const movingPath = draggedFilePath;
+	draggedFilePath = null;
+	const filename = movingPath.split("/").pop() ?? "";
+	openMoveDialog({ path: movingPath, name: filename }, targetFolderPath);
+}
 
-  function treePathUrl(path: string): string {
-    const trimmed = path.replace(/^\/+|\/+$/g, "");
-    if (!trimmed) {
-      return `/cms/tree?${query}`;
-    }
-    return `/cms/tree/${trimmed}?${query}`;
-  }
-
+function treePathUrl(path: string): string {
+	const trimmed = path.replace(/^\/+|\/+$/g, "");
+	if (!trimmed) {
+		return `/cms/tree?${query}`;
+	}
+	return `/cms/tree/${trimmed}?${query}`;
+}
 </script>
 
 <svelte:head>

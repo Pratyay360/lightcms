@@ -1,21 +1,25 @@
 <script lang="ts">
-	import { buttonVariants } from '$lib/components/ui/button/button.js';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { cn } from '$lib/utils.js';
-	import { NodeViewContent, type NodeViewProps, NodeViewWrapper } from '../../tiptap/index.js';
+import { buttonVariants } from "$lib/components/ui/button/button.js";
+import { Input } from "$lib/components/ui/input/index.js";
+import * as Popover from "$lib/components/ui/popover/index.js";
+import { cn } from "$lib/utils.js";
+import {
+	NodeViewContent,
+	type NodeViewProps,
+	NodeViewWrapper,
+} from "../../tiptap/index.js";
 
-	const { node, updateAttributes }: NodeViewProps = $props();
+const { node, updateAttributes }: NodeViewProps = $props();
 
-	let emoji = $derived(node.attrs.emoji ?? '💡');
+let emoji = $derived(node.attrs.emoji ?? "💡");
 
-	function handleEmojiInput(e: Event) {
-		const target = e.target as HTMLInputElement;
-		if (target.value) {
-			const emojiChar = Array.from(target.value)[0] || '💡';
-			updateAttributes({ emoji: emojiChar });
-		}
+function handleEmojiInput(e: Event) {
+	const target = e.target as HTMLInputElement;
+	if (target.value) {
+		const emojiChar = Array.from(target.value)[0] || "💡";
+		updateAttributes({ emoji: emojiChar });
 	}
+}
 </script>
 
 <NodeViewWrapper

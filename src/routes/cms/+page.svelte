@@ -12,11 +12,16 @@ import Settings from "@lucide/svelte/icons/settings";
 import Sparkles from "@lucide/svelte/icons/sparkles";
 import { toast } from "svelte-sonner";
 import { goto, invalidateAll } from "$app/navigation";
-import { CreateBranchDialog, CreateFolderDialog, TemplateDrawer } from "$lib/components/custom";
+import {
+	CreateBranchDialog,
+	CreateFolderDialog,
+	TemplateDrawer,
+} from "$lib/components/custom";
 import { Button } from "$lib/components/ui/button";
 import type { PageData } from "./$types";
 
-let { data, form }: { data: PageData; form?: { error?: string } | null } = $props();
+let { data, form }: { data: PageData; form?: { error?: string } | null } =
+	$props();
 
 let _selectingRepository = $state(false);
 let _selectingBranch = $state(false);
@@ -32,7 +37,9 @@ const _collectionCount = $derived(_collections.length);
 const _repositoryCount = $derived(repositories.length);
 const _installationCount = $derived(_installations.length);
 const _query = $derived(data.query ?? "");
-const _createCollectionAction = $derived(`?/createCollection${_query ? `&${_query}` : ""}`);
+const _createCollectionAction = $derived(
+	`?/createCollection${_query ? `&${_query}` : ""}`,
+);
 const _branches = $derived(data.branches ?? []);
 const _defaultBranch = $derived(data.defaultBranch ?? "");
 const _activeBranch = $derived(data.selection?.branch ?? _defaultBranch);

@@ -80,9 +80,7 @@ function getAnchorRow(view: EditorView, state: EditorState): HTMLTableRowElement
 function getColumnIndex(cell: HTMLElement): number {
   const row = cell.closest("tr");
   if (!row) return -1;
-  const cells = Array.from(row.children).filter(
-    (el) => el.tagName === "TD" || el.tagName === "TH",
-  );
+  const cells = Array.from(row.children).filter((el) => el.tagName === "TD" || el.tagName === "TH");
   return cells.indexOf(cell);
 }
 

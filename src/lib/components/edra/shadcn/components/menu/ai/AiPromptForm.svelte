@@ -1,44 +1,44 @@
 <script lang="ts">
-	import Send from "@lucide/svelte/icons/send";
-	import { Button } from '$lib/components/ui/button/index.js';
-	import MicButton from '../../../../harper/MicButton.svelte';
+import Send from "@lucide/svelte/icons/send";
+import { Button } from "$lib/components/ui/button/index.js";
+import MicButton from "../../../../harper/MicButton.svelte";
 
-	interface Props {
-		value: string;
-		onSubmit: () => void;
-		inputRef?: HTMLTextAreaElement | null;
+interface Props {
+	value: string;
+	onSubmit: () => void;
+	inputRef?: HTMLTextAreaElement | null;
+}
+
+let {
+	value = $bindable(""),
+	onSubmit,
+	inputRef = $bindable(null),
+}: Props = $props();
+
+function autogrow() {
+	if (!inputRef) return;
+	inputRef.style.height = "auto";
+	if (value.length > 0) {
+		inputRef.style.height = `${inputRef.scrollHeight}px`;
 	}
+}
 
-	let {
-		value = $bindable(''),
-		onSubmit,
-		inputRef = $bindable(null),
-	}: Props = $props();
+$effect(() => {
+	void value;
+	autogrow();
+});
 
-	function autogrow() {
-		if (!inputRef) return;
-		inputRef.style.height = 'auto';
-		if (value.length > 0) {
-			inputRef.style.height = `${inputRef.scrollHeight}px`;
-		}
+const appendTranscript = (text: string) => {
+	const clean = text.trim();
+	if (clean.length === 0) return;
+
+	if (value.length > 0 && !value.endsWith(" ")) {
+		value = `${value} ${clean}`;
+	} else {
+		value = `${value}${clean}`;
 	}
-
-	$effect(() => {
-		void value;
-		autogrow();
-	});
-
-	const appendTranscript = (text: string) => {
-		const clean = text.trim();
-		if (clean.length === 0) return;
-
-		if (value.length > 0 && !value.endsWith(' ')) {
-			value = `${value} ${clean}`;
-		} else {
-			value = `${value}${clean}`;
-		}
-		inputRef?.focus();
-	};
+	inputRef?.focus();
+};
 </script>
 
 <form

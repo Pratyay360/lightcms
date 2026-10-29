@@ -2,8 +2,8 @@
 name: integration-sveltekit
 description: PostHog integration for SvelteKit applications
 metadata:
-  author: PostHog
-  version: 1.57.0
+author: PostHog
+version: 1.57.0
 ---
 
 # PostHog integration for SvelteKit

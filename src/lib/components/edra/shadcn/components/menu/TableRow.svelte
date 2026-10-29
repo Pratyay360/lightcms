@@ -1,22 +1,22 @@
 <script lang="ts">
-	import ArrowDown from '@lucide/svelte/icons/arrow-down';
-	import ArrowDownFromLine from '@lucide/svelte/icons/arrow-down-from-line';
-	import ArrowUp from '@lucide/svelte/icons/arrow-up';
-	import ArrowUpFromLine from '@lucide/svelte/icons/arrow-up-from-line';
-	import Sheet from '@lucide/svelte/icons/sheet';
-	import Trash from '@lucide/svelte/icons/trash';
-	import { Button } from '$lib/components/ui/button';
+import ArrowDown from "@lucide/svelte/icons/arrow-down";
+import ArrowDownFromLine from "@lucide/svelte/icons/arrow-down-from-line";
+import ArrowUp from "@lucide/svelte/icons/arrow-up";
+import ArrowUpFromLine from "@lucide/svelte/icons/arrow-up-from-line";
+import Sheet from "@lucide/svelte/icons/sheet";
+import Trash from "@lucide/svelte/icons/trash";
+import { Button } from "$lib/components/ui/button";
 
-	import { Separator } from '$lib/components/ui/separator';
-	import strings from '../../../strings';
-	import { BubbleMenu, getEditor } from '../../../tiptap';
-	import {
-		isRowGripSelected,
-		moveRowDown,
-		moveRowUp
-	} from '../../../tiptap/extensions/table/utils';
+import { Separator } from "$lib/components/ui/separator";
+import strings from "../../../strings";
+import { BubbleMenu, getEditor } from "../../../tiptap";
+import {
+	isRowGripSelected,
+	moveRowDown,
+	moveRowUp,
+} from "../../../tiptap/extensions/table/utils";
 
-	const editor = getEditor();
+const editor = getEditor();
 </script>
 
 <BubbleMenu

@@ -1,26 +1,51 @@
 <script lang="ts">
-  import GitBranch from "@lucide/svelte/icons/git-branch";
-  import Heart from "@lucide/svelte/icons/heart";
-  import Mail from "@lucide/svelte/icons/mail";
-  import MessageCircle from "@lucide/svelte/icons/message-circle";
-  import ShieldCheck from "@lucide/svelte/icons/shield-check";
-  import { Button } from "$lib/components/ui/button";
-  import { SITE } from "$lib/seo";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import Heart from "@lucide/svelte/icons/heart";
+import Mail from "@lucide/svelte/icons/mail";
+import MessageCircle from "@lucide/svelte/icons/message-circle";
+import ShieldCheck from "@lucide/svelte/icons/shield-check";
+import { Button } from "$lib/components/ui/button";
+import { SITE } from "$lib/seo";
 
-  type FooterAction = {
-    href: string;
-    label: string;
-    icon: typeof GitBranch;
-    external: boolean;
-  };
+type FooterAction = {
+	href: string;
+	label: string;
+	icon: typeof GitBranch;
+	external: boolean;
+};
 
-  const footerActions: FooterAction[] = [
-    { href: SITE.repository, label: "Contribute on GitHub", icon: GitBranch, external: true },
-    { href: SITE.sponsorUrl, label: "Support financially", icon: Heart, external: true },
-    { href: SITE.contactFormUrl, label: "Contact form", icon: MessageCircle, external: true },
-    { href: `mailto:${SITE.contactEmail}`, label: "Email Us", icon: Mail, external: false },
-    { href: "/privacy", label: "Privacy policy", icon: ShieldCheck, external: false },
-  ];
+const footerActions: FooterAction[] = [
+	{
+		href: SITE.repository,
+		label: "Contribute on GitHub",
+		icon: GitBranch,
+		external: true,
+	},
+	{
+		href: SITE.sponsorUrl,
+		label: "Support financially",
+		icon: Heart,
+		external: true,
+	},
+	{
+		href: SITE.contactFormUrl,
+		label: "Contact form",
+		icon: MessageCircle,
+		external: true,
+	},
+	{
+		href: `mailto:${SITE.contactEmail}`,
+		label: "Email Us",
+		icon: Mail,
+		external: false,
+	},
+	{
+		href: "/privacy",
+		label: "Privacy policy",
+		icon: ShieldCheck,
+		external: false,
+	},
+];
 </script>
 
 <section class="mx-auto max-w-3xl px-4 py-8 sm:py-12" aria-labelledby="about-title">

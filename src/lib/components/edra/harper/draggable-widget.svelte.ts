@@ -11,7 +11,9 @@ export interface Point {
   readonly y: number;
 }
 
-export type WidgetPointerEvent = PointerEvent & { currentTarget: EventTarget & HTMLElement };
+export type WidgetPointerEvent = PointerEvent & {
+  currentTarget: EventTarget & HTMLElement;
+};
 
 interface DragOrigin {
   readonly pointerId: number;

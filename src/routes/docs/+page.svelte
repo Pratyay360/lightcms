@@ -9,7 +9,7 @@ import {
 	CardDescription,
 	CardFooter,
 	CardHeader,
-	CardTitle
+	CardTitle,
 } from "$lib/components/ui/card";
 
 interface DocPost {
@@ -19,7 +19,7 @@ interface DocPost {
 }
 
 let {
-	data
+	data,
 }: {
 	data: { title?: string; posts?: DocPost[] };
 } = $props();

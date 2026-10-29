@@ -1,4 +1,5 @@
 ---
+
 title: Frequently Asked Questions
 description: Answers to common questions about LightCMS, static sites, and building a greener web.
 section: Reference
@@ -6,14 +7,15 @@ badge: FAQ
 date: 2026-10-14T13:30:00Z
 draft: false
 tags:
-  - faq
-  - lightcms
-  - static-sites
-  - green-web
-keywords:
-  - lightcms
-  - faq
-  - static sites
+- faq
+- lightcms
+- static-sites
+- green-web
+  keywords:
+- lightcms
+- faq
+- static sites
+
 ---
 
 ### Frequently Asked Questions

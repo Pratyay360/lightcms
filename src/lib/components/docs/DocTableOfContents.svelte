@@ -1,77 +1,77 @@
 <script lang="ts">
-	import ArrowUp from "@lucide/svelte/icons/arrow-up";
-	import ExternalLink from "@lucide/svelte/icons/external-link";
-	import { onDestroy, onMount } from "svelte";
-	import type { DocHeading } from "$lib/server/markdown";
-	import { cn } from "$lib/utils";
+import ArrowUp from "@lucide/svelte/icons/arrow-up";
+import ExternalLink from "@lucide/svelte/icons/external-link";
+import { onDestroy, onMount } from "svelte";
+import type { DocHeading } from "$lib/server/markdown";
+import { cn } from "$lib/utils";
 
-	let {
-		headings = [],
-		slug = ""
-	}: {
-		headings: DocHeading[];
-		slug?: string;
-	} = $props();
+let {
+	headings = [],
+	slug = "",
+}: {
+	headings: DocHeading[];
+	slug?: string;
+} = $props();
 
-	let activeId = $state<string>("");
-	let observer: IntersectionObserver | null = null;
+let activeId = $state<string>("");
+let observer: IntersectionObserver | null = null;
 
-	function scrollToHeading(id: string, event: MouseEvent): void {
-		event.preventDefault();
-		const element = document.getElementById(id);
-		if (!element) {
-			return;
-		}
-		activeId = id;
-		element.scrollIntoView({ behavior: "smooth", block: "start" });
-		history.pushState(null, "", `#${id}`);
+function scrollToHeading(id: string, event: MouseEvent): void {
+	event.preventDefault();
+	const element = document.getElementById(id);
+	if (!element) {
+		return;
+	}
+	activeId = id;
+	element.scrollIntoView({ behavior: "smooth", block: "start" });
+	history.pushState(null, "", `#${id}`);
+}
+
+function scrollToTop(): void {
+	window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+onMount(() => {
+	if (headings.length === 0) {
+		return;
 	}
 
-	function scrollToTop(): void {
-		window.scrollTo({ top: 0, behavior: "smooth" });
+	const headingElements = headings
+		.map((h) => document.getElementById(h.id))
+		.filter((el): el is HTMLElement => el !== null);
+
+	if (headingElements.length === 0) {
+		return;
 	}
 
-	onMount(() => {
-		if (headings.length === 0) {
-			return;
-		}
+	activeId = headings[0].id;
 
-		const headingElements = headings
-			.map((h) => document.getElementById(h.id))
-			.filter((el): el is HTMLElement => el !== null);
-
-		if (headingElements.length === 0) {
-			return;
-		}
-
-		activeId = headings[0].id;
-
-		observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						activeId = entry.target.id;
-						break;
-					}
+	observer = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.isIntersecting) {
+					activeId = entry.target.id;
+					break;
 				}
-			},
-			{
-				rootMargin: "0px 0px -65% 0px",
-				threshold: 0
 			}
-		);
+		},
+		{
+			rootMargin: "0px 0px -65% 0px",
+			threshold: 0,
+		},
+	);
 
-		for (const el of headingElements) {
-			observer.observe(el);
-		}
-	});
+	for (const el of headingElements) {
+		observer.observe(el);
+	}
+});
 
-	onDestroy(() => {
-		if (observer) {
-			observer.disconnect();
-			observer = null;
-		}
-	});
+onDestroy(() => {
+	if (observer) {
+		observer.disconnect();
+		observer = null;
+	}
+});
 </script>
 
 {#if headings.length > 0}

@@ -1,4 +1,5 @@
 ---
+
 title: Why LightCMS?
 description: The philosophy behind LightCMS — why writing should be frictionless, why Git backed content matters, and keeping complexity away from the writer.
 serial: 2
@@ -6,15 +7,16 @@ section: Get Started
 date: 2026-09-18T00:41:00Z
 draft: false
 tags:
-  - cms
-  - philosophy
-  - lightcms
-keywords:
-  - why lightcms
-  - git-backed cms
-  - static sites
-  - carbon footprint
-preview: /og-image.png
+- cms
+- philosophy
+- lightcms
+  keywords:
+- why lightcms
+- git-backed cms
+- static sites
+- carbon footprint
+  preview: /og-image.png
+
 ---
 
 I’ve tried dozens of CMS solutions over the years, and somehow, most of them felt a little flat. They worked, but they frequently

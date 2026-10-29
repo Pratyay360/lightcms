@@ -11,6 +11,7 @@
         "@better-auth/passkey": "^1.7.14",
         "@floating-ui/dom": "^1.8.0",
         "@fontsource-variable/jetbrains-mono": "^5.3.0",
+        "@lottiefiles/dotlottie-svelte": "^0.10.16",
         "@lucide/svelte": "^1.64.0",
         "@opentelemetry/api": "^1.10.0",
         "@opentelemetry/api-logs": "^0.223.0",
@@ -420,6 +421,10 @@
     "@js-sdsl/ordered-map": ["@js-sdsl/ordered-map@4.4.2", "", {}, "sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw=="],
 
     "@levischuck/tiny-cbor": ["@levischuck/tiny-cbor@0.2.11", "", {}, "sha512-llBRm4dT4Z89aRsm6u2oEZ8tfwL/2l6BwpZ7JcyieouniDECM5AqNgr/y08zalEIvW3RSK4upYyybDcmjXqAow=="],
+
+    "@lottiefiles/dotlottie-svelte": ["@lottiefiles/dotlottie-svelte@0.10.16", "", { "dependencies": { "@lottiefiles/dotlottie-web": "0.81.0" }, "peerDependencies": { "svelte": "^5.0.0" } }, "sha512-y2d9spf0aLe+BNfMLb/FeTI1ifvfpw3tnMI46gUMw0CP+9gP+omr/4UqMoS4c//3jiICAfGWBLqZswjQTirCaA=="],
+
+    "@lottiefiles/dotlottie-web": ["@lottiefiles/dotlottie-web@0.81.0", "", {}, "sha512-BmX/+0eaK2unVexuB0VZLvBsax2BS8fLwwIdUqF4AO9C7tFw97eTi90C//20QVK4q08SDhnnszysCGX0Qt7XPA=="],
 
     "@lucide/svelte": ["@lucide/svelte@1.64.0", "", { "peerDependencies": { "svelte": "^5" } }, "sha512-PSFui8Gkk0JcU4nXljZzy+MnBhXeY4DIblvvcDNPIvL6r5NIngeDfAvBs4C/XDlz+dTth9+LcHy6/zdhEmxEwQ=="],
 

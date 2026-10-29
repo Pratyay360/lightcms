@@ -1,6 +1,6 @@
-import { dev } from "$app/environment";
 import type { HandleClientError } from "@sveltejs/kit";
 import posthog from "posthog-js";
+import { dev } from "$app/environment";
 
 let posthogInitialized = false;
 

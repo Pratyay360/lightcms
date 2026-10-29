@@ -1,44 +1,60 @@
 <script lang="ts">
-	import Check from '@lucide/svelte/icons/check';
-	import Monitor from '@lucide/svelte/icons/monitor';
-	import Moon from '@lucide/svelte/icons/moon';
-	import Sun from '@lucide/svelte/icons/sun';
-	import { mode, resetMode, setMode, setTheme, theme, userPrefersMode } from 'mode-watcher';
-	import { buttonVariants } from '$lib/components/ui/button/button.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import type { ModePreference } from '$lib/themes.js';
-	import { APP_THEMES, getThemeById, normalizeModePreference, normalizeThemeId } from '$lib/themes.js';
-	import { cn } from '$lib/utils.js';
+import Check from "@lucide/svelte/icons/check";
+import Monitor from "@lucide/svelte/icons/monitor";
+import Moon from "@lucide/svelte/icons/moon";
+import Sun from "@lucide/svelte/icons/sun";
+import {
+	mode,
+	resetMode,
+	setMode,
+	setTheme,
+	theme,
+	userPrefersMode,
+} from "mode-watcher";
+import { buttonVariants } from "$lib/components/ui/button/button.js";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+import type { ModePreference } from "$lib/themes.js";
+import {
+	APP_THEMES,
+	getThemeById,
+	normalizeModePreference,
+	normalizeThemeId,
+} from "$lib/themes.js";
+import { cn } from "$lib/utils.js";
 
-	const resolvedMode = $derived(mode.current ?? 'light');
-	const preferredMode = $derived(normalizeModePreference(userPrefersMode.current));
-	const activeThemeId = $derived(normalizeThemeId(theme.current));
-	const activeTheme = $derived(getThemeById(activeThemeId));
+const resolvedMode = $derived(mode.current ?? "light");
+const preferredMode = $derived(
+	normalizeModePreference(userPrefersMode.current),
+);
+const activeThemeId = $derived(normalizeThemeId(theme.current));
+const activeTheme = $derived(getThemeById(activeThemeId));
 
-	const isResolvedDark = $derived(resolvedMode === 'dark');
-	const isSystemPreference = $derived(preferredMode === 'system');
+const isResolvedDark = $derived(resolvedMode === "dark");
+const isSystemPreference = $derived(preferredMode === "system");
 
-	function selectModePreference(next: ModePreference): void {
-		if (next === 'system') {
-			resetMode();
-			return;
-		}
-		setMode(next);
+function selectModePreference(next: ModePreference): void {
+	if (next === "system") {
+		resetMode();
+		return;
 	}
+	setMode(next);
+}
 
-	function selectTheme(id: string): void {
-		setTheme(id);
-	}
+function selectTheme(id: string): void {
+	setTheme(id);
+}
 
-	function isPreferred(value: ModePreference): boolean {
-		return preferredMode === value;
-	}
+function isPreferred(value: ModePreference): boolean {
+	return preferredMode === value;
+}
 
-	function isActiveTheme(id: string): boolean {
-		return activeThemeId === id;
-	}
+function isActiveTheme(id: string): boolean {
+	return activeThemeId === id;
+}
 
-	const triggerLabel = $derived(`Appearance: ${activeTheme.label}, ${preferredMode} mode`);
+const triggerLabel = $derived(
+	`Appearance: ${activeTheme.label}, ${preferredMode} mode`,
+);
 </script>
 
 <DropdownMenu.Root>

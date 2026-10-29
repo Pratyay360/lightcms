@@ -14,9 +14,9 @@ import {
 } from "$lib/server/cms";
 
 import { getConfiguredCollection } from "$lib/server/cms-context";
-import { captureServerEvent } from "$lib/server/posthog";
 import { isGitHubStatus } from "$lib/server/github";
 import { joinPath, normalizeFolder } from "$lib/server/paths";
+import { captureServerEvent } from "$lib/server/posthog";
 import type { Actions, PageServerLoad } from "./$types";
 
 /** Frontmatter keys rendered as inline form fields; the drawer handles the rest. */

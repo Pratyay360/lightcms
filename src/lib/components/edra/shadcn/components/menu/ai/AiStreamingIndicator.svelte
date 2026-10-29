@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Sparkle from "@lucide/svelte/icons/sparkle";
-	import { fade } from 'svelte/transition';
+import Sparkle from "@lucide/svelte/icons/sparkle";
+import { fade } from "svelte/transition";
 </script>
 
 <div transition:fade class="animated-gradient-border rounded p-0.5">

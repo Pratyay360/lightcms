@@ -3,6 +3,7 @@
   "globalDependencies": [".env", ".env.*"],
   "tasks": {
     "build": {
+      "tags": ["ci"],
       "outputs": [".svelte-kit/**", ".vercel/output/**"],
       "inputs": [
         "$TURBO_DEFAULT$",

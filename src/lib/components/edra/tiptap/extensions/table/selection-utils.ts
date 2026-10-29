@@ -31,9 +31,9 @@ export const isCellSelection = (selection: Selection): selection is CellSelectio
   }
   return Boolean(
     selection &&
-      typeof selection === "object" &&
-      "$anchorCell" in selection &&
-      "$headCell" in selection,
+    typeof selection === "object" &&
+    "$anchorCell" in selection &&
+    "$headCell" in selection,
   );
 };
 

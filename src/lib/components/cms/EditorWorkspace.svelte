@@ -1,414 +1,409 @@
 <script lang="ts">
-  import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-  import Calendar from "@lucide/svelte/icons/calendar";
-  import Clock3 from "@lucide/svelte/icons/clock-3";
-  import CloudCheck from "@lucide/svelte/icons/cloud-check";
-  import FileCode from "@lucide/svelte/icons/file-code";
-  import FolderInput from "@lucide/svelte/icons/folder-input";
-  import GitBranch from "@lucide/svelte/icons/git-branch";
-  import LoaderCircle from "@lucide/svelte/icons/loader-circle";
-  import Maximize from "@lucide/svelte/icons/maximize";
-  import Minimize from "@lucide/svelte/icons/minimize";
-  import Save from "@lucide/svelte/icons/save";
-  import Settings2 from "@lucide/svelte/icons/settings-2";
-  import Trash2 from "@lucide/svelte/icons/trash-2";
-  import Type from "@lucide/svelte/icons/type";
-  import { onMount, untrack } from "svelte";
-  import { toast } from "svelte-sonner";
-  import { enhance } from "$app/forms";
-  import { goto } from "$app/navigation";
-  import SaveStatus from "$lib/components/cms/SaveStatus.svelte";
-  import { FrontmatterDrawer, TagManager } from "$lib/components/custom";
-  import { createEditor, Edra } from "$lib/components/edra/shadcn";
-  import type { EdraEditorProps } from "$lib/components/edra/shadcn/editor";
-  import { Button } from "$lib/components/ui/button";
-  import { Checkbox } from "$lib/components/ui/checkbox";
-  import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-  } from "$lib/components/ui/dialog";
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import { Separator } from "$lib/components/ui/separator";
-  import { Textarea } from "$lib/components/ui/textarea";
+import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+import Calendar from "@lucide/svelte/icons/calendar";
+import Clock3 from "@lucide/svelte/icons/clock-3";
+import CloudCheck from "@lucide/svelte/icons/cloud-check";
+import FileCode from "@lucide/svelte/icons/file-code";
+import FolderInput from "@lucide/svelte/icons/folder-input";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import LoaderCircle from "@lucide/svelte/icons/loader-circle";
+import Maximize from "@lucide/svelte/icons/maximize";
+import Minimize from "@lucide/svelte/icons/minimize";
+import Save from "@lucide/svelte/icons/save";
+import Settings2 from "@lucide/svelte/icons/settings-2";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import Type from "@lucide/svelte/icons/type";
+import { onMount, untrack } from "svelte";
+import { toast } from "svelte-sonner";
+import { enhance } from "$app/forms";
+import { goto } from "$app/navigation";
+import SaveStatus from "$lib/components/cms/SaveStatus.svelte";
+import { FrontmatterDrawer, TagManager } from "$lib/components/custom";
+import { createEditor, Edra } from "$lib/components/edra/shadcn";
+import type { EdraEditorProps } from "$lib/components/edra/shadcn/editor";
+import { Button } from "$lib/components/ui/button";
+import { Checkbox } from "$lib/components/ui/checkbox";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { Separator } from "$lib/components/ui/separator";
+import { Textarea } from "$lib/components/ui/textarea";
 
-  interface EditorFile {
-    path: string;
-    filename: string;
-    sha: string;
-    isMarkdown: boolean;
-    frontMatter: Record<string, unknown>;
-    body: string;
-  }
+interface EditorFile {
+	path: string;
+	filename: string;
+	sha: string;
+	isMarkdown: boolean;
+	frontMatter: Record<string, unknown>;
+	body: string;
+}
 
-  interface Props {
-    file: EditorFile;
-    repository: string;
-    branch?: string | null;
-    backUrl: string;
-    backTitle?: string;
-    saveUrl: string;
-    deleteUrl?: string;
-    moveUrl?: string;
-    reloadOnSave?: boolean;
-    savedMessage?: string;
-    callAI?: EdraEditorProps["callAI"];
-    onFileUpload?: EdraEditorProps["onFileUpload"];
-  }
+interface Props {
+	file: EditorFile;
+	repository: string;
+	branch?: string | null;
+	backUrl: string;
+	backTitle?: string;
+	saveUrl: string;
+	deleteUrl?: string;
+	moveUrl?: string;
+	reloadOnSave?: boolean;
+	savedMessage?: string;
+	callAI?: EdraEditorProps["callAI"];
+	onFileUpload?: EdraEditorProps["onFileUpload"];
+}
 
-  let {
-    file,
-    repository,
-    branch = null,
-    backUrl,
-    backTitle = "Back to folder",
-    saveUrl,
-    deleteUrl,
-    moveUrl,
-    reloadOnSave = true,
-    savedMessage = "Saved successfully",
-    callAI,
-    onFileUpload,
-  }: Props = $props();
+let {
+	file,
+	repository,
+	branch = null,
+	backUrl,
+	backTitle = "Back to folder",
+	saveUrl,
+	deleteUrl,
+	moveUrl,
+	reloadOnSave = true,
+	savedMessage = "Saved successfully",
+	callAI,
+	onFileUpload,
+}: Props = $props();
 
-  function parentPath(path: string): string {
-    const lastSlashIndex = path.lastIndexOf("/");
-    if (lastSlashIndex === -1) {
-      return "";
-    }
-    return path.slice(0, lastSlashIndex);
-  }
+function parentPath(path: string): string {
+	const lastSlashIndex = path.lastIndexOf("/");
+	if (lastSlashIndex === -1) {
+		return "";
+	}
+	return path.slice(0, lastSlashIndex);
+}
 
-  function toFrontMatterEntries(
-    frontMatter: Record<string, unknown>,
-  ): Array<{ key: string; value: string }> {
-    const result: Array<{ key: string; value: string }> = [];
-    for (const [key, value] of Object.entries(frontMatter)) {
-      let serializedValue = "";
-      if (value instanceof Date) {
-        serializedValue = value.toISOString();
-      } else if (typeof value === "object" && value !== null) {
-        serializedValue = JSON.stringify(value);
-      } else if (value !== undefined && value !== null) {
-        serializedValue = String(value);
-      }
-      result.push({ key, value: serializedValue });
-    }
-    return result;
-  }
+function toFrontMatterEntries(
+	frontMatter: Record<string, unknown>,
+): Array<{ key: string; value: string }> {
+	const result: Array<{ key: string; value: string }> = [];
+	for (const [key, value] of Object.entries(frontMatter)) {
+		let serializedValue = "";
+		if (value instanceof Date) {
+			serializedValue = value.toISOString();
+		} else if (typeof value === "object" && value !== null) {
+			serializedValue = JSON.stringify(value);
+		} else if (value !== undefined && value !== null) {
+			serializedValue = String(value);
+		}
+		result.push({ key, value: serializedValue });
+	}
+	return result;
+}
 
-  type EditorMode = "rich" | "markdown" | "raw";
+type EditorMode = "rich" | "markdown" | "raw";
 
-  /** Frontmatter keys edited inline; the drawer only handles the rest. */
-  const BASIC_FRONTMATTER_KEYS = [
-    "title",
-    "slug",
-    "description",
-    "date",
-    "draft",
-    "tags",
-  ] as const;
+/** Frontmatter keys edited inline; the drawer only handles the rest. */
+const BASIC_FRONTMATTER_KEYS = [
+	"title",
+	"slug",
+	"description",
+	"date",
+	"draft",
+	"tags",
+] as const;
 
-  function isBasicFrontmatterKey(key: string): boolean {
-    const normalized = key.trim().toLowerCase();
-    return BASIC_FRONTMATTER_KEYS.some((basicKey) => basicKey === normalized);
-  }
+function isBasicFrontmatterKey(key: string): boolean {
+	const normalized = key.trim().toLowerCase();
+	return BASIC_FRONTMATTER_KEYS.some((basicKey) => basicKey === normalized);
+}
 
-  function findFrontmatterEntryIndex(key: string): number {
-    const normalized = key.trim().toLowerCase();
-    return frontMatterEntries.findIndex(
-      (entry) => entry.key.trim().toLowerCase() === normalized,
-    );
-  }
+function findFrontmatterEntryIndex(key: string): number {
+	const normalized = key.trim().toLowerCase();
+	return frontMatterEntries.findIndex(
+		(entry) => entry.key.trim().toLowerCase() === normalized,
+	);
+}
 
-  function getFrontmatterValue(key: string): string {
-    const index = findFrontmatterEntryIndex(key);
-    if (index === -1) {
-      return "";
-    }
-    return frontMatterEntries[index]?.value ?? "";
-  }
+function getFrontmatterValue(key: string): string {
+	const index = findFrontmatterEntryIndex(key);
+	if (index === -1) {
+		return "";
+	}
+	return frontMatterEntries[index]?.value ?? "";
+}
 
-  function setFrontmatterValue(key: string, value: string): void {
-    const index = findFrontmatterEntryIndex(key);
+function setFrontmatterValue(key: string, value: string): void {
+	const index = findFrontmatterEntryIndex(key);
 
-    if (index === -1) {
-      if (value.length === 0) {
-        return;
-      }
-      frontMatterEntries = [...frontMatterEntries, { key, value }];
-    } else if (value.length === 0) {
-      frontMatterEntries = frontMatterEntries.filter(
-        (_, entryIndex) => entryIndex !== index,
-      );
-    } else {
-      frontMatterEntries = frontMatterEntries.map((entry, entryIndex) =>
-        entryIndex === index ? { ...entry, value } : entry,
-      );
-    }
+	if (index === -1) {
+		if (value.length === 0) {
+			return;
+		}
+		frontMatterEntries = [...frontMatterEntries, { key, value }];
+	} else if (value.length === 0) {
+		frontMatterEntries = frontMatterEntries.filter(
+			(_, entryIndex) => entryIndex !== index,
+		);
+	} else {
+		frontMatterEntries = frontMatterEntries.map((entry, entryIndex) =>
+			entryIndex === index ? { ...entry, value } : entry,
+		);
+	}
 
-    hasUnsavedChanges = true;
-  }
+	hasUnsavedChanges = true;
+}
 
-  function setDraftValue(checked: boolean): void {
-    if (!checked && findFrontmatterEntryIndex("draft") === -1) {
-      return;
-    }
-    setFrontmatterValue("draft", checked ? "true" : "false");
-  }
+function setDraftValue(checked: boolean): void {
+	if (!checked && findFrontmatterEntryIndex("draft") === -1) {
+		return;
+	}
+	setFrontmatterValue("draft", checked ? "true" : "false");
+}
 
-  function parseTagList(value: string): string[] {
-    const trimmed = value.trim();
-    if (trimmed.length === 0) {
-      return [];
-    }
+function parseTagList(value: string): string[] {
+	const trimmed = value.trim();
+	if (trimmed.length === 0) {
+		return [];
+	}
 
-    if (trimmed.startsWith("[")) {
-      try {
-        const parsed: unknown = JSON.parse(trimmed);
-        if (Array.isArray(parsed)) {
-          return parsed
-            .map((item) => String(item).trim())
-            .filter((item) => item.length > 0);
-        }
-      } catch {
-        // Not JSON — fall back to comma-separated values.
-      }
-    }
+	if (trimmed.startsWith("[")) {
+		try {
+			const parsed: unknown = JSON.parse(trimmed);
+			if (Array.isArray(parsed)) {
+				return parsed
+					.map((item) => String(item).trim())
+					.filter((item) => item.length > 0);
+			}
+		} catch {
+			// Not JSON — fall back to comma-separated values.
+		}
+	}
 
-    return trimmed
-      .split(",")
-      .map((item) => item.trim())
-      .filter((item) => item.length > 0);
-  }
+	return trimmed
+		.split(",")
+		.map((item) => item.trim())
+		.filter((item) => item.length > 0);
+}
 
-  function setTagsValue(tags: string[]): void {
-    setFrontmatterValue("tags", tags.length > 0 ? JSON.stringify(tags) : "");
-  }
+function setTagsValue(tags: string[]): void {
+	setFrontmatterValue("tags", tags.length > 0 ? JSON.stringify(tags) : "");
+}
 
-  /** Keys whose values must stay strings even when they look numeric or boolean. */
-  const TEXT_FRONTMATTER_KEYS = new Set([
-    "title",
-    "slug",
-    "description",
-    "date",
-  ]);
+/** Keys whose values must stay strings even when they look numeric or boolean. */
+const TEXT_FRONTMATTER_KEYS = new Set(["title", "slug", "description", "date"]);
 
-  function parseFrontmatterValue(key: string, raw: string): unknown {
-    const normalized = key.trim().toLowerCase();
-    if (normalized === "draft") {
-      return raw.trim().toLowerCase() === "true";
-    }
-    if (TEXT_FRONTMATTER_KEYS.has(normalized)) {
-      return raw;
-    }
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return raw;
-    }
-  }
+function parseFrontmatterValue(key: string, raw: string): unknown {
+	const normalized = key.trim().toLowerCase();
+	if (normalized === "draft") {
+		return raw.trim().toLowerCase() === "true";
+	}
+	if (TEXT_FRONTMATTER_KEYS.has(normalized)) {
+		return raw;
+	}
+	try {
+		return JSON.parse(raw);
+	} catch {
+		return raw;
+	}
+}
 
-  let editorMode = $state<EditorMode>(
-    untrack(() => {
-      if (file.isMarkdown) {
-        return "rich";
-      }
-      return "raw";
-    }),
-  );
+let editorMode = $state<EditorMode>(
+	untrack(() => {
+		if (file.isMarkdown) {
+			return "rich";
+		}
+		return "raw";
+	}),
+);
 
-  let bodyContent = $state(untrack(() => file.body ?? ""));
-  let rawMarkdown = $state(untrack(() => file.body ?? ""));
-  let frontMatterEntries = $state(
-    untrack(() => toFrontMatterEntries(file.frontMatter)),
-  );
-  let showFrontmatter = $state(false);
+let bodyContent = $state(untrack(() => file.body ?? ""));
+let rawMarkdown = $state(untrack(() => file.body ?? ""));
+let frontMatterEntries = $state(
+	untrack(() => toFrontMatterEntries(file.frontMatter)),
+);
+let showFrontmatter = $state(false);
 
-  const basicDraft = $derived(
-    getFrontmatterValue("draft").trim().toLowerCase() === "true",
-  );
-  const basicTags = $derived(parseTagList(getFrontmatterValue("tags")));
-  const additionalFrontmatterCount = $derived(
-    frontMatterEntries.filter((entry) => !isBasicFrontmatterKey(entry.key))
-      .length,
-  );
-  let deleteDialogOpen = $state(false);
-  let moveDialogOpen = $state(false);
-  let destinationFolder = $state(untrack(() => parentPath(file.path)));
-  let newFilename = $state(untrack(() => file.filename));
-  let isSaving = $state(false);
-  let hasUnsavedChanges = $state(false);
-  let lastSaved = $state<Date | null>(null);
-  let contentFullscreen = $state(false);
-  let syncedPath: string | null = null;
+const basicDraft = $derived(
+	getFrontmatterValue("draft").trim().toLowerCase() === "true",
+);
+const basicTags = $derived(parseTagList(getFrontmatterValue("tags")));
+const additionalFrontmatterCount = $derived(
+	frontMatterEntries.filter((entry) => !isBasicFrontmatterKey(entry.key))
+		.length,
+);
+let deleteDialogOpen = $state(false);
+let moveDialogOpen = $state(false);
+let destinationFolder = $state(untrack(() => parentPath(file.path)));
+let newFilename = $state(untrack(() => file.filename));
+let isSaving = $state(false);
+let hasUnsavedChanges = $state(false);
+let lastSaved = $state<Date | null>(null);
+let contentFullscreen = $state(false);
+let syncedPath: string | null = null;
 
-  const editor = untrack(() =>
-    createEditor({
-      callAI,
-      harper: true,
-      onUpdate: () => {
-        if (!editor) return;
-        const currentMarkdown = editor.getMarkdown();
-        bodyContent = currentMarkdown;
-        rawMarkdown = currentMarkdown;
-        hasUnsavedChanges = true;
-      },
-      onFileUpload,
-    }),
-  );
+const editor = untrack(() =>
+	createEditor({
+		callAI,
+		harper: true,
+		onUpdate: () => {
+			if (!editor) return;
+			const currentMarkdown = editor.getMarkdown();
+			bodyContent = currentMarkdown;
+			rawMarkdown = currentMarkdown;
+			hasUnsavedChanges = true;
+		},
+		onFileUpload,
+	}),
+);
 
-  $effect(() => {
-    if (!editor || syncedPath === file.path) return;
+$effect(() => {
+	if (!editor || syncedPath === file.path) return;
 
-    syncedPath = file.path;
-    const initialBody = file.body ?? "";
-    bodyContent = initialBody;
-    rawMarkdown = initialBody;
-    frontMatterEntries = toFrontMatterEntries(file.frontMatter);
-    if (file.isMarkdown) {
-      editorMode = "rich";
-    } else {
-      editorMode = "raw";
-    }
-    destinationFolder = parentPath(file.path);
-    newFilename = file.filename;
-    showFrontmatter = false;
-    deleteDialogOpen = false;
-    moveDialogOpen = false;
-    isSaving = false;
-    hasUnsavedChanges = false;
-    lastSaved = null;
+	syncedPath = file.path;
+	const initialBody = file.body ?? "";
+	bodyContent = initialBody;
+	rawMarkdown = initialBody;
+	frontMatterEntries = toFrontMatterEntries(file.frontMatter);
+	if (file.isMarkdown) {
+		editorMode = "rich";
+	} else {
+		editorMode = "raw";
+	}
+	destinationFolder = parentPath(file.path);
+	newFilename = file.filename;
+	showFrontmatter = false;
+	deleteDialogOpen = false;
+	moveDialogOpen = false;
+	isSaving = false;
+	hasUnsavedChanges = false;
+	lastSaved = null;
 
-    if (file.isMarkdown) {
-      editor.commands.setContent(initialBody, {
-        contentType: "markdown",
-        emitUpdate: false,
-      });
-    }
-  });
+	if (file.isMarkdown) {
+		editor.commands.setContent(initialBody, {
+			contentType: "markdown",
+			emitUpdate: false,
+		});
+	}
+});
 
-  function switchToMarkdown() {
-    if (!editor) return;
-    const currentMarkdown = editor.getMarkdown();
-    rawMarkdown = currentMarkdown;
-    bodyContent = currentMarkdown;
-    editorMode = "markdown";
-  }
+function switchToMarkdown() {
+	if (!editor) return;
+	const currentMarkdown = editor.getMarkdown();
+	rawMarkdown = currentMarkdown;
+	bodyContent = currentMarkdown;
+	editorMode = "markdown";
+}
 
-  function switchToRich() {
-    if (!editor) return;
-    bodyContent = rawMarkdown;
-    editor.commands.setContent(rawMarkdown, {
-      contentType: "markdown",
-      emitUpdate: false,
-    });
-    editorMode = "rich";
-  }
+function switchToRich() {
+	if (!editor) return;
+	bodyContent = rawMarkdown;
+	editor.commands.setContent(rawMarkdown, {
+		contentType: "markdown",
+		emitUpdate: false,
+	});
+	editorMode = "rich";
+}
 
-  const frontMatterJson = $derived.by(() => {
-    if (frontMatterEntries.length === 0) {
-      return "";
-    }
-    const obj: Record<string, unknown> = {};
-    for (const entry of frontMatterEntries) {
-      const trimmedKey = entry.key.trim();
-      if (trimmedKey.length === 0) {
-        continue;
-      }
-      obj[trimmedKey] = parseFrontmatterValue(trimmedKey, entry.value);
-    }
-    return JSON.stringify(obj);
-  });
+const frontMatterJson = $derived.by(() => {
+	if (frontMatterEntries.length === 0) {
+		return "";
+	}
+	const obj: Record<string, unknown> = {};
+	for (const entry of frontMatterEntries) {
+		const trimmedKey = entry.key.trim();
+		if (trimmedKey.length === 0) {
+			continue;
+		}
+		obj[trimmedKey] = parseFrontmatterValue(trimmedKey, entry.value);
+	}
+	return JSON.stringify(obj);
+});
 
-  const currentContent = $derived.by(() => {
-    if (editorMode === "markdown") {
-      return rawMarkdown;
-    }
-    return bodyContent;
-  });
+const currentContent = $derived.by(() => {
+	if (editorMode === "markdown") {
+		return rawMarkdown;
+	}
+	return bodyContent;
+});
 
-  const wordCount = $derived.by(() => {
-    const trimmed = currentContent.trim();
-    if (trimmed.length === 0) {
-      return 0;
-    }
-    return trimmed.split(/\s+/).length;
-  });
+const wordCount = $derived.by(() => {
+	const trimmed = currentContent.trim();
+	if (trimmed.length === 0) {
+		return 0;
+	}
+	return trimmed.split(/\s+/).length;
+});
 
-  const charCount = $derived(currentContent.length);
+const charCount = $derived(currentContent.length);
 
-  const readingMinutes = $derived.by(() => {
-    if (wordCount === 0) {
-      return 0;
-    }
-    return Math.max(1, Math.round(wordCount / 200));
-  });
+const readingMinutes = $derived.by(() => {
+	if (wordCount === 0) {
+		return 0;
+	}
+	return Math.max(1, Math.round(wordCount / 200));
+});
 
-  function handleGlobalKeydown(e: KeyboardEvent) {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
-      e.preventDefault();
-      const formElement = document.getElementById(
-        "workspace-save-form",
-      ) as HTMLFormElement | null;
-      formElement?.requestSubmit();
-    }
-  }
+function handleGlobalKeydown(e: KeyboardEvent) {
+	if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+		e.preventDefault();
+		const formElement = document.getElementById(
+			"workspace-save-form",
+		) as HTMLFormElement | null;
+		formElement?.requestSubmit();
+	}
+}
 
-  $effect(() => {
-    if (!contentFullscreen) return;
-    document.body.style.overflow = "hidden";
-    const guard = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !e.defaultPrevented) {
-        contentFullscreen = false;
-        if (editorMode === "rich" && editor) {
-          editor.commands.focus("end");
-        } else if (editorMode === "markdown" || editorMode === "raw") {
-          const markdownEditor = document.getElementById(
-            "workspace-markdown-editor",
-          ) as HTMLTextAreaElement | null;
-          markdownEditor?.focus();
-        }
-      }
-    };
-    window.addEventListener("keydown", guard);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", guard);
-    };
-  });
+$effect(() => {
+	if (!contentFullscreen) return;
+	document.body.style.overflow = "hidden";
+	const guard = (e: KeyboardEvent) => {
+		if (e.key === "Escape" && !e.defaultPrevented) {
+			contentFullscreen = false;
+			if (editorMode === "rich" && editor) {
+				editor.commands.focus("end");
+			} else if (editorMode === "markdown" || editorMode === "raw") {
+				const markdownEditor = document.getElementById(
+					"workspace-markdown-editor",
+				) as HTMLTextAreaElement | null;
+				markdownEditor?.focus();
+			}
+		}
+	};
+	window.addEventListener("keydown", guard);
+	return () => {
+		document.body.style.overflow = "";
+		window.removeEventListener("keydown", guard);
+	};
+});
 
-  $effect(() => {
-    if (!contentFullscreen) return;
-    if (editorMode === "rich" && editor) {
-      const frame = requestAnimationFrame(() => editor.commands.focus("end"));
-      return () => cancelAnimationFrame(frame);
-    }
-    if (editorMode === "markdown" || editorMode === "raw") {
-      const frame = requestAnimationFrame(() => {
-        const markdownEditor = document.getElementById(
-          "workspace-markdown-editor",
-        ) as HTMLTextAreaElement | null;
-        markdownEditor?.focus();
-      });
-      return () => cancelAnimationFrame(frame);
-    }
-  });
+$effect(() => {
+	if (!contentFullscreen) return;
+	if (editorMode === "rich" && editor) {
+		const frame = requestAnimationFrame(() => editor.commands.focus("end"));
+		return () => cancelAnimationFrame(frame);
+	}
+	if (editorMode === "markdown" || editorMode === "raw") {
+		const frame = requestAnimationFrame(() => {
+			const markdownEditor = document.getElementById(
+				"workspace-markdown-editor",
+			) as HTMLTextAreaElement | null;
+			markdownEditor?.focus();
+		});
+		return () => cancelAnimationFrame(frame);
+	}
+});
 
-  onMount(() => {
-    const guard = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault();
-      }
-    };
-    window.addEventListener("beforeunload", guard);
-    return () => window.removeEventListener("beforeunload", guard);
-  });
+onMount(() => {
+	const guard = (e: BeforeUnloadEvent) => {
+		if (hasUnsavedChanges) {
+			e.preventDefault();
+		}
+	};
+	window.addEventListener("beforeunload", guard);
+	return () => window.removeEventListener("beforeunload", guard);
+});
 </script>
 
 <svelte:window onkeydown={handleGlobalKeydown} />

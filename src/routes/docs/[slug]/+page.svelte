@@ -1,75 +1,72 @@
 <script lang="ts">
-	import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-	import ArrowRight from "@lucide/svelte/icons/arrow-right";
-	import BookOpen from "@lucide/svelte/icons/book-open";
-	import Check from "@lucide/svelte/icons/check";
-	import Copy from "@lucide/svelte/icons/copy";
-	import { onMount } from "svelte";
-	import { DocsBlogBanner } from "$lib/components/custom";
-	import {
-		DocBreadcrumbLlm,
-		DocCardsGrid,
-		DocHeroBanner
-	} from "$lib/components/docs";
-	import { Button } from "$lib/components/ui/button";
-	import { Separator } from "$lib/components/ui/separator";
+import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+import ArrowRight from "@lucide/svelte/icons/arrow-right";
+import BookOpen from "@lucide/svelte/icons/book-open";
+import Check from "@lucide/svelte/icons/check";
+import Copy from "@lucide/svelte/icons/copy";
+import { onMount } from "svelte";
+import { DocsBlogBanner } from "$lib/components/custom";
+import { DocBreadcrumbLlm, DocCardsGrid } from "$lib/components/docs";
+import { Button } from "$lib/components/ui/button";
+import { Separator } from "$lib/components/ui/separator";
 
-	interface DocLink {
-		slug: string;
+interface DocLink {
+	slug: string;
+	title: string;
+}
+
+let {
+	data,
+}: {
+	data: {
 		title: string;
-	}
+		description: string;
+		content: string;
+		raw: string;
+		section: string;
+		slug: string;
+		badge: string | null;
+		previous: DocLink | null;
+		next: DocLink | null;
+	};
+} = $props();
 
-	let {
-		data
-	}: {
-		data: {
-			title: string;
-			description: string;
-			content: string;
-			raw: string;
-			section: string;
-			slug: string;
-			badge: string | null;
-			previous: DocLink | null;
-			next: DocLink | null;
-		};
-	} = $props();
+const isIntroPage = $derived(
+	data.slug === "getting-started-with-lightcms" || data.slug === "introduction",
+);
 
-	const isIntroPage = $derived(
-		data.slug === "getting-started-with-lightcms" || data.slug === "introduction"
-	);
-
-	onMount(() => {
-		const preBlocks = document.querySelectorAll<HTMLPreElement>(".docs-article pre");
-		for (const pre of preBlocks) {
-			if (pre.querySelector(".copy-code-btn")) {
-				continue;
-			}
-			pre.style.position = "relative";
-			const button = document.createElement("button");
-			button.className = "copy-code-btn";
-			button.setAttribute("aria-label", "Copy code");
-			button.innerHTML =
-				'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-
-			button.addEventListener("click", async () => {
-				const codeEl = pre.querySelector("code");
-				const textToCopy = codeEl ? codeEl.innerText : pre.innerText;
-				try {
-					await navigator.clipboard.writeText(textToCopy);
-					button.innerHTML =
-						'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
-					setTimeout(() => {
-						button.innerHTML =
-							'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-					}, 2000);
-				} catch {
-					// Fallback silent failure
-				}
-			});
-			pre.appendChild(button);
+onMount(() => {
+	const preBlocks =
+		document.querySelectorAll<HTMLPreElement>(".docs-article pre");
+	for (const pre of preBlocks) {
+		if (pre.querySelector(".copy-code-btn")) {
+			continue;
 		}
-	});
+		pre.style.position = "relative";
+		const button = document.createElement("button");
+		button.className = "copy-code-btn";
+		button.setAttribute("aria-label", "Copy code");
+		button.innerHTML =
+			'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+
+		button.addEventListener("click", async () => {
+			const codeEl = pre.querySelector("code");
+			const textToCopy = codeEl ? codeEl.innerText : pre.innerText;
+			try {
+				await navigator.clipboard.writeText(textToCopy);
+				button.innerHTML =
+					'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+				setTimeout(() => {
+					button.innerHTML =
+						'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+				}, 2000);
+			} catch {
+				// Fallback silent failure
+			}
+		});
+		pre.appendChild(button);
+	}
+});
 </script>
 
 <article class="space-y-6">
@@ -107,52 +104,6 @@
 
 		<Separator class="my-6 border-border/60" />
 	</header>
-
-	{#if isIntroPage}
-		<DocHeroBanner
-			title="LightCMS"
-			tagline="Lightweight • Git-Backed • Markdown-Native"
-		/>
-
-		<section class="my-8 space-y-4">
-			<h2
-				id="in-a-nutshell"
-				class="text-2xl font-black tracking-tight text-foreground scroll-mt-24"
-			>
-				In a Nutshell
-			</h2>
-
-			<DocCardsGrid
-				cards={[
-					{
-						title: "Git-Backed Storage",
-						description:
-							"Zero vendor lock-in. Content lives directly in your own GitHub repository as clean Markdown and YAML front matter files with full commit history.",
-						badge: "Core"
-					},
-					{
-						title: "Visual TipTap Editor",
-						description:
-							"Distraction-free WYSIWYG writing with math equations (KaTeX), syntax highlighting, drag-and-drop media, tables, and task lists.",
-						badge: "Editor"
-					},
-					{
-						title: "Integrated AI Copilot",
-						description:
-							"Smart drafting, outlining, rewriting, and brainstorming powered by any OpenAI-compatible provider (OpenAI, OpenRouter, Ollama, NIM).",
-						badge: "AI"
-					},
-					{
-						title: "Multi-Theme Design",
-						description:
-							"Seamless dark and light modes with over 20 tailored themes powered by Skeleton and Tailwind CSS.",
-						badge: "Styling"
-					}
-				]}
-			/>
-		</section>
-	{/if}
-
 	<!-- Prose Markdown Content -->
 	<div class="docs-article">
 		{@html data.content}

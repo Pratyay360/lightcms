@@ -1,30 +1,30 @@
 <script lang="ts">
-	import ExternalLink from "@lucide/svelte/icons/external-link";
-	import Menu from "@lucide/svelte/icons/menu";
-	import Search from "@lucide/svelte/icons/search";
-	import Sparkles from "@lucide/svelte/icons/sparkles";
-	import X from "@lucide/svelte/icons/x";
-	import { page } from "$app/state";
-	import {
-		DocSearchModal,
-		DocSidebar,
-		DocTableOfContents
-	} from "$lib/components/docs";
-	import { Button } from "$lib/components/ui/button";
-	import type { LayoutData } from "./$types";
+import ExternalLink from "@lucide/svelte/icons/external-link";
+import Menu from "@lucide/svelte/icons/menu";
+import Search from "@lucide/svelte/icons/search";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import X from "@lucide/svelte/icons/x";
+import { page } from "$app/state";
+import {
+	DocSearchModal,
+	DocSidebar,
+	DocTableOfContents,
+} from "$lib/components/docs";
+import { Button } from "$lib/components/ui/button";
+import type { LayoutData } from "./$types";
 
-	let { data, children }: { data: LayoutData; children: any } = $props();
+let { data, children }: { data: LayoutData; children: any } = $props();
 
-	let searchOpen = $state(false);
-	let mobileMenuOpen = $state(false);
+let searchOpen = $state(false);
+let mobileMenuOpen = $state(false);
 
-	const sections = $derived(data.sections ?? []);
-	const headings = $derived(page.data.headings ?? []);
-	const currentSlug = $derived(page.data.slug ?? "");
+const sections = $derived(data.sections ?? []);
+const headings = $derived(page.data.headings ?? []);
+const currentSlug = $derived(page.data.slug ?? "");
 
-	function closeMobileMenu(): void {
-		mobileMenuOpen = false;
-	}
+function closeMobileMenu(): void {
+	mobileMenuOpen = false;
+}
 </script>
 
 <DocSearchModal bind:open={searchOpen} {sections} />
@@ -46,21 +46,6 @@
 			<span class="font-mono text-xs">Menu</span>
 		</Button>
 
-		<!-- Docs badge & Framework tag -->
-		<div class="flex items-center gap-2">
-			<span
-				class="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 font-mono text-[11px] font-bold tracking-wide text-primary uppercase"
-			>
-				<Sparkles size={11} />
-				Docs
-			</span>
-			<span
-				class="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-muted/40 px-2 py-0.5 font-mono text-xs font-semibold text-muted-foreground"
-			>
-				<span class="size-1.5 rounded-full bg-amber-500"></span>
-				SvelteKit
-			</span>
-		</div>
 	</div>
 
 	<div class="flex items-center gap-2">
@@ -91,7 +76,7 @@
 
 		<!-- GitHub Repo Link -->
 		<a
-			href="https://github.com/pbteja1998/lightcms"
+			href="https://github.com/light-cms/lightcms"
 			target="_blank"
 			rel="noreferrer noopener"
 			aria-label="LightCMS GitHub repository"

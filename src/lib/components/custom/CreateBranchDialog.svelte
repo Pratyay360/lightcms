@@ -1,105 +1,105 @@
 <script lang="ts">
-	import GitFork from "@lucide/svelte/icons/git-fork";
-	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
-	import Plus from "@lucide/svelte/icons/plus";
-	import { untrack } from "svelte";
-	import { Button } from "$lib/components/ui/button";
-	import {
-		Dialog,
-		DialogContent,
-		DialogDescription,
-		DialogFooter,
-		DialogHeader,
-		DialogTitle,
-	} from "$lib/components/ui/dialog";
-	import { Input } from "$lib/components/ui/input";
-	import { Label } from "$lib/components/ui/label";
-	import { createLightCmsClient } from "$lib/orpc-client";
+import GitFork from "@lucide/svelte/icons/git-fork";
+import LoaderCircle from "@lucide/svelte/icons/loader-circle";
+import Plus from "@lucide/svelte/icons/plus";
+import { untrack } from "svelte";
+import { Button } from "$lib/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { createLightCmsClient } from "$lib/orpc-client";
 
-	interface BranchOption {
-		name: string;
-		isDefault?: boolean;
-	}
+interface BranchOption {
+	name: string;
+	isDefault?: boolean;
+}
 
-	interface Props {
-		open?: boolean;
-		installationId: number;
-		repository: string;
-		branches: BranchOption[];
-		activeBranch?: string;
-		defaultBranch?: string;
-		onCreated?: (branchName: string) => void;
-	}
+interface Props {
+	open?: boolean;
+	installationId: number;
+	repository: string;
+	branches: BranchOption[];
+	activeBranch?: string;
+	defaultBranch?: string;
+	onCreated?: (branchName: string) => void;
+}
 
-	let {
-		open: dialogOpen = $bindable(false),
-		installationId,
-		repository,
-		branches,
-		activeBranch,
-		defaultBranch,
-		onCreated,
-	}: Props = $props();
+let {
+	open: dialogOpen = $bindable(false),
+	installationId,
+	repository,
+	branches,
+	activeBranch,
+	defaultBranch,
+	onCreated,
+}: Props = $props();
 
-	let newBranchName = $state("");
-	const initialSource = untrack(() => defaultBranch ?? activeBranch ?? "main");
-	let sourceRef = $state(initialSource);
-	let submitting = $state(false);
-	let errorMessage = $state("");
+let newBranchName = $state("");
+const initialSource = untrack(() => defaultBranch ?? activeBranch ?? "main");
+let sourceRef = $state(initialSource);
+let submitting = $state(false);
+let errorMessage = $state("");
 
-	$effect(() => {
-		if (dialogOpen) {
-			newBranchName = "";
-			sourceRef = defaultBranch ?? activeBranch ?? "main";
-			errorMessage = "";
-		}
-	});
-
-	const sortedBranches = $derived(
-		[...branches].sort((left, right) => {
-			if (left.isDefault && !right.isDefault) return -1;
-			if (!left.isDefault && right.isDefault) return 1;
-			return left.name.localeCompare(right.name);
-		}),
-	);
-
-	async function submit(event: SubmitEvent) {
-		event.preventDefault();
-		if (submitting) return;
-		const name = newBranchName.trim();
-		const from = sourceRef.trim();
-		if (!name) {
-			errorMessage = "Enter a name for the new branch.";
-			return;
-		}
-		if (!from) {
-			errorMessage = "Choose a source branch or ref to branch from.";
-			return;
-		}
-		submitting = true;
+$effect(() => {
+	if (dialogOpen) {
+		newBranchName = "";
+		sourceRef = defaultBranch ?? activeBranch ?? "main";
 		errorMessage = "";
-		try {
-			const client = createLightCmsClient();
-			await client.cms.createBranch({
-				installationId,
-				repository,
-				name,
-				from,
-			});
-			dialogOpen = false;
-			onCreated?.(name);
-		} catch (cause) {
-			const message =
-				cause instanceof Error
-					? cause.message
-					: typeof cause === "string"
-						? cause
-						: "Could not create the branch.";
-			errorMessage = message;
-		} finally {
-			submitting = false;
-		}
 	}
+});
+
+const sortedBranches = $derived(
+	[...branches].sort((left, right) => {
+		if (left.isDefault && !right.isDefault) return -1;
+		if (!left.isDefault && right.isDefault) return 1;
+		return left.name.localeCompare(right.name);
+	}),
+);
+
+async function submit(event: SubmitEvent) {
+	event.preventDefault();
+	if (submitting) return;
+	const name = newBranchName.trim();
+	const from = sourceRef.trim();
+	if (!name) {
+		errorMessage = "Enter a name for the new branch.";
+		return;
+	}
+	if (!from) {
+		errorMessage = "Choose a source branch or ref to branch from.";
+		return;
+	}
+	submitting = true;
+	errorMessage = "";
+	try {
+		const client = createLightCmsClient();
+		await client.cms.createBranch({
+			installationId,
+			repository,
+			name,
+			from,
+		});
+		dialogOpen = false;
+		onCreated?.(name);
+	} catch (cause) {
+		const message =
+			cause instanceof Error
+				? cause.message
+				: typeof cause === "string"
+					? cause
+					: "Could not create the branch.";
+		errorMessage = message;
+	} finally {
+		submitting = false;
+	}
+}
 </script>
 
 <Dialog bind:open={dialogOpen}>

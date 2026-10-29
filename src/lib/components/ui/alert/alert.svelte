@@ -1,17 +1,17 @@
 <script lang="ts">
-	import type { HTMLAttributes } from "svelte/elements";
-	import { cn, type WithElementRef } from "$lib/utils";
-	import { type AlertVariant, alertVariants } from "./alert.js";
+import type { HTMLAttributes } from "svelte/elements";
+import { cn, type WithElementRef } from "$lib/utils";
+import { type AlertVariant, alertVariants } from "./alert.js";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		variant = "default",
-		children,
-		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
-		variant?: AlertVariant;
-	} = $props();
+let {
+	ref = $bindable(null),
+	class: className,
+	variant = "default",
+	children,
+	...restProps
+}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
+	variant?: AlertVariant;
+} = $props();
 </script>
 
 <div

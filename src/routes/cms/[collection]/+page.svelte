@@ -1,190 +1,203 @@
 <script lang="ts">
-	import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-	import ChevronRight from "@lucide/svelte/icons/chevron-right";
-	import File from "@lucide/svelte/icons/file";
-	import FileText from "@lucide/svelte/icons/file-text";
-	import Folder from "@lucide/svelte/icons/folder";
-	import FolderInput from "@lucide/svelte/icons/folder-input";
-	import FolderOpen from "@lucide/svelte/icons/folder-open";
-	import FolderPlus from "@lucide/svelte/icons/folder-plus";
-	import Home from "@lucide/svelte/icons/home";
-	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
-	import Plus from "@lucide/svelte/icons/plus";
-	import Sparkles from "@lucide/svelte/icons/sparkles";
-	import Trash from "@lucide/svelte/icons/trash";
-	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
-	import { toast } from "svelte-sonner";
-	import { enhance } from "$app/forms";
-	import { goto, invalidateAll } from "$app/navigation";
-	import { CreateFolderDialog } from "$lib/components/custom";
-	import { Button } from "$lib/components/ui/button";
-	import {
-		Dialog,
-		DialogContent,
-		DialogDescription,
-		DialogFooter,
-		DialogHeader,
-		DialogTitle,
-	} from "$lib/components/ui/dialog";
+import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+import ChevronRight from "@lucide/svelte/icons/chevron-right";
+import File from "@lucide/svelte/icons/file";
+import FileText from "@lucide/svelte/icons/file-text";
+import Folder from "@lucide/svelte/icons/folder";
+import FolderInput from "@lucide/svelte/icons/folder-input";
+import FolderOpen from "@lucide/svelte/icons/folder-open";
+import FolderPlus from "@lucide/svelte/icons/folder-plus";
+import Home from "@lucide/svelte/icons/home";
+import LoaderCircle from "@lucide/svelte/icons/loader-circle";
+import Plus from "@lucide/svelte/icons/plus";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import Trash from "@lucide/svelte/icons/trash";
+import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+import { toast } from "svelte-sonner";
+import { enhance } from "$app/forms";
+import { goto, invalidateAll } from "$app/navigation";
+import { CreateFolderDialog } from "$lib/components/custom";
+import { Button } from "$lib/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "$lib/components/ui/dialog";
 
-	import { createLightCmsClient } from "$lib/orpc-client";
-	import { buildEntryUrl, buildFolderUrl, buildPayloadQuery, withFolder } from "$lib/utils/cms-url";
-	import type { PageData } from "./$types";
+import { createLightCmsClient } from "$lib/orpc-client";
+import {
+	buildEntryUrl,
+	buildFolderUrl,
+	buildPayloadQuery,
+	withFolder,
+} from "$lib/utils/cms-url";
+import type { PageData } from "./$types";
 
-	let { data, form }: { data: PageData; form?: { folderError?: string } | null } = $props();
+let { data, form }: { data: PageData; form?: { folderError?: string } | null } =
+	$props();
 
+const folderError = $derived(form?.folderError);
 
-	const folderError = $derived(form?.folderError);
-
-	const collection = $derived(data.collection);
-	const folders = $derived(data.folders );
-	const entries = $derived(data.entries);
-	const query = $derived(data.query);
-	const selection = $derived(data.selection);
-	const primaryField = $derived(data.primaryField);
-	const folder = $derived(data.folder ?? "");
-	const segments = $derived(folder ? folder.split("/") : []);
-	const isRoot = $derived(folder === "");
-	const currentPath = $derived.by(() => {
-		if (isRoot) {
-			return collection.path;
-		}
-		if (collection.path.length > 0) {
-			return `${collection.path}/${folder}`;
-		}
-		return folder;
-	});
-
-	function folderUrl(folderPath: string) {
-		return buildFolderUrl(collection.name, query, folderPath);
+const collection = $derived(data.collection);
+const folders = $derived(data.folders);
+const entries = $derived(data.entries);
+const query = $derived(data.query);
+const selection = $derived(data.selection);
+const primaryField = $derived(data.primaryField);
+const folder = $derived(data.folder ?? "");
+const segments = $derived(folder ? folder.split("/") : []);
+const isRoot = $derived(folder === "");
+const currentPath = $derived.by(() => {
+	if (isRoot) {
+		return collection.path;
 	}
-
-	function entryUrl(entry: { slug: string }) {
-		return buildEntryUrl(collection.name, query, entry.slug, folder);
+	if (collection.path.length > 0) {
+		return `${collection.path}/${folder}`;
 	}
+	return folder;
+});
 
-	function newEntryUrl() {
-		return buildEntryUrl(collection.name, query, "new", folder);
+function folderUrl(folderPath: string) {
+	return buildFolderUrl(collection.name, query, folderPath);
+}
+
+function entryUrl(entry: { slug: string }) {
+	return buildEntryUrl(collection.name, query, entry.slug, folder);
+}
+
+function newEntryUrl() {
+	return buildEntryUrl(collection.name, query, "new", folder);
+}
+
+let createFolderOpen = $state(false);
+
+function openCreateFolder() {
+	createFolderOpen = true;
+}
+
+const folderPayloadQuery = $derived(buildPayloadQuery(query, folder));
+const createFolderAction = $derived(
+	`?/createFolder${folderPayloadQuery ? `&${folderPayloadQuery}` : ""}`,
+);
+let deleteDialogOpen = $state(false);
+let deleteTarget: { name: string; path: string } | null = $state(null);
+let deleting = $state(false);
+let deleteError: string | null = $state(null);
+
+function openDeleteDialog(entry: { name: string; path: string }) {
+	deleteTarget = entry;
+	deleteError = null;
+	deleteDialogOpen = true;
+}
+
+function closeDeleteDialog() {
+	deleteDialogOpen = false;
+}
+
+async function confirmDeleteFolder() {
+	if (!deleteTarget) return;
+	if (!selection?.installationId || !selection?.repository) {
+		deleteError =
+			"Missing repository selection. Please re-select your repository.";
+		toast.error(deleteError);
+		return;
 	}
-
-	let createFolderOpen = $state(false);
-
-	function openCreateFolder() {
-		createFolderOpen = true;
-	}
-
-	const folderPayloadQuery = $derived(buildPayloadQuery(query, folder));
-	const createFolderAction = $derived(`?/createFolder${folderPayloadQuery ? `&${folderPayloadQuery}` : ""}`);
-	let deleteDialogOpen = $state(false);
-	let deleteTarget: { name: string; path: string } | null = $state(null);
-	let deleting = $state(false);
-	let deleteError: string | null = $state(null);
-
-	function openDeleteDialog(entry: { name: string; path: string }) {
-		deleteTarget = entry;
-		deleteError = null;
-		deleteDialogOpen = true;
-	}
-
-	function closeDeleteDialog() {
+	const targetPath = deleteTarget.path;
+	const targetName = deleteTarget.name;
+	deleting = true;
+	deleteError = null;
+	try {
+		const client = createLightCmsClient();
+		await client.cms.deleteFolder({
+			installationId: selection.installationId,
+			repository: selection.repository,
+			branch: selection.branch ?? undefined,
+			directoryPath: targetPath,
+		});
+		toast.success(`Deleted folder "${targetName}"`);
 		deleteDialogOpen = false;
-	}
-
-	async function confirmDeleteFolder() {
-		if (!deleteTarget) return;
-		if (!selection?.installationId || !selection?.repository) {
-			deleteError = "Missing repository selection. Please re-select your repository.";
-			toast.error(deleteError);
-			return;
-		}
-		const targetPath = deleteTarget.path;
-		const targetName = deleteTarget.name;
-		deleting = true;
-		deleteError = null;
-		try {
-			const client = createLightCmsClient();
-			await client.cms.deleteFolder({
-				installationId: selection.installationId,
-				repository: selection.repository,
-				branch: selection.branch ?? undefined,
-				directoryPath: targetPath,
+		deleteTarget = null;
+		const currentFolderPath = currentPath;
+		if (targetPath && currentFolderPath === targetPath) {
+			const parent = folder.split("/").slice(0, -1).join("/");
+			const params = withFolder(query, parent);
+			await goto(`/cms/${encodeURIComponent(collection.name)}?${params}`, {
+				invalidateAll: true,
 			});
-			toast.success(`Deleted folder "${targetName}"`);
-			deleteDialogOpen = false;
-			deleteTarget = null;
-			const currentFolderPath = currentPath;
-			if (targetPath && currentFolderPath === targetPath) {
-				const parent = folder.split("/").slice(0, -1).join("/");
-				const params = withFolder(query, parent);
-				await goto(`/cms/${encodeURIComponent(collection.name)}?${params}`, { invalidateAll: true });
-			} else {
-				await invalidateAll();
-			}
-		} catch (cause) {
-			deleteError = cause instanceof Error ? cause.message : String(cause);
-			toast.error(deleteError);
-		} finally {
-			deleting = false;
-		}
-	}
-
-	let moveEntryTarget = $state<{ slug: string; title: string } | null>(null);
-	let destinationFolder = $state("");
-	let draggedSlug = $state<string | null>(null);
-	let dropFolderTarget = $state<string | null>(null);
-
-	function openMoveDialog(entry: { slug: string; title?: string }, prefilledFolder?: string) {
-		let entryTitle = entry.slug;
-		if (entry.title && entry.title.length > 0) {
-			entryTitle = entry.title;
-		}
-		moveEntryTarget = {
-			slug: entry.slug,
-			title: entryTitle,
-		};
-		if (prefilledFolder !== undefined) {
-			destinationFolder = prefilledFolder;
 		} else {
-			destinationFolder = folder;
+			await invalidateAll();
 		}
+	} catch (cause) {
+		deleteError = cause instanceof Error ? cause.message : String(cause);
+		toast.error(deleteError);
+	} finally {
+		deleting = false;
 	}
+}
 
-	function handleDragStart(e: DragEvent, entrySlug: string) {
-		draggedSlug = entrySlug;
-		if (e.dataTransfer) {
-			e.dataTransfer.effectAllowed = "move";
-			e.dataTransfer.setData("text/plain", entrySlug);
-		}
+let moveEntryTarget = $state<{ slug: string; title: string } | null>(null);
+let destinationFolder = $state("");
+let draggedSlug = $state<string | null>(null);
+let dropFolderTarget = $state<string | null>(null);
+
+function openMoveDialog(
+	entry: { slug: string; title?: string },
+	prefilledFolder?: string,
+) {
+	let entryTitle = entry.slug;
+	if (entry.title && entry.title.length > 0) {
+		entryTitle = entry.title;
 	}
+	moveEntryTarget = {
+		slug: entry.slug,
+		title: entryTitle,
+	};
+	if (prefilledFolder !== undefined) {
+		destinationFolder = prefilledFolder;
+	} else {
+		destinationFolder = folder;
+	}
+}
 
-	function handleDragEnd() {
-		draggedSlug = null;
+function handleDragStart(e: DragEvent, entrySlug: string) {
+	draggedSlug = entrySlug;
+	if (e.dataTransfer) {
+		e.dataTransfer.effectAllowed = "move";
+		e.dataTransfer.setData("text/plain", entrySlug);
+	}
+}
+
+function handleDragEnd() {
+	draggedSlug = null;
+	dropFolderTarget = null;
+}
+
+function handleDragOverFolder(e: DragEvent, folderNameOrPath: string) {
+	if (!draggedSlug) return;
+	e.preventDefault();
+	if (e.dataTransfer) {
+		e.dataTransfer.dropEffect = "move";
+	}
+	dropFolderTarget = folderNameOrPath;
+}
+
+function handleDragLeaveFolder(folderNameOrPath: string) {
+	if (dropFolderTarget === folderNameOrPath) {
 		dropFolderTarget = null;
 	}
+}
 
-	function handleDragOverFolder(e: DragEvent, folderNameOrPath: string) {
-		if (!draggedSlug) return;
-		e.preventDefault();
-		if (e.dataTransfer) {
-			e.dataTransfer.dropEffect = "move";
-		}
-		dropFolderTarget = folderNameOrPath;
-	}
-
-	function handleDragLeaveFolder(folderNameOrPath: string) {
-		if (dropFolderTarget === folderNameOrPath) {
-			dropFolderTarget = null;
-		}
-	}
-
-	function handleDropOnFolder(e: DragEvent, targetFolderName: string) {
-		e.preventDefault();
-		dropFolderTarget = null;
-		if (!draggedSlug) return;
-		const slugToMove = draggedSlug;
-		draggedSlug = null;
-		openMoveDialog({ slug: slugToMove }, targetFolderName);
-	}
+function handleDropOnFolder(e: DragEvent, targetFolderName: string) {
+	e.preventDefault();
+	dropFolderTarget = null;
+	if (!draggedSlug) return;
+	const slugToMove = draggedSlug;
+	draggedSlug = null;
+	openMoveDialog({ slug: slugToMove }, targetFolderName);
+}
 </script>
 
 

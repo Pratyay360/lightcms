@@ -1,5 +1,9 @@
 <script lang="ts">
-	let { as = 'span', class: className, children }: { as?: string; class?: string; children?: any } = $props();
+let {
+	as = "span",
+	class: className,
+	children,
+}: { as?: string; class?: string; children?: any } = $props();
 </script>
 
 {#key 'mvc'}

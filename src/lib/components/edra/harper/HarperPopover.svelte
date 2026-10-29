@@ -1,99 +1,105 @@
 <script lang="ts">
-  import { autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
-  import Sparkles from "@lucide/svelte/icons/sparkles";
-  import X from "@lucide/svelte/icons/x";
-  import { onMount, untrack } from "svelte";
-  import { getEditor } from "../tiptap/components/editorContext.js";
-  import { decodeHarperPayload } from "../tiptap/extensions/harper/index.ts";
-  import type { HarperIssue } from "./types.ts";
+import {
+	autoUpdate,
+	computePosition,
+	flip,
+	offset,
+	shift,
+} from "@floating-ui/dom";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import X from "@lucide/svelte/icons/x";
+import { onMount, untrack } from "svelte";
+import { getEditor } from "../tiptap/components/editorContext.js";
+import { decodeHarperPayload } from "../tiptap/extensions/harper/index.ts";
+import type { HarperIssue } from "./types.ts";
 
-  const editor = getEditor();
+const editor = getEditor();
 
-  let anchor = $state<HTMLElement | null>(null);
-  let popover = $state<HTMLDivElement | null>(null);
-  let active = $state<{ issue: HarperIssue; from: number; to: number } | null>(null);
-  let cleanup: (() => void) | null = null;
+let anchor = $state<HTMLElement | null>(null);
+let popover = $state<HTMLDivElement | null>(null);
+let active = $state<{ issue: HarperIssue; from: number; to: number } | null>(
+	null,
+);
+let cleanup: (() => void) | null = null;
 
-  const handleClick = (event: MouseEvent) => {
-    if (popover?.contains(event.target as Node)) return;
-    const target = event.target as HTMLElement | null;
-    if (!target) return;
-    const idAttr = target.closest<HTMLElement>("[data-harper-id]");
-    if (!idAttr) {
-      close();
-      return;
-    }
-    const payload = decodeHarperPayload(idAttr.getAttribute("data-harper-payload"));
-    if (!payload) {
-      close();
-      return;
-    }
-    const view = editor.view;
-    const textNode = idAttr.firstChild;
-    const start = view.posAtDOM(idAttr, 0);
-    if (start < 0) {
-      close();
-      return;
-    }
-    const length = textNode?.textContent?.length ?? 0;
-    const end = start + length;
-    anchor = idAttr;
-    active = { issue: payload, from: start, to: end };
-    untrack(() => position());
-  };
+const handleClick = (event: MouseEvent) => {
+	if (popover?.contains(event.target as Node)) return;
+	const target = event.target as HTMLElement | null;
+	if (!target) return;
+	const idAttr = target.closest<HTMLElement>("[data-harper-id]");
+	if (!idAttr) {
+		close();
+		return;
+	}
+	const payload = decodeHarperPayload(
+		idAttr.getAttribute("data-harper-payload"),
+	);
+	if (!payload) {
+		close();
+		return;
+	}
+	const view = editor.view;
+	const textNode = idAttr.firstChild;
+	const start = view.posAtDOM(idAttr, 0);
+	if (start < 0) {
+		close();
+		return;
+	}
+	const length = textNode?.textContent?.length ?? 0;
+	const end = start + length;
+	anchor = idAttr;
+	active = { issue: payload, from: start, to: end };
+	untrack(() => position());
+};
 
-  const position = async () => {
-    if (!anchor || !popover) return;
-    const { x, y } = await computePosition(anchor, popover, {
-      placement: "bottom-start",
-      middleware: [offset(6), flip(), shift({ padding: 8 })],
-    });
-    Object.assign(popover.style, { left: `${x}px`, top: `${y}px` });
-  };
+const position = async () => {
+	if (!anchor || !popover) return;
+	const { x, y } = await computePosition(anchor, popover, {
+		placement: "bottom-start",
+		middleware: [offset(6), flip(), shift({ padding: 8 })],
+	});
+	Object.assign(popover.style, { left: `${x}px`, top: `${y}px` });
+};
 
-  $effect(() => {
-    if (!anchor || !popover) return;
-    cleanup?.();
-    cleanup = autoUpdate(anchor, popover, () => {
-      void position();
-    });
-    return () => {
-      cleanup?.();
-      cleanup = null;
-    };
-  });
+$effect(() => {
+	if (!anchor || !popover) return;
+	cleanup?.();
+	cleanup = autoUpdate(anchor, popover, () => {
+		void position();
+	});
+	return () => {
+		cleanup?.();
+		cleanup = null;
+	};
+});
 
-  const close = () => {
-    cleanup?.();
-    cleanup = null;
-    active = null;
-    anchor = null;
-  };
+const close = () => {
+	cleanup?.();
+	cleanup = null;
+	active = null;
+	anchor = null;
+};
 
-  const accept = (suggestion: string) => {
-    if (!active) return;
-    const { from, to } = active;
-    editor
-      .chain()
-      .focus()
-      .insertContentAt({ from, to }, suggestion)
-      .run();
-    close();
-  };
+const accept = (suggestion: string) => {
+	if (!active) return;
+	const { from, to } = active;
+	editor.chain().focus().insertContentAt({ from, to }, suggestion).run();
+	close();
+};
 
-  const dismiss = () => close();
+const dismiss = () => close();
 
-  const readSuggestions = $derived(active?.issue.suggestions ?? []);
-  const readMessage = $derived(active?.issue.message ?? "");
+const readSuggestions = $derived(active?.issue.suggestions ?? []);
+const readMessage = $derived(active?.issue.message ?? "");
 
-  onMount(() => {
-    const dom = editor.view.dom;
-    dom.addEventListener("click", handleClick);
-    return () => {
-      dom.removeEventListener("click", handleClick);
-      cleanup?.();
-    };
-  });
+onMount(() => {
+	const dom = editor.view.dom;
+	dom.addEventListener("click", handleClick);
+	return () => {
+		dom.removeEventListener("click", handleClick);
+		cleanup?.();
+	};
+});
 </script>
 
 {#if active}

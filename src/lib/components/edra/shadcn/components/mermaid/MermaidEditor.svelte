@@ -1,42 +1,42 @@
 <script lang="ts">
-	import Check from '@lucide/svelte/icons/check';
-	import Code from '@lucide/svelte/icons/code';
-	import Columns2 from '@lucide/svelte/icons/columns-2';
-	import Copy from '@lucide/svelte/icons/copy';
-	import Eye from '@lucide/svelte/icons/eye';
-	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
-	import Workflow from '@lucide/svelte/icons/workflow';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import * as Tabs from '$lib/components/ui/tabs/index.js';
-	import { cn } from '$lib/utils.js';
+import Check from "@lucide/svelte/icons/check";
+import Code from "@lucide/svelte/icons/code";
+import Columns2 from "@lucide/svelte/icons/columns-2";
+import Copy from "@lucide/svelte/icons/copy";
+import Eye from "@lucide/svelte/icons/eye";
+import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+import Workflow from "@lucide/svelte/icons/workflow";
+import { Button } from "$lib/components/ui/button/index.js";
+import * as Tabs from "$lib/components/ui/tabs/index.js";
+import { cn } from "$lib/utils.js";
 
-	interface Props {
-		mode: 'both' | 'code' | 'preview';
-		editCode: string;
-		previewRef?: HTMLDivElement | null;
-		copied: boolean;
-		error: string | null;
-		isRendering: boolean;
-		lineCount: number;
-		onSave: () => void;
-		onCancel: () => void;
-		onCopy: () => void;
-		onKeydown: (event: KeyboardEvent) => void;
-	}
+interface Props {
+	mode: "both" | "code" | "preview";
+	editCode: string;
+	previewRef?: HTMLDivElement | null;
+	copied: boolean;
+	error: string | null;
+	isRendering: boolean;
+	lineCount: number;
+	onSave: () => void;
+	onCancel: () => void;
+	onCopy: () => void;
+	onKeydown: (event: KeyboardEvent) => void;
+}
 
-	let {
-		mode = $bindable('both'),
-		editCode = $bindable(''),
-		previewRef = $bindable(null),
-		copied,
-		error,
-		isRendering,
-		lineCount,
-		onSave,
-		onCancel,
-		onCopy,
-		onKeydown,
-	}: Props = $props();
+let {
+	mode = $bindable("both"),
+	editCode = $bindable(""),
+	previewRef = $bindable(null),
+	copied,
+	error,
+	isRendering,
+	lineCount,
+	onSave,
+	onCancel,
+	onCopy,
+	onKeydown,
+}: Props = $props();
 </script>
 
 <div class="flex h-112 w-full flex-col overflow-hidden rounded-lg border bg-background">

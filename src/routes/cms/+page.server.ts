@@ -1,13 +1,13 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { createFolderAtPath, listDirectory, resolveRepository } from "$lib/server/cms";
 import { getCmsQuery, getCmsSelection, tryGetCmsSelection } from "$lib/server/cms-context";
-import { captureServerEvent } from "$lib/server/posthog";
 import { assertCollectionName, getCollection, type LightCmsCollection } from "$lib/server/config";
 import {
   isGitHubStatus,
   listBranches as listRepoBranches,
   listRepositories,
 } from "$lib/server/github";
+import { captureServerEvent } from "$lib/server/posthog";
 import {
   getCmsContext,
   listGitHubInstallations,
@@ -20,7 +20,10 @@ const TEMPLATE_OWNER = "light-cms";
 
 async function loadTemplates(fetchFn: typeof fetch): Promise<TemplatesResult> {
   try {
-    const templates = await fetchTemplates(TEMPLATE_OWNER, { fetch: fetchFn, org: true });
+    const templates = await fetchTemplates(TEMPLATE_OWNER, {
+      fetch: fetchFn,
+      org: true,
+    });
     return { templates, error: null };
   } catch (cause) {
     console.warn("Failed to load repository templates:", cause);

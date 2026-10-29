@@ -1,21 +1,23 @@
 ---
+
 title: Newsletter & Email Automation
 description: How to configure automated newsletters for your blog using Newsy and Git driven publishing without expensive third-party platforms.
 serial: 5
 date: 2026-09-18T01:50:00Z
 draft: false
 tags:
-  - newsletter
-  - email
-  - newsy
-  - smtp
-keywords:
-  - newsletter
-  - email automation
-  - newsy
-  - smtp
-  - lightcms
-preview: /og-image.png
+- newsletter
+- email
+- newsy
+- smtp
+  keywords:
+- newsletter
+- email automation
+- newsy
+- smtp
+- lightcms
+  preview: /og-image.png
+
 ---
 
 Connecting with your directly via email is one of the most effective ways to

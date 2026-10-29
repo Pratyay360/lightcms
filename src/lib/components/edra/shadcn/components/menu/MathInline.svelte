@@ -1,22 +1,26 @@
 <script lang="ts">
-	import CornerDownLeft from '@lucide/svelte/icons/corner-down-left';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import strings from '../../../strings.js';
-	import { BubbleMenu, getEditor, useEditorState } from '../../../tiptap/index.js';
+import CornerDownLeft from "@lucide/svelte/icons/corner-down-left";
+import { Button } from "$lib/components/ui/button/index.js";
+import { Input } from "$lib/components/ui/input/index.js";
+import strings from "../../../strings.js";
+import {
+	BubbleMenu,
+	getEditor,
+	useEditorState,
+} from "../../../tiptap/index.js";
 
-	const editor = getEditor();
-	const editorState = useEditorState({
-		editor,
-		selector: ({ editor }) => ({
-			latex: editor.getAttributes('inlineMath').latex as string
-		})
-	});
-	let latex = $derived($editorState.latex);
+const editor = getEditor();
+const editorState = useEditorState({
+	editor,
+	selector: ({ editor }) => ({
+		latex: editor.getAttributes("inlineMath").latex as string,
+	}),
+});
+let latex = $derived($editorState.latex);
 
-	function updateLatex() {
-		editor.commands.updateInlineMath({ latex });
-	}
+function updateLatex() {
+	editor.commands.updateInlineMath({ latex });
+}
 </script>
 
 <BubbleMenu

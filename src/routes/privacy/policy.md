@@ -136,16 +136,13 @@ The Company will retain Your Personal Data only for as long as is necessary for 
 Where possible, We apply shorter retention periods and/or reduce identifiability by deleting, aggregating, or anonymizing data. Unless otherwise stated, the retention periods below are maximum periods ("up to") and We may delete or anonymize data sooner when it is no longer needed for the relevant purpose. We apply different retention periods to different categories of Personal Data based on the purpose of processing and legal obligations:
 
 - Account Information
-
   - User Accounts: retained for the duration of Your Account relationship plus up to 24 months after account closure to handle any post-termination issues or resolve disputes.
 
 - Customer Support Data
-
   - Support tickets and correspondence: up to 24 months from the date of ticket closure to resolve follow-up inquiries, track service quality, and defend against potential legal claims.
   - Chat transcripts: up to 24 months for quality assurance and staff training purposes.
 
 - Usage Data
-
   - Website analytics data (cookies, IP addresses, device identifiers): up to 24 months from the date of collection, which allows us to analyze trends while respecting privacy principles.
   - Server logs (IP addresses, access times): up to 24 months for security monitoring and troubleshooting purposes.
 

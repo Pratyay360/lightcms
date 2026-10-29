@@ -1,22 +1,22 @@
 <script lang="ts">
-	import Check from '@lucide/svelte/icons/check';
-	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { cn } from '$lib/utils.js';
-	import { getEditor, useEditorState } from '../../../tiptap/index.js';
-	import { quickcolors } from '../../../utils.ts';
-	import Tooltip from '../Tooltip.svelte';
+import Check from "@lucide/svelte/icons/check";
+import ChevronDown from "@lucide/svelte/icons/chevron-down";
+import { buttonVariants } from "$lib/components/ui/button/index.js";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+import { cn } from "$lib/utils.js";
+import { getEditor, useEditorState } from "../../../tiptap/index.js";
+import { quickcolors } from "../../../utils.ts";
+import Tooltip from "../Tooltip.svelte";
 
-	let open = $state(false);
-	const editor = getEditor();
-	const editorState = useEditorState({
-		editor,
-		selector: ({ editor }) => ({
-			currentColor: editor.getAttributes('textStyle').color,
-			currentHighlight: editor.getAttributes('highlight').color
-		})
-	});
+let open = $state(false);
+const editor = getEditor();
+const editorState = useEditorState({
+	editor,
+	selector: ({ editor }) => ({
+		currentColor: editor.getAttributes("textStyle").color,
+		currentHighlight: editor.getAttributes("highlight").color,
+	}),
+});
 </script>
 
 <DropdownMenu.Root bind:open>

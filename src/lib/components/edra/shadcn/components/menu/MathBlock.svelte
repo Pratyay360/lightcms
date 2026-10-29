@@ -1,20 +1,24 @@
 <script lang="ts">
-	import { Textarea } from '$lib/components/ui/textarea/index.js';
-	import strings from '../../../strings.js';
-	import { BubbleMenu, getEditor, useEditorState } from '../../../tiptap/index.js';
+import { Textarea } from "$lib/components/ui/textarea/index.js";
+import strings from "../../../strings.js";
+import {
+	BubbleMenu,
+	getEditor,
+	useEditorState,
+} from "../../../tiptap/index.js";
 
-	const editor = getEditor();
-	const editorState = useEditorState({
-		editor,
-		selector: ({ editor }) => ({
-			latex: editor.getAttributes('blockMath').latex as string
-		})
-	});
-	let latex = $derived($editorState.latex);
+const editor = getEditor();
+const editorState = useEditorState({
+	editor,
+	selector: ({ editor }) => ({
+		latex: editor.getAttributes("blockMath").latex as string,
+	}),
+});
+let latex = $derived($editorState.latex);
 
-	function updateLatex() {
-		editor.commands.updateBlockMath({ latex });
-	}
+function updateLatex() {
+	editor.commands.updateBlockMath({ latex });
+}
 </script>
 
 <BubbleMenu

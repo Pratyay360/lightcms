@@ -1,35 +1,35 @@
 <script lang="ts">
-	import WandSparkles from "@lucide/svelte/icons/wand-sparkles";
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Separator } from '$lib/components/ui/separator/index.js';
-	import { cn } from '$lib/utils.js';
-	import { commands } from '../../commands/index.js';
-	import MicButton from '../../harper/MicButton.svelte';
-	import { addAIHighlight, getEditor } from '../../tiptap/index.js';
-	import { useAiEnabled } from '../hooks/useAiEnabled.svelte.js';
-	import { useCommandState } from '../hooks/useCommandState.svelte.js';
-	import Tooltip from './Tooltip.svelte';
-	import Colors from './tools/Colors.svelte';
-	import Export from './tools/Export.svelte';
+import WandSparkles from "@lucide/svelte/icons/wand-sparkles";
+import { Button } from "$lib/components/ui/button/index.js";
+import { Separator } from "$lib/components/ui/separator/index.js";
+import { cn } from "$lib/utils.js";
+import { commands } from "../../commands/index.js";
+import MicButton from "../../harper/MicButton.svelte";
+import { addAIHighlight, getEditor } from "../../tiptap/index.js";
+import { useAiEnabled } from "../hooks/useAiEnabled.svelte.js";
+import { useCommandState } from "../hooks/useCommandState.svelte.js";
+import Tooltip from "./Tooltip.svelte";
+import Colors from "./tools/Colors.svelte";
+import Export from "./tools/Export.svelte";
 
-	interface Props {
-		class?: string;
+interface Props {
+	class?: string;
+}
+const { class: className }: Props = $props();
+
+const editor = getEditor();
+
+const isAiEnabled = useAiEnabled(editor);
+const { isActive, isClickable } = useCommandState(editor);
+const commandsKeys = Object.keys(commands);
+
+const insertTranscript = (text: string) => {
+	const clean = text.trim();
+	if (clean.length === 0) {
+		return;
 	}
-	const { class: className }: Props = $props();
-
-	const editor = getEditor();
-
-	const isAiEnabled = useAiEnabled(editor);
-	const { isActive, isClickable } = useCommandState(editor);
-	const commandsKeys = Object.keys(commands);
-
-	const insertTranscript = (text: string) => {
-		const clean = text.trim();
-		if (clean.length === 0) {
-			return;
-		}
-		editor.chain().focus().insertContent(`${clean} `).run();
-	};
+	editor.chain().focus().insertContent(`${clean} `).run();
+};
 </script>
 
 <div class={cn('flex h-full w-fit items-center gap-2', className)}>

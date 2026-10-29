@@ -1,58 +1,58 @@
 <script lang="ts">
-	import Check from "@lucide/svelte/icons/check";
-	import ChevronDown from "@lucide/svelte/icons/chevron-down";
-	import ChevronRight from "@lucide/svelte/icons/chevron-right";
-	import Copy from "@lucide/svelte/icons/copy";
-	import FileCode from "@lucide/svelte/icons/file-code";
-	import FileText from "@lucide/svelte/icons/file-text";
-	import Link from "@lucide/svelte/icons/link";
-	import { toast } from "svelte-sonner";
-	import { Button } from "$lib/components/ui/button";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+import Check from "@lucide/svelte/icons/check";
+import ChevronDown from "@lucide/svelte/icons/chevron-down";
+import ChevronRight from "@lucide/svelte/icons/chevron-right";
+import Copy from "@lucide/svelte/icons/copy";
+import FileCode from "@lucide/svelte/icons/file-code";
+import FileText from "@lucide/svelte/icons/file-text";
+import Link from "@lucide/svelte/icons/link";
+import { toast } from "svelte-sonner";
+import { Button } from "$lib/components/ui/button";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 
-	let {
-		section = "Get Started",
-		title = "Introduction",
-		rawMarkdown = ""
-	}: {
-		section: string;
-		title: string;
-		rawMarkdown?: string;
-	} = $props();
+let {
+	section = "Get Started",
+	title = "Introduction",
+	rawMarkdown = "",
+}: {
+	section: string;
+	title: string;
+	rawMarkdown?: string;
+} = $props();
 
-	let copied = $state(false);
+let copied = $state(false);
 
-	async function copyForLlm(): Promise<void> {
-		const promptContext = [
-			`# Documentation: ${title}`,
-			`Section: ${section}`,
-			`Source: LightCMS Official Docs`,
-			"",
-			"Below is the documentation content:",
-			"",
-			rawMarkdown
-		].join("\n");
+async function copyForLlm(): Promise<void> {
+	const promptContext = [
+		`# Documentation: ${title}`,
+		`Section: ${section}`,
+		`Source: LightCMS Official Docs`,
+		"",
+		"Below is the documentation content:",
+		"",
+		rawMarkdown,
+	].join("\n");
 
-		try {
-			await navigator.clipboard.writeText(promptContext);
-			copied = true;
-			toast.success("Copied page markdown for LLM!");
-			setTimeout(() => {
-				copied = false;
-			}, 2000);
-		} catch {
-			toast.error("Failed to copy to clipboard");
-		}
+	try {
+		await navigator.clipboard.writeText(promptContext);
+		copied = true;
+		toast.success("Copied page markdown for LLM!");
+		setTimeout(() => {
+			copied = false;
+		}, 2000);
+	} catch {
+		toast.error("Failed to copy to clipboard");
 	}
+}
 
-	async function copyPageLink(): Promise<void> {
-		try {
-			await navigator.clipboard.writeText(window.location.href);
-			toast.success("Page link copied to clipboard!");
-		} catch {
-			toast.error("Failed to copy link");
-		}
+async function copyPageLink(): Promise<void> {
+	try {
+		await navigator.clipboard.writeText(window.location.href);
+		toast.success("Page link copied to clipboard!");
+	} catch {
+		toast.error("Failed to copy link");
 	}
+}
 </script>
 
 <div class="flex items-center justify-between gap-4 py-1">

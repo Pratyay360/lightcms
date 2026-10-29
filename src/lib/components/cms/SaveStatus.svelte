@@ -1,14 +1,18 @@
 <script lang="ts">
-  import Check from "@lucide/svelte/icons/check";
-  import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
-  import { Spinner } from '$lib/components/ui/spinner';
-  import { timeAgo } from '$lib/utils/time-ago';
+import Check from "@lucide/svelte/icons/check";
+import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+import { Spinner } from "$lib/components/ui/spinner";
+import { timeAgo } from "$lib/utils/time-ago";
 
-  let { saving, hasUnsavedChanges, lastSaved }: {
-    saving: boolean;
-    hasUnsavedChanges: boolean;
-    lastSaved: Date | null;
-  } = $props();
+let {
+	saving,
+	hasUnsavedChanges,
+	lastSaved,
+}: {
+	saving: boolean;
+	hasUnsavedChanges: boolean;
+	lastSaved: Date | null;
+} = $props();
 </script>
 
 {#if saving}

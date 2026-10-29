@@ -1,10 +1,10 @@
 <script lang="ts">
-	import EditorContent from './EditorContent.svelte';
-	import { getEditor } from './editorContext.js';
+import EditorContent from "./EditorContent.svelte";
+import { getEditor } from "./editorContext.js";
 
-	let { class: className }: { class: string } = $props();
+let { class: className }: { class: string } = $props();
 
-	const editor = getEditor();
+const editor = getEditor();
 </script>
 
 <EditorContent {editor} class={className} />

@@ -1,6 +1,6 @@
-import FileCode from "@lucide/svelte/icons/file-code";
 import Bold from "@lucide/svelte/icons/bold";
 import Code from "@lucide/svelte/icons/code";
+import FileCode from "@lucide/svelte/icons/file-code";
 import Italic from "@lucide/svelte/icons/italic";
 import Link from "@lucide/svelte/icons/link-2";
 import Pilcrow from "@lucide/svelte/icons/pilcrow";

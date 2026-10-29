@@ -1,21 +1,21 @@
 <script lang="ts">
-	import Check from "@lucide/svelte/icons/check";
-	import Copy from "@lucide/svelte/icons/copy";
-	import CornerDownLeft from "@lucide/svelte/icons/corner-down-left";
-	import RotateCcw from "@lucide/svelte/icons/rotate-ccw";
-	import Trash2 from "@lucide/svelte/icons/trash-2";
-	import { fade } from 'svelte/transition';
-	import { Button } from '$lib/components/ui/button/index.js';
+import Check from "@lucide/svelte/icons/check";
+import Copy from "@lucide/svelte/icons/copy";
+import CornerDownLeft from "@lucide/svelte/icons/corner-down-left";
+import RotateCcw from "@lucide/svelte/icons/rotate-ccw";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import { fade } from "svelte/transition";
+import { Button } from "$lib/components/ui/button/index.js";
 
-	interface Props {
-		onReplace: () => void;
-		onInsert: () => void;
-		onCopy: () => void;
-		onRetry: () => void;
-		onDiscard: () => void;
-	}
+interface Props {
+	onReplace: () => void;
+	onInsert: () => void;
+	onCopy: () => void;
+	onRetry: () => void;
+	onDiscard: () => void;
+}
 
-	const { onReplace, onInsert, onCopy, onRetry, onDiscard }: Props = $props();
+const { onReplace, onInsert, onCopy, onRetry, onDiscard }: Props = $props();
 </script>
 
 <div

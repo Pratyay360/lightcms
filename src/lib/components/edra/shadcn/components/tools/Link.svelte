@@ -1,31 +1,31 @@
 <script lang="ts">
-	import Check from '@lucide/svelte/icons/check';
-	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import Link from '@lucide/svelte/icons/link-2';
-	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { cn } from '$lib/utils.js';
-	import { getEditor, useEditorTransaction } from '../../../tiptap/index.js';
-	import Tooltip from '../Tooltip.svelte';
+import Check from "@lucide/svelte/icons/check";
+import ChevronDown from "@lucide/svelte/icons/chevron-down";
+import Link from "@lucide/svelte/icons/link-2";
+import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+import { Input } from "$lib/components/ui/input/index.js";
+import * as Popover from "$lib/components/ui/popover/index.js";
+import { cn } from "$lib/utils.js";
+import { getEditor, useEditorTransaction } from "../../../tiptap/index.js";
+import Tooltip from "../Tooltip.svelte";
 
-	let open = $state(false);
+let open = $state(false);
 
-	let value = $state<string>();
-	const editor = getEditor();
-	const transaction = useEditorTransaction(editor);
-	function isActive() {
-		void transaction.version;
-		return editor.isActive('link');
-	}
+let value = $state<string>();
+const editor = getEditor();
+const transaction = useEditorTransaction(editor);
+function isActive() {
+	void transaction.version;
+	return editor.isActive("link");
+}
 
-	function handleSubmit(e: Event) {
-		e.preventDefault();
-		if (value === undefined || value.trim() === '') return;
-		editor.chain().focus().setLink({ href: value }).run();
-		value = undefined;
-		open = false;
-	}
+function handleSubmit(e: Event) {
+	e.preventDefault();
+	if (value === undefined || value.trim() === "") return;
+	editor.chain().focus().setLink({ href: value }).run();
+	value = undefined;
+	open = false;
+}
 </script>
 
 <Popover.Root bind:open>

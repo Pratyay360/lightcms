@@ -1,17 +1,18 @@
 <script lang="ts">
-  import EditorWorkspace from "$lib/components/cms/EditorWorkspace.svelte";
-  import type { PageData } from "./$types";
+import EditorWorkspace from "$lib/components/cms/EditorWorkspace.svelte";
+import type { PageData } from "./$types";
 
-  let { data }: { data: PageData } = $props();
+let { data }: { data: PageData } = $props();
 
-  function readFileAsDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = () => reject(reader.error ?? new Error("Could not read file."));
-      reader.readAsDataURL(file);
-    });
-  }
+function readFileAsDataUrl(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(String(reader.result));
+		reader.onerror = () =>
+			reject(reader.error ?? new Error("Could not read file."));
+		reader.readAsDataURL(file);
+	});
+}
 </script>
 
 <svelte:head>

@@ -1,35 +1,44 @@
 <script lang="ts">
-	import Link from "@lucide/svelte/icons/link";
-	import Check from '@lucide/svelte/icons/check';
-	import Copy from '@lucide/svelte/icons/copy';
-	import Edit from '@lucide/svelte/icons/pen';
-	import Trash2 from '@lucide/svelte/icons/trash-2';
-	import { slide } from 'svelte/transition';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import strings from '../../../strings.js';
-	import { BubbleMenu, getEditor, useEditorState } from '../../../tiptap/index.js';
-	import Tooltip from '../Tooltip.svelte';
+import Check from "@lucide/svelte/icons/check";
+import Copy from "@lucide/svelte/icons/copy";
+import Link from "@lucide/svelte/icons/link";
+import Edit from "@lucide/svelte/icons/pen";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import { slide } from "svelte/transition";
+import { Button } from "$lib/components/ui/button/index.js";
+import { Input } from "$lib/components/ui/input/index.js";
+import strings from "../../../strings.js";
+import {
+	BubbleMenu,
+	getEditor,
+	useEditorState,
+} from "../../../tiptap/index.js";
+import Tooltip from "../Tooltip.svelte";
 
-	const editor = getEditor();
+const editor = getEditor();
 
-	const editorState = useEditorState({
-		editor,
-		selector: ({ editor }) => ({
-			link: editor.getAttributes('link').href as string
-		})
-	});
+const editorState = useEditorState({
+	editor,
+	selector: ({ editor }) => ({
+		link: editor.getAttributes("link").href as string,
+	}),
+});
 
-	let isEditing = $state(false);
+let isEditing = $state(false);
 
-	let linkInput = $derived($editorState.link);
+let linkInput = $derived($editorState.link);
 
-	function handleSubmit(e: Event) {
-		e.preventDefault();
-		if (!linkInput || linkInput.trim() === '') return;
-		isEditing = false;
-		editor.chain().focus().extendMarkRange('link').setLink({ href: linkInput }).run();
-	}
+function handleSubmit(e: Event) {
+	e.preventDefault();
+	if (!linkInput || linkInput.trim() === "") return;
+	isEditing = false;
+	editor
+		.chain()
+		.focus()
+		.extendMarkRange("link")
+		.setLink({ href: linkInput })
+		.run();
+}
 </script>
 
 <BubbleMenu

@@ -1,5 +1,6 @@
 <script lang="ts">
-	let { as = 'div', class: className }: { as?: string; class?: string } = $props();
+let { as = "div", class: className }: { as?: string; class?: string } =
+	$props();
 </script>
 
 {#key 'nvc'}

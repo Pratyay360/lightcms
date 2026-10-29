@@ -1,56 +1,63 @@
 <script lang="ts">
-	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
-	import { NodeViewContent, type NodeViewProps, NodeViewWrapper } from '../../tiptap/index.js';
+import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+import {
+	NodeViewContent,
+	type NodeViewProps,
+	NodeViewWrapper,
+} from "../../tiptap/index.js";
 
-	const { editor, node, updateAttributes, extension, getPos }: NodeViewProps = $props();
+const { editor, node, updateAttributes, extension, getPos }: NodeViewProps =
+	$props();
 
-	import Sparkle from "@lucide/svelte/icons/sparkle";
-	import Check from '@lucide/svelte/icons/check';
-	import Copy from '@lucide/svelte/icons/copy';
-	import * as Command from '$lib/components/ui/command/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { cn } from '$lib/utils.js';
-	import strings from '../../strings.js';
-	import Tooltip from './Tooltip.svelte';
+import Check from "@lucide/svelte/icons/check";
+import Copy from "@lucide/svelte/icons/copy";
+import Sparkle from "@lucide/svelte/icons/sparkle";
+import * as Command from "$lib/components/ui/command/index.js";
+import * as Popover from "$lib/components/ui/popover/index.js";
+import { cn } from "$lib/utils.js";
+import strings from "../../strings.js";
+import Tooltip from "./Tooltip.svelte";
 
-	let preRef = $state<HTMLPreElement>();
-	let isCopying = $state(false);
-	const languages: string[] = $derived(extension.options.lowlight.listLanguages().sort());
-	let defaultLanguage = $derived<string>(node.attrs.language ?? 'plaintext');
+let preRef = $state<HTMLPreElement>();
+let isCopying = $state(false);
+const languages: string[] = $derived(
+	extension.options.lowlight.listLanguages().sort(),
+);
+let defaultLanguage = $derived<string>(node.attrs.language ?? "plaintext");
 
-	const changeLanguage = (language: string) => {
-		updateAttributes({ language: language });
-		defaultLanguage = language;
-	};
+const changeLanguage = (language: string) => {
+	updateAttributes({ language: language });
+	defaultLanguage = language;
+};
 
-	function copyCode() {
-		if (!preRef) return;
-		isCopying = true;
-		navigator.clipboard.writeText(preRef.innerText);
-		setTimeout(() => {
-			isCopying = false;
-		}, 1000);
-	}
+function copyCode() {
+	if (!preRef) return;
+	isCopying = true;
+	navigator.clipboard.writeText(preRef.innerText);
+	setTimeout(() => {
+		isCopying = false;
+	}, 1000);
+}
 
-	function convertToMermaid() {
-		const code = node.textContent;
-		const pos = getPos();
-		if (typeof pos !== 'number') return;
-		editor
-			.chain()
-			.focus()
-			.deleteRange({ from: pos, to: pos + node.nodeSize })
-			.insertContentAt(pos, {
-				type: 'mermaid',
-				content: [
-					{
-						type: 'text',
-						text: code || ''
-					}
-				]
-			})
-			.run();
-	}
+function convertToMermaid() {
+	const code = node.textContent;
+	const pos = getPos();
+	if (typeof pos !== "number") return;
+	editor
+		.chain()
+		.focus()
+		.deleteRange({ from: pos, to: pos + node.nodeSize })
+		.insertContentAt(pos, {
+			type: "mermaid",
+			content: [
+				{
+					type: "text",
+					text: code || "",
+				},
+			],
+		})
+		.run();
+}
 </script>
 
 <NodeViewWrapper class="my-4 rounded-lg bg-muted pb-4 dark:bg-muted/20">

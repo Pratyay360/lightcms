@@ -1,34 +1,34 @@
 <script lang="ts">
-	import Download from "@lucide/svelte/icons/download";
-	import Check from '@lucide/svelte/icons/check';
-	import Copy from '@lucide/svelte/icons/copy';
-	import Pencil from '@lucide/svelte/icons/pencil';
-	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
-	import Workflow from '@lucide/svelte/icons/workflow';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import Tooltip from '../Tooltip.svelte';
+import Check from "@lucide/svelte/icons/check";
+import Copy from "@lucide/svelte/icons/copy";
+import Download from "@lucide/svelte/icons/download";
+import Pencil from "@lucide/svelte/icons/pencil";
+import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+import Workflow from "@lucide/svelte/icons/workflow";
+import { Button } from "$lib/components/ui/button/index.js";
+import Tooltip from "../Tooltip.svelte";
 
-	interface Props {
-		code: string;
-		editable: boolean;
-		containerRef?: HTMLDivElement | null;
-		copied: boolean;
-		error: string | null;
-		onEdit: () => void;
-		onCopy: () => void;
-		onDownload: () => void;
-	}
+interface Props {
+	code: string;
+	editable: boolean;
+	containerRef?: HTMLDivElement | null;
+	copied: boolean;
+	error: string | null;
+	onEdit: () => void;
+	onCopy: () => void;
+	onDownload: () => void;
+}
 
-	let {
-		code,
-		editable,
-		containerRef = $bindable(null),
-		copied,
-		error,
-		onEdit,
-		onCopy,
-		onDownload,
-	}: Props = $props();
+let {
+	code,
+	editable,
+	containerRef = $bindable(null),
+	copied,
+	error,
+	onEdit,
+	onCopy,
+	onDownload,
+}: Props = $props();
 </script>
 
 <div class="group/preview relative w-full">

@@ -1,27 +1,27 @@
 <script lang="ts">
-	import { page } from "$app/state";
-	import type { DocNavSection } from "$lib/server/docs";
-	import { cn } from "$lib/utils";
+import { page } from "$app/state";
+import type { DocNavSection } from "$lib/server/docs";
+import { cn } from "$lib/utils";
 
-	let {
-		sections = [],
-		onLinkClick
-	}: {
-		sections: DocNavSection[];
-		onLinkClick?: () => void;
-	} = $props();
+let {
+	sections = [],
+	onLinkClick,
+}: {
+	sections: DocNavSection[];
+	onLinkClick?: () => void;
+} = $props();
 
-	function isActive(slug: string): boolean {
-		const currentPath = page.url.pathname;
-		const targetPath = `/docs/${slug}`;
-		if (currentPath === targetPath) {
-			return true;
-		}
-		if (currentPath === "/docs" && slug === "getting-started-with-lightcms") {
-			return true;
-		}
-		return false;
+function isActive(slug: string): boolean {
+	const currentPath = page.url.pathname;
+	const targetPath = `/docs/${slug}`;
+	if (currentPath === targetPath) {
+		return true;
 	}
+	if (currentPath === "/docs" && slug === "getting-started-with-lightcms") {
+		return true;
+	}
+	return false;
+}
 </script>
 
 <nav class="space-y-6 text-sm" aria-label="Documentation navigation">

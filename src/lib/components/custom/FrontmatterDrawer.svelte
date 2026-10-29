@@ -1,255 +1,257 @@
 <script lang="ts">
-  import type { FrontmatterEntry } from "./frontmatter-drawer.types.ts";
-  import ArrowDown from "@lucide/svelte/icons/arrow-down";
-  import ArrowUp from "@lucide/svelte/icons/arrow-up";
-  import Calendar from "@lucide/svelte/icons/calendar";
-  import Check from "@lucide/svelte/icons/check";
-  import Code2 from "@lucide/svelte/icons/code-2";
-  import Copy from "@lucide/svelte/icons/copy";
-  import Plus from "@lucide/svelte/icons/plus";
-  import Search from "@lucide/svelte/icons/search";
-  import Settings2 from "@lucide/svelte/icons/settings-2";
-  import SlidersHorizontal from "@lucide/svelte/icons/sliders-horizontal";
-  import Trash2 from "@lucide/svelte/icons/trash-2";
-  import X from "@lucide/svelte/icons/x";
-  import { Dialog as DialogPrimitive } from "bits-ui";
-  import { toast } from "svelte-sonner";
-  import { Badge } from "$lib/components/ui/badge";
-  import { Button } from "$lib/components/ui/button";
-  import { Input } from "$lib/components/ui/input";
-  import { Textarea } from "$lib/components/ui/textarea";
+import ArrowDown from "@lucide/svelte/icons/arrow-down";
+import ArrowUp from "@lucide/svelte/icons/arrow-up";
+import Calendar from "@lucide/svelte/icons/calendar";
+import Check from "@lucide/svelte/icons/check";
+import Code2 from "@lucide/svelte/icons/code-2";
+import Copy from "@lucide/svelte/icons/copy";
+import Plus from "@lucide/svelte/icons/plus";
+import Search from "@lucide/svelte/icons/search";
+import Settings2 from "@lucide/svelte/icons/settings-2";
+import SlidersHorizontal from "@lucide/svelte/icons/sliders-horizontal";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import X from "@lucide/svelte/icons/x";
+import { Dialog as DialogPrimitive } from "bits-ui";
+import { toast } from "svelte-sonner";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import { Input } from "$lib/components/ui/input";
+import { Textarea } from "$lib/components/ui/textarea";
+import type { FrontmatterEntry } from "./frontmatter-drawer.types.ts";
 
+interface Props {
+	open?: boolean;
+	entries?: FrontmatterEntry[];
+	onchange?: () => void;
+	/** Keys that are edited inline elsewhere, so the drawer hides them. */
+	hiddenKeys?: readonly string[];
+}
 
-  interface Props {
-    open?: boolean;
-    entries?: FrontmatterEntry[];
-    onchange?: () => void;
-    /** Keys that are edited inline elsewhere, so the drawer hides them. */
-    hiddenKeys?: readonly string[];
-  }
+let {
+	open = $bindable(false),
+	entries = $bindable([]),
+	onchange,
+	hiddenKeys = [],
+}: Props = $props();
 
-  let {
-    open = $bindable(false),
-    entries = $bindable([]),
-    onchange,
-    hiddenKeys = [],
-  }: Props = $props();
+function isHiddenKey(key: string): boolean {
+	const normalized = key.trim().toLowerCase();
+	return hiddenKeys.some(
+		(hiddenKey) => hiddenKey.trim().toLowerCase() === normalized,
+	);
+}
 
-  function isHiddenKey(key: string): boolean {
-    const normalized = key.trim().toLowerCase();
-    return hiddenKeys.some(
-      (hiddenKey) => hiddenKey.trim().toLowerCase() === normalized,
-    );
-  }
+let searchQuery = $state("");
+let newFieldKey = $state("");
+let newFieldValue = $state("");
+let viewMode = $state<"fields" | "yaml">("fields");
+let hasCopiedYaml = $state(false);
 
-  let searchQuery = $state("");
-  let newFieldKey = $state("");
-  let newFieldValue = $state("");
-  let viewMode = $state<"fields" | "yaml">("fields");
-  let hasCopiedYaml = $state(false);
+const COMMON_SUGGESTIONS = [
+	"title",
+	"description",
+	"date",
+	"draft",
+	"tags",
+	"keywords",
+	"author",
+	"preview",
+	"image",
+	"weight",
+] as const;
 
-  const COMMON_SUGGESTIONS = [
-    "title",
-    "description",
-    "date",
-    "draft",
-    "tags",
-    "keywords",
-    "author",
-    "preview",
-    "image",
-    "weight",
-  ] as const;
+const unusedSuggestions = $derived.by(() => {
+	const existingKeys = new Set(
+		entries.map((entry) => entry.key.trim().toLowerCase()),
+	);
+	return COMMON_SUGGESTIONS.filter(
+		(suggestion) =>
+			!existingKeys.has(suggestion.toLowerCase()) && !isHiddenKey(suggestion),
+	);
+});
 
-  const unusedSuggestions = $derived.by(() => {
-    const existingKeys = new Set(
-      entries.map((entry) => entry.key.trim().toLowerCase()),
-    );
-    return COMMON_SUGGESTIONS.filter(
-      (suggestion) =>
-        !existingKeys.has(suggestion.toLowerCase()) &&
-        !isHiddenKey(suggestion),
-    );
-  });
+const visibleEntries = $derived.by(() =>
+	entries
+		.map((entry, index) => ({ entry, index }))
+		.filter(({ entry }) => !isHiddenKey(entry.key)),
+);
 
-  const visibleEntries = $derived.by(() =>
-    entries
-      .map((entry, index) => ({ entry, index }))
-      .filter(({ entry }) => !isHiddenKey(entry.key)),
-  );
+const filteredEntries = $derived.by(() => {
+	const query = searchQuery.trim().toLowerCase();
+	if (query.length === 0) {
+		return visibleEntries;
+	}
+	return visibleEntries.filter(({ entry }) => {
+		const keyMatches = entry.key.toLowerCase().includes(query);
+		const valueMatches = entry.value.toLowerCase().includes(query);
+		return keyMatches || valueMatches;
+	});
+});
 
-  const filteredEntries = $derived.by(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (query.length === 0) {
-      return visibleEntries;
-    }
-    return visibleEntries.filter(({ entry }) => {
-      const keyMatches = entry.key.toLowerCase().includes(query);
-      const valueMatches = entry.value.toLowerCase().includes(query);
-      return keyMatches || valueMatches;
-    });
-  });
+function detectValueType(
+	value: string,
+): "boolean" | "number" | "array" | "object" | "date" | "string" {
+	const trimmed = value.trim();
+	if (trimmed === "true" || trimmed === "false") {
+		return "boolean";
+	}
+	if (
+		trimmed.length > 0 &&
+		!Number.isNaN(Number(trimmed)) &&
+		!trimmed.startsWith("0x")
+	) {
+		return "number";
+	}
+	if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+		return "array";
+	}
+	if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+		return "object";
+	}
+	if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
+		return "date";
+	}
+	return "string";
+}
 
-  function detectValueType(
-    value: string,
-  ): "boolean" | "number" | "array" | "object" | "date" | "string" {
-    const trimmed = value.trim();
-    if (trimmed === "true" || trimmed === "false") {
-      return "boolean";
-    }
-    if (trimmed.length > 0 && !Number.isNaN(Number(trimmed)) && !trimmed.startsWith("0x")) {
-      return "number";
-    }
-    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
-      return "array";
-    }
-    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-      return "object";
-    }
-    if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
-      return "date";
-    }
-    return "string";
-  }
+function addField(keyToAdd?: string) {
+	const resolvedKey = keyToAdd ?? newFieldKey;
+	const key = resolvedKey.trim();
+	if (key.length === 0) return;
 
-  function addField(keyToAdd?: string) {
-    const resolvedKey = keyToAdd ?? newFieldKey;
-    const key = resolvedKey.trim();
-    if (key.length === 0) return;
+	if (isHiddenKey(key)) {
+		toast.info("That field is edited inline in the editor.");
+		return;
+	}
 
-    if (isHiddenKey(key)) {
-      toast.info("That field is edited inline in the editor.");
-      return;
-    }
+	const alreadyExists = entries.some(
+		(entry) => entry.key.trim().toLowerCase() === key.toLowerCase(),
+	);
+	if (alreadyExists) {
+		toast.error(`"${key}" already exists.`);
+		return;
+	}
 
-    const alreadyExists = entries.some(
-      (entry) => entry.key.trim().toLowerCase() === key.toLowerCase(),
-    );
-    if (alreadyExists) {
-      toast.error(`"${key}" already exists.`);
-      return;
-    }
+	let initialValue = newFieldValue;
+	if (keyToAdd !== undefined && newFieldValue.length === 0) {
+		if (key === "draft") {
+			initialValue = "false";
+		} else if (key === "date") {
+			initialValue = new Date().toISOString();
+		} else if (key === "tags" || key === "keywords") {
+			initialValue = "[]";
+		}
+	}
 
-    let initialValue = newFieldValue;
-    if (keyToAdd !== undefined && newFieldValue.length === 0) {
-      if (key === "draft") {
-        initialValue = "false";
-      } else if (key === "date") {
-        initialValue = new Date().toISOString();
-      } else if (key === "tags" || key === "keywords") {
-        initialValue = "[]";
-      }
-    }
+	entries = [...entries, { key, value: initialValue }];
+	newFieldKey = "";
+	newFieldValue = "";
+	onchange?.();
+}
 
-    entries = [...entries, { key, value: initialValue }];
-    newFieldKey = "";
-    newFieldValue = "";
-    onchange?.();
-  }
+function removeField(index: number) {
+	entries = entries.filter((_, i) => i !== index);
+	onchange?.();
+}
 
-  function removeField(index: number) {
-    entries = entries.filter((_, i) => i !== index);
-    onchange?.();
-  }
+function moveField(index: number, direction: "up" | "down") {
+	// Swap slots in the visible list so hidden (inline) keys keep their position.
+	const visibleIndexes = visibleEntries.map((item) => item.index);
+	const currentPosition = visibleIndexes.indexOf(index);
+	if (currentPosition === -1) return;
 
-  function moveField(index: number, direction: "up" | "down") {
-    // Swap slots in the visible list so hidden (inline) keys keep their position.
-    const visibleIndexes = visibleEntries.map((item) => item.index);
-    const currentPosition = visibleIndexes.indexOf(index);
-    if (currentPosition === -1) return;
+	const targetPosition =
+		direction === "up" ? currentPosition - 1 : currentPosition + 1;
+	const targetIndex = visibleIndexes[targetPosition];
+	if (targetIndex === undefined) return;
 
-    const targetPosition =
-      direction === "up" ? currentPosition - 1 : currentPosition + 1;
-    const targetIndex = visibleIndexes[targetPosition];
-    if (targetIndex === undefined) return;
+	const updated = [...entries];
+	const current = updated[index];
+	const target = updated[targetIndex];
+	if (current === undefined || target === undefined) return;
 
-    const updated = [...entries];
-    const current = updated[index];
-    const target = updated[targetIndex];
-    if (current === undefined || target === undefined) return;
+	updated[index] = target;
+	updated[targetIndex] = current;
+	entries = updated;
+	onchange?.();
+}
 
-    updated[index] = target;
-    updated[targetIndex] = current;
-    entries = updated;
-    onchange?.();
-  }
+function toggleBoolean(index: number) {
+	const target = entries[index];
+	if (target === undefined) return;
+	const isCurrentlyTrue = target.value.trim().toLowerCase() === "true";
+	target.value = isCurrentlyTrue ? "false" : "true";
+	onchange?.();
+}
 
-  function toggleBoolean(index: number) {
-    const target = entries[index];
-    if (target === undefined) return;
-    const isCurrentlyTrue = target.value.trim().toLowerCase() === "true";
-    target.value = isCurrentlyTrue ? "false" : "true";
-    onchange?.();
-  }
+function setDateNow(index: number) {
+	const target = entries[index];
+	if (target === undefined) return;
+	target.value = new Date().toISOString();
+	onchange?.();
+}
 
-  function setDateNow(index: number) {
-    const target = entries[index];
-    if (target === undefined) return;
-    target.value = new Date().toISOString();
-    onchange?.();
-  }
+const yamlPreview = $derived.by(() => {
+	if (entries.length === 0) {
+		return "# No frontmatter metadata defined\n";
+	}
+	const lines: string[] = ["---"];
+	for (const entry of entries) {
+		const trimmedKey = entry.key.trim();
+		if (trimmedKey.length === 0) continue;
 
-  const yamlPreview = $derived.by(() => {
-    if (entries.length === 0) {
-      return "# No frontmatter metadata defined\n";
-    }
-    const lines: string[] = ["---"];
-    for (const entry of entries) {
-      const trimmedKey = entry.key.trim();
-      if (trimmedKey.length === 0) continue;
+		const trimmedVal = entry.value.trim();
+		const type = detectValueType(trimmedVal);
 
-      const trimmedVal = entry.value.trim();
-      const type = detectValueType(trimmedVal);
+		if (type === "boolean" || type === "number") {
+			lines.push(`${trimmedKey}: ${trimmedVal}`);
+		} else if (type === "array") {
+			try {
+				const parsed = JSON.parse(trimmedVal);
+				if (Array.isArray(parsed) && parsed.length > 0) {
+					lines.push(`${trimmedKey}:`);
+					for (const item of parsed) {
+						const formattedItem =
+							typeof item === "string" ? JSON.stringify(item) : String(item);
+						lines.push(`  - ${formattedItem}`);
+					}
+				} else {
+					lines.push(`${trimmedKey}: []`);
+				}
+			} catch {
+				lines.push(`${trimmedKey}: ${trimmedVal}`);
+			}
+		} else if (type === "object") {
+			lines.push(`${trimmedKey}: ${trimmedVal}`);
+		} else {
+			const needsQuotes =
+				trimmedVal.includes("\n") ||
+				trimmedVal.includes(":") ||
+				trimmedVal.includes('"') ||
+				trimmedVal.includes("#");
+			if (needsQuotes) {
+				lines.push(`${trimmedKey}: ${JSON.stringify(trimmedVal)}`);
+			} else {
+				lines.push(`${trimmedKey}: "${trimmedVal}"`);
+			}
+		}
+	}
+	lines.push("---");
+	return lines.join("\n");
+});
 
-      if (type === "boolean" || type === "number") {
-        lines.push(`${trimmedKey}: ${trimmedVal}`);
-      } else if (type === "array") {
-        try {
-          const parsed = JSON.parse(trimmedVal);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            lines.push(`${trimmedKey}:`);
-            for (const item of parsed) {
-              const formattedItem =
-                typeof item === "string" ? JSON.stringify(item) : String(item);
-              lines.push(`  - ${formattedItem}`);
-            }
-          } else {
-            lines.push(`${trimmedKey}: []`);
-          }
-        } catch {
-          lines.push(`${trimmedKey}: ${trimmedVal}`);
-        }
-      } else if (type === "object") {
-        lines.push(`${trimmedKey}: ${trimmedVal}`);
-      } else {
-        const needsQuotes =
-          trimmedVal.includes("\n") ||
-          trimmedVal.includes(":") ||
-          trimmedVal.includes('"') ||
-          trimmedVal.includes("#");
-        if (needsQuotes) {
-          lines.push(`${trimmedKey}: ${JSON.stringify(trimmedVal)}`);
-        } else {
-          lines.push(`${trimmedKey}: "${trimmedVal}"`);
-        }
-      }
-    }
-    lines.push("---");
-    return lines.join("\n");
-  });
-
-  async function copyYaml() {
-    try {
-      await navigator.clipboard.writeText(yamlPreview);
-      hasCopiedYaml = true;
-      toast.success("YAML copied to clipboard");
-      setTimeout(() => {
-        hasCopiedYaml = false;
-      }, 2000);
-    } catch {
-      toast.error("Failed to copy YAML");
-    }
-  }
+async function copyYaml() {
+	try {
+		await navigator.clipboard.writeText(yamlPreview);
+		hasCopiedYaml = true;
+		toast.success("YAML copied to clipboard");
+		setTimeout(() => {
+			hasCopiedYaml = false;
+		}, 2000);
+	} catch {
+		toast.error("Failed to copy YAML");
+	}
+}
 </script>
 
 <DialogPrimitive.Root bind:open>

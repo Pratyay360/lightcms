@@ -1,46 +1,46 @@
 <script lang="ts">
-	import FolderPlus from "@lucide/svelte/icons/folder-plus";
-	import Sparkles from "@lucide/svelte/icons/sparkles";
-	import { enhance } from "$app/forms";
-	import { Button } from "$lib/components/ui/button";
-	import {
-		Dialog,
-		DialogContent,
-		DialogDescription,
-		DialogFooter,
-		DialogHeader,
-		DialogTitle,
-	} from "$lib/components/ui/dialog";
-	import { Input } from "$lib/components/ui/input";
-	import { Label } from "$lib/components/ui/label";
+import FolderPlus from "@lucide/svelte/icons/folder-plus";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import { enhance } from "$app/forms";
+import { Button } from "$lib/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
 
-	interface Props {
-		open?: boolean;
-		targetPath: string;
-		error?: string;
-		action?: string;
-		title?: string;
-		description?: string;
-		onSuccess?: () => void;
+interface Props {
+	open?: boolean;
+	targetPath: string;
+	error?: string;
+	action?: string;
+	title?: string;
+	description?: string;
+	onSuccess?: () => void;
+}
+
+let {
+	open: dialogOpen = $bindable(false),
+	targetPath,
+	error = "",
+	action = "?/createFolder",
+	title = "New Folder",
+	description,
+	onSuccess,
+}: Props = $props();
+
+let folderName = $state("");
+
+$effect(() => {
+	if (dialogOpen) {
+		folderName = "";
 	}
-
-	let {
-		open: dialogOpen = $bindable(false),
-		targetPath,
-		error = '',
-		action = "?/createFolder",
-		title = "New Folder",
-		description,
-		onSuccess,
-	}: Props = $props();
-
-	let folderName = $state("");
-
-	$effect(() => {
-		if (dialogOpen) {
-			folderName = "";
-		}
-	});
+});
 </script>
 
 <Dialog bind:open={dialogOpen}>

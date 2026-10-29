@@ -1,19 +1,19 @@
 <script lang="ts">
-	import Command from '@lucide/svelte/icons/command';
-	import type { Node } from '@tiptap/pm/model';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import type { EdraCommand } from '../../commands/index.js';
-	import type { Editor } from '../../tiptap/index.js';
+import Command from "@lucide/svelte/icons/command";
+import type { Node } from "@tiptap/pm/model";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+import type { EdraCommand } from "../../commands/index.js";
+import type { Editor } from "../../tiptap/index.js";
 
-	interface Props {
-		editor: Editor;
-		currentNode: Node | null;
-		currentNodePos: number;
-		turnIntos: Record<string, EdraCommand[]>;
-	}
+interface Props {
+	editor: Editor;
+	currentNode: Node | null;
+	currentNodePos: number;
+	turnIntos: Record<string, EdraCommand[]>;
+}
 
-	const { editor, currentNode, currentNodePos, turnIntos }: Props = $props();
-	const turnIntoKeys = $derived(Object.keys(turnIntos));
+const { editor, currentNode, currentNodePos, turnIntos }: Props = $props();
+const turnIntoKeys = $derived(Object.keys(turnIntos));
 </script>
 
 <DropdownMenu.Sub>

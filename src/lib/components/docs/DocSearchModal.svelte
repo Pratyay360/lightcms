@@ -1,29 +1,29 @@
 <script lang="ts">
-	import ArrowRight from "@lucide/svelte/icons/arrow-right";
-	import FileText from "@lucide/svelte/icons/file-text";
-	import { goto } from "$app/navigation";
-	import * as Command from "$lib/components/ui/command";
-	import type { DocNavSection } from "$lib/server/docs";
+import ArrowRight from "@lucide/svelte/icons/arrow-right";
+import FileText from "@lucide/svelte/icons/file-text";
+import { goto } from "$app/navigation";
+import * as Command from "$lib/components/ui/command";
+import type { DocNavSection } from "$lib/server/docs";
 
-	let {
-		open = $bindable(false),
-		sections = []
-	}: {
-		open: boolean;
-		sections: DocNavSection[];
-	} = $props();
+let {
+	open = $bindable(false),
+	sections = [],
+}: {
+	open: boolean;
+	sections: DocNavSection[];
+} = $props();
 
-	function handleKeydown(event: KeyboardEvent): void {
-		if ((event.metaKey || event.ctrlKey) && event.key === "k") {
-			event.preventDefault();
-			open = !open;
-		}
+function handleKeydown(event: KeyboardEvent): void {
+	if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+		event.preventDefault();
+		open = !open;
 	}
+}
 
-	function selectDoc(slug: string): void {
-		open = false;
-		goto(`/docs/${slug}`);
-	}
+function selectDoc(slug: string): void {
+	open = false;
+	goto(`/docs/${slug}`);
+}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

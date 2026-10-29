@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { getEditor } from "../tiptap/components/editorContext.js";
-  import HarperPopover from "./HarperPopover.svelte";
-  import { primeHarper } from "./harper-client.ts";
+import { onMount } from "svelte";
+import { getEditor } from "../tiptap/components/editorContext.js";
+import HarperPopover from "./HarperPopover.svelte";
+import { primeHarper } from "./harper-client.ts";
 
-  const _editor = getEditor();
+const _editor = getEditor();
 
-  onMount(() => {
-    primeHarper();
-  });
+onMount(() => {
+	primeHarper();
+});
 </script>
 
 <HarperPopover />

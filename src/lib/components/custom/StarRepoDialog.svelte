@@ -1,23 +1,23 @@
 <script lang="ts">
-	// import Github from "@lucide/svelte/icons/github";
-	import Star from "@lucide/svelte/icons/star";
-	import Users from "@lucide/svelte/icons/users";
-	import { Button } from "$lib/components/ui/button";
-	import {
-		Dialog,
-		DialogContent,
-		DialogDescription,
-		DialogFooter,
-		DialogHeader,
-		DialogTitle,
-	} from "$lib/components/ui/dialog";
-	import { SITE } from "$lib/seo";
+// import Github from "@lucide/svelte/icons/github";
+import Star from "@lucide/svelte/icons/star";
+import Users from "@lucide/svelte/icons/users";
+import { Button } from "$lib/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "$lib/components/ui/dialog";
+import { SITE } from "$lib/seo";
 
-	interface Props {
-		open?: boolean;
-	}
+interface Props {
+	open?: boolean;
+}
 
-	let { open: dialogOpen = $bindable(false) }: Props = $props();
+let { open: dialogOpen = $bindable(false) }: Props = $props();
 </script>
 
 <Dialog bind:open={dialogOpen} onOpenChange={(open) => {

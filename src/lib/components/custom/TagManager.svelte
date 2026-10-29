@@ -1,48 +1,55 @@
 <script lang="ts">
-  import X from "@lucide/svelte/icons/x";
-  import { Badge } from "$lib/components/ui/badge";
-  import { Button } from "$lib/components/ui/button";
-  import { Card, CardContent } from "$lib/components/ui/card";
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
+import X from "@lucide/svelte/icons/x";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import { Card, CardContent } from "$lib/components/ui/card";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
 
-  interface Props {
-    tags: string[];
-    onTagsChange: (tags: string[]) => void;
-    fieldName?: string;
-    label?: string;
-    placeholder?: string;
-    description?: string;
-  }
+interface Props {
+	tags: string[];
+	onTagsChange: (tags: string[]) => void;
+	fieldName?: string;
+	label?: string;
+	placeholder?: string;
+	description?: string;
+}
 
-  let { tags, onTagsChange, fieldName = "tags", label = "Tags", placeholder = "press Enter or comma...", description }: Props = $props();
-  let newTagInput = $state("");
+let {
+	tags,
+	onTagsChange,
+	fieldName = "tags",
+	label = "Tags",
+	placeholder = "press Enter or comma...",
+	description,
+}: Props = $props();
+let newTagInput = $state("");
 
-  function addTag() { 
-    const rawTags = newTagInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
-    if (!rawTags.length) return;
+function addTag() {
+	const rawTags = newTagInput
+		.split(",")
+		.map((t) => t.trim())
+		.filter(Boolean);
+	if (!rawTags.length) return;
 
-    const uniqueNewTags = rawTags.filter((t) => !tags.includes(t));
+	const uniqueNewTags = rawTags.filter((t) => !tags.includes(t));
 
-    if (uniqueNewTags.length) {
-      onTagsChange([...tags, ...uniqueNewTags]);
-    }
-    newTagInput = "";
-  }
+	if (uniqueNewTags.length) {
+		onTagsChange([...tags, ...uniqueNewTags]);
+	}
+	newTagInput = "";
+}
 
-  function removeTag(tagToRemove: string) {
-    onTagsChange(tags.filter((t) => t !== tagToRemove));
-  }
+function removeTag(tagToRemove: string) {
+	onTagsChange(tags.filter((t) => t !== tagToRemove));
+}
 
-  function handleTagKeydown(e: KeyboardEvent) {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addTag();
-    }
-  }
+function handleTagKeydown(e: KeyboardEvent) {
+	if (e.key === "Enter" || e.key === ",") {
+		e.preventDefault();
+		addTag();
+	}
+}
 </script>
 
 <div class="grid gap-2 max-w-md">

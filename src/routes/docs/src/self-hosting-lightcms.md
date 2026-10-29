@@ -1,4 +1,5 @@
 ---
+
 title: Self Hosting LightCMS
 description: Guide to self host LightCMS, covering the GitHub App, PostgreSQL, environment variables, optional AI, CDN and email, and deploying to edge.
 serial: 4
@@ -7,18 +8,19 @@ badge: Deploy
 date: 2026-09-18T01:45:00Z
 draft: false
 tags:
-  - selfhost
-  - lightcms
-  - postgresql
-  - deployment
-keywords:
-  - lightcms
-  - probot
-  - self-hosting
-  - github_app
-  - vercel
-  - sveltekit
-preview: /og-image.png
+- selfhost
+- lightcms
+- postgresql
+- deployment
+  keywords:
+- lightcms
+- probot
+- self-hosting
+- github_app
+- vercel
+- sveltekit
+  preview: /og-image.png
+
 ---
 
 Want LightCMS fully under your control? LightCMS is a [SvelteKit](https://svelte.dev) application so it can be deployed anywhere, backed by a postgre database and a GitHub App(octokit). Your content never leaves your own GitHub repositories.

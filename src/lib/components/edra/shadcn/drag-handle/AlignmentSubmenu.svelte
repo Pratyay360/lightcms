@@ -1,18 +1,18 @@
 <script lang="ts">
-	import TextAlignCenter from '@lucide/svelte/icons/text-align-center';
-	import type { Node } from '@tiptap/pm/model';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { commands } from '../../commands/index.js';
-	import type { Editor } from '../../tiptap/index.js';
+import TextAlignCenter from "@lucide/svelte/icons/text-align-center";
+import type { Node } from "@tiptap/pm/model";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+import { commands } from "../../commands/index.js";
+import type { Editor } from "../../tiptap/index.js";
 
-	interface Props {
-		editor: Editor;
-		currentNode: Node | null;
-		currentNodePos: number;
-	}
+interface Props {
+	editor: Editor;
+	currentNode: Node | null;
+	currentNodePos: number;
+}
 
-	const { editor, currentNode, currentNodePos }: Props = $props();
-	const alignments = commands.alignment;
+const { editor, currentNode, currentNodePos }: Props = $props();
+const alignments = commands.alignment;
 </script>
 
 <DropdownMenu.Sub>

@@ -1,41 +1,41 @@
 <script lang="ts">
-	import GripHorizontal from '@lucide/svelte/icons/grip-horizontal';
-	import Loader2Icon from '@lucide/svelte/icons/loader-2';
-	import MicAudioLines from '@lucide/svelte/icons/mic-audio-lines';
-	import type { DraggableWidget } from './draggable-widget.svelte.js';
-	import { SPEECH_PROVIDERS, type SpeechProvider } from './speech-recognition.js';
-	import type { SpeechRecognitionInstance } from './speech-recognition.svelte.js';
+import GripHorizontal from "@lucide/svelte/icons/grip-horizontal";
+import Loader2Icon from "@lucide/svelte/icons/loader-2";
+import MicAudioLines from "@lucide/svelte/icons/mic-audio-lines";
+import type { DraggableWidget } from "./draggable-widget.svelte.js";
+import { SPEECH_PROVIDERS, type SpeechProvider } from "./speech-recognition.js";
+import type { SpeechRecognitionInstance } from "./speech-recognition.svelte.js";
 
-	interface Props {
-		/** The positioned root element, handed back so the parent can measure and clamp it. */
-		element?: HTMLDivElement | null;
-		speech: SpeechRecognitionInstance;
-		widget: DraggableWidget;
-		activeLang: string;
-		selectedProvider: SpeechProvider;
-		onProviderChange: (provider: SpeechProvider) => void;
-		onStop: () => void;
+interface Props {
+	/** The positioned root element, handed back so the parent can measure and clamp it. */
+	element?: HTMLDivElement | null;
+	speech: SpeechRecognitionInstance;
+	widget: DraggableWidget;
+	activeLang: string;
+	selectedProvider: SpeechProvider;
+	onProviderChange: (provider: SpeechProvider) => void;
+	onStop: () => void;
+}
+
+let {
+	element = $bindable(null),
+	speech,
+	widget,
+	activeLang,
+	selectedProvider,
+	onProviderChange,
+	onStop,
+}: Props = $props();
+
+const position = $derived(widget.position);
+
+const handleProviderChange = (event: Event) => {
+	const target = event.currentTarget;
+	if (!(target instanceof HTMLSelectElement)) {
+		return;
 	}
-
-	let {
-		element = $bindable(null),
-		speech,
-		widget,
-		activeLang,
-		selectedProvider,
-		onProviderChange,
-		onStop,
-	}: Props = $props();
-
-	const position = $derived(widget.position);
-
-	const handleProviderChange = (event: Event) => {
-		const target = event.currentTarget;
-		if (!(target instanceof HTMLSelectElement)) {
-			return;
-		}
-		onProviderChange(target.value as SpeechProvider);
-	};
+	onProviderChange(target.value as SpeechProvider);
+};
 </script>
 
 <div

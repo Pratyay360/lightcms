@@ -1,20 +1,22 @@
 ---
+
 title: "Static Sites and CO2: Building a Greener Web"
 description: Why static sites emit less carbon, how CDN caching cuts energy use, and what a greener web looks like.
 date: 2026-10-14T13:30:00Z
 draft: false
 tags:
-  - sustainability
-  - static-sites
-  - green-web
-  - co2
-  - ssg
-keywords:
-  - static sites
-  - green web
-  - sustainability
-  - website carbon
-preview: /og-image.png
+- sustainability
+- static-sites
+- green-web
+- co2
+- ssg
+  keywords:
+- static sites
+- green web
+- sustainability
+- website carbon
+  preview: /og-image.png
+
 ---
 
 Every page view costs energy. Somewhere, a server makes a cache miss, few database query runs, consuming a lot of compute as a result generating kgs of CO2. Commonly cited estimates put the web at roughly 2–4% of global electricity emissions,
@@ -78,4 +80,3 @@ Some notable static site hosting providers are:
 - [surge](https://surge.sh/)
 
 even from a custom s3 bucket one can serve a static site.
-
