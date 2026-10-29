@@ -1,5 +1,9 @@
 <script lang="ts">
 import { DotLottieSvelte } from "@lottiefiles/dotlottie-svelte";
+import ArrowRight from "@lucide/svelte/icons/arrow-right";
+import Layers from "@lucide/svelte/icons/layers";
+import LayoutTemplate from "@lucide/svelte/icons/layout-template";
+import Pencil from "@lucide/svelte/icons/pencil";
 </script>
 
 

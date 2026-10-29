@@ -11,7 +11,7 @@ tags:
 - lightcms
 - static-sites
 - green-web
-  keywords:
+keywords:
 - lightcms
 - faq
 - static sites

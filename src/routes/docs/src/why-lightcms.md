@@ -10,12 +10,12 @@ tags:
 - cms
 - philosophy
 - lightcms
-  keywords:
+keywords:
 - why lightcms
 - git-backed cms
 - static sites
 - carbon footprint
-  preview: /og-image.png
+preview: /og-image.png
 
 ---
 

@@ -9,7 +9,7 @@ import LeafyGreen from "@lucide/svelte/icons/leafy-green";
 import Pencil from "@lucide/svelte/icons/pencil";
 import Sparkles from "@lucide/svelte/icons/sparkles";
 import Zap from "@lucide/svelte/icons/zap";
-import Hero from "@/components/Hero";
+import Hero from "$lib/components/Hero.svelte";
 </script>
 
 <div class="space-y-16 py-6 lg:py-12">

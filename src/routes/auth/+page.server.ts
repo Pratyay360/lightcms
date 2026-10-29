@@ -2,7 +2,7 @@ import { fail } from "@sveltejs/kit";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { z } from "zod";
-import { auth } from "$lib/server/auth";
+import { getAuth } from "$lib/server/auth";
 
 const authFormSchema = z.object({
   email: z.string().trim().min(1, "Enter an email address."),
@@ -85,7 +85,7 @@ export const actions = {
     }
 
     try {
-      await auth.api.signInMagicLink({
+      await getAuth().api.signInMagicLink({
         body: {
           email: form.data.email,
           callbackURL: "/cms",

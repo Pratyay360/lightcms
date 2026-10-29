@@ -11,13 +11,13 @@ tags:
 - sites
 - markdown
 - getting-started
-  keywords:
+keywords:
 - how to start a blog
 - start a blog for free
 - markdown blog
 - static site blog
 - best way to start a blog 2026
-  preview: /og-image.png
+preview: /og-image.png
 
 ---
 

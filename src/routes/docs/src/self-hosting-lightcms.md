@@ -12,14 +12,14 @@ tags:
 - lightcms
 - postgresql
 - deployment
-  keywords:
+keywords:
 - lightcms
 - probot
 - self-hosting
 - github_app
 - vercel
 - sveltekit
-  preview: /og-image.png
+preview: /og-image.png
 
 ---
 

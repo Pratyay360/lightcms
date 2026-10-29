@@ -65,4 +65,11 @@ function createAuth() {
   });
 }
 
-export const auth = createAuth();
+let instance: ReturnType<typeof betterAuth> | null = null;
+
+export function getAuth(): ReturnType<typeof betterAuth> {
+  if (!instance) {
+    instance = createAuth();
+  }
+  return instance;
+}

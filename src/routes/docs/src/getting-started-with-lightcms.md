@@ -12,7 +12,7 @@ tags:
 - static
 - site
 - generator
-  keywords:
+keywords:
 - "lightcms"
 - "getting started"
 - "introduction"

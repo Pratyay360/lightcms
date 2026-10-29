@@ -10,12 +10,12 @@ tags:
 - green-web
 - co2
 - ssg
-  keywords:
+keywords:
 - static sites
 - green web
 - sustainability
 - website carbon
-  preview: /og-image.png
+preview: /og-image.png
 
 ---
 

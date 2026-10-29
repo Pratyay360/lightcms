@@ -10,13 +10,13 @@ tags:
 - email
 - newsy
 - smtp
-  keywords:
+keywords:
 - newsletter
 - email automation
 - newsy
 - smtp
 - lightcms
-  preview: /og-image.png
+preview: /og-image.png
 
 ---
 
