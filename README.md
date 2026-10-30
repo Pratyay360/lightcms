@@ -5,12 +5,15 @@
 <p align="center">
   <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Sponsor-GitHub-ea4aaa.svg?variant=secondary&amp;logo=githubsponsors" /><img alt="GitHub Sponsors" src="https://shieldcn.dev/badge/Sponsor-GitHub-ea4aaa.svg?variant=secondary&amp;mode=light&amp;logo=githubsponsors" /></picture>
 </p>
+
 <p align="center">
   <img alt="badge" src="https://shieldcn.dev/npm/react.svg" />
   <img alt="badge" src="https://shieldcn.dev/github/light-cms/lightcms/stars.svg" />
 </p>
 
 [![releaseszn](https://releaseszn.com/badge/lightcms.svg)](https://releaseszn.com/p/lightcms)
+
+<a href="https://www.producthunt.com/products/lightcms-2?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-lightcms-2" target="_blank" rel="noopener noreferrer"><img alt="LightCMS - Git backed CMS for static site generators | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1298924&amp;theme=dark&amp;t=1793393067873"></a>
 
 ## Overview
 

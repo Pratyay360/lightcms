@@ -111,7 +111,10 @@ import Pencil from "@lucide/svelte/icons/pencil";
           </h3>
 
           <p class="text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Start from battle-tested templates for Hugo, Astro, Zola, Eleventy, Jekyll, and more with standardized front matter. Save time with ready-to-use configurations or customize the LLM prompt to generate templates for any static site generator.
+            Get started quickly with ready made,
+            handcrafted templates for popular Static Site Generators (SSGs) like Hugo, Astro, and Zola. You can save time using these pre built configurations or use the LLM to customize any template to perfectly fit your static site needs.
+
+
             <a href="https://github.com/light-cms" class="text-foreground">Learn more</a>
             or you can ask a LLM to help you get started. <a href="/llms.txt" class="text-foreground">Ask a question</a>
           </p>
@@ -138,11 +141,11 @@ import Pencil from "@lucide/svelte/icons/pencil";
 
 
         <h3 class="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Content creation assistance
+          Built in copilot
         </h3>
 
         <p class="text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Leverage AI assistants to quickly draft, edit, and improve your content directly inside the editor.
+          Leverage AI copilot to aid your content writing experience.
 
         </p>
 
