@@ -10,6 +10,8 @@ import Pencil from "@lucide/svelte/icons/pencil";
 import Sparkles from "@lucide/svelte/icons/sparkles";
 import Zap from "@lucide/svelte/icons/zap";
 import Hero from "$lib/components/Hero.svelte";
+import Supademo from "$lib/components/Supademo.svelte";
+
 </script>
 
 <div class="space-y-16 py-6 lg:py-12">
@@ -50,6 +52,7 @@ import Hero from "$lib/components/Hero.svelte";
         >
           Try the demo
         </a>
+        <Supademo />
       </div>
     </div>
 

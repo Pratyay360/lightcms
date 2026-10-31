@@ -1,3 +1,4 @@
+
 <script lang="ts">
 import Blocks from "@lucide/svelte/icons/blocks";
 import BookOpen from "@lucide/svelte/icons/book-open";
@@ -8,6 +9,7 @@ import { injectAnalytics } from "@vercel/analytics/sveltekit";
 import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
 import { ModeWatcher } from "mode-watcher";
 import "./layout.css";
+
 import { onMount } from "svelte";
 import { dev } from "$app/environment";
 import { page } from "$app/state";
